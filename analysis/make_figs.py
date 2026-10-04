@@ -127,10 +127,10 @@ def grammar_fig(g, out):
             ax.text(x, bad + 0.8, str(bad), ha="center", va="bottom", fontsize=12, color=INK)
     ax.set_xticks(range(len(groups)), [f"{lab}\nn = 400" for _, lab in groups])
     ax.set_ylim(0, max(top, 1) * 1.3)
-    ax.set_ylabel("Tasks with a format failure\n(no call, malformed, bad tool, bad args)")
+    ax.set_ylabel("Tasks with a format failure (of 400)")
     ax.legend(frameon=False, loc="upper center", ncol=2, bbox_to_anchor=(0.5, 1.04))
-    fig.subplots_adjust(left=0.13, right=0.98, top=0.95, bottom=0.23)
-    footnote(fig, "BFCL simple_python, raw /completion, greedy · grammar forces >= 1 schema-valid call")
+    fig.subplots_adjust(left=0.1, right=0.98, top=0.95, bottom=0.23)
+    footnote(fig, "BFCL simple_python, raw /completion, greedy · format failure = no call, malformed call, unknown tool, or schema-invalid args")
     fig.savefig(out, dpi=200, facecolor="white")
     plt.close(fig)
 
