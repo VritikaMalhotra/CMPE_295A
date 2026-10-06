@@ -135,6 +135,30 @@ def grammar_fig(g, out):
     plt.close(fig)
 
 
+def nonlive_fig(nl, out):
+    cats = [("simple_python", "Simple\nPython"), ("simple_java", "Simple\nJava"), ("simple_javascript", "Simple\nJS"),
+            ("multiple", "Multiple"), ("parallel", "Parallel"), ("parallel_multiple", "Parallel\nmultiple")]
+    fig, ax = base_axes()
+    ax.set_xlim(-0.6, len(cats) - 0.4)
+    w = bar_width_data(ax, fig) * 0.85
+    gap = w * 0.08
+    for j, f in enumerate(FORMATS):
+        d = nl[nl.format == f]
+        for i, (c, _) in enumerate(cats):
+            acc = 100 * d[d.category == c].correct.mean()
+            ax.bar(i + (j - 1) * (w + gap), acc, width=w, color=FORMAT_COLOR[f], zorder=2,
+                   label=FORMAT_LABEL[f] if i == 0 else None)
+    ax.set_xticks(range(len(cats)), [f"{lab}\nn = {int((nl[(nl.format == 'BF16') & (nl.category == c)]).shape[0])}"
+                                      for c, lab in cats], fontsize=11)
+    ax.set_ylim(0, 100)
+    ax.set_ylabel("BFCL non-live accuracy (%)")
+    ax.legend(frameon=False, loc="upper center", ncol=3, bbox_to_anchor=(0.5, 1.04))
+    fig.subplots_adjust(left=0.1, right=0.98, top=0.93, bottom=0.27)
+    footnote(fig, "bfcl-eval 2026.3.23 · Non-Live Overall: BF16 69.4%, Q4_K_M 67.4%, Q4_0 (--pure) 56.0%")
+    fig.savefig(out, dpi=200, facecolor="white")
+    plt.close(fig)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--progress", default=os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -145,6 +169,9 @@ def main():
     df = df[df.category == "simple_python"]
     accuracy_fig(df, os.path.join(figs, "accuracy_bf16_vs_q4.png"))
     failure_fig(df, os.path.join(figs, "failure_breakdown.png"))
+    npath = os.path.join(args.progress, "bfcl_nonlive_pilot.csv")
+    if os.path.exists(npath):
+        nonlive_fig(pd.read_csv(npath), os.path.join(figs, "accuracy_nonlive_by_category.png"))
     gpath = os.path.join(args.progress, "grammar_pilot.csv")
     if os.path.exists(gpath):
         g = pd.read_csv(gpath)
