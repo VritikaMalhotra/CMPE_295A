@@ -159,6 +159,27 @@ def nonlive_fig(nl, out):
     plt.close(fig)
 
 
+def energy_fig(nv, out):
+    fig, ax = base_axes()
+    ax.set_xlim(-0.6, len(FORMATS) - 0.4)
+    w = bar_width_data(ax, fig) * 1.6
+    top = 0
+    for i, f in enumerate(FORMATS):
+        d = nv[nv.format == f].mj_per_tok_counter
+        m, sd = d.mean(), d.std()
+        top = max(top, m + sd)
+        ax.bar(i, m, width=w, color=FORMAT_COLOR[f], zorder=2)
+        ax.plot([i, i], [m - sd, m + sd], color=INK_2, linewidth=1.2, zorder=3)
+        ax.text(i, m + sd + top * 0.02, f"{m:.0f} mJ", ha="center", va="bottom", fontsize=13, color=INK, fontweight="bold")
+    ax.set_xticks(range(len(FORMATS)), [f"{FORMAT_LABEL[f]}\nn = {int((nv.format == f).sum())} runs" for f in FORMATS])
+    ax.set_ylim(0, top * 1.2)
+    ax.set_ylabel("GPU energy per decoded token (mJ)")
+    fig.subplots_adjust(left=0.1, right=0.98, top=0.95, bottom=0.23)
+    footnote(fig, "NVML energy counter, idle power subtracted · 1,024-token greedy decode · whiskers: \u00b11 sd over 10 runs")
+    fig.savefig(out, dpi=200, facecolor="white")
+    plt.close(fig)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--progress", default=os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -172,6 +193,9 @@ def main():
     npath = os.path.join(args.progress, "bfcl_nonlive_pilot.csv")
     if os.path.exists(npath):
         nonlive_fig(pd.read_csv(npath), os.path.join(figs, "accuracy_nonlive_by_category.png"))
+    epath = os.path.join(args.progress, "nvml_summary.csv")
+    if os.path.exists(epath):
+        energy_fig(pd.read_csv(epath), os.path.join(figs, "energy_per_token.png"))
     gpath = os.path.join(args.progress, "grammar_pilot.csv")
     if os.path.exists(gpath):
         g = pd.read_csv(gpath)
