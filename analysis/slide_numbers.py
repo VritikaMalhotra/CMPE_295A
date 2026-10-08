@@ -91,6 +91,13 @@ def main():
 
     s7 = pd.read_csv(os.path.join(P, "s7_loss_compare.csv"))
     out.append(f"s7_resume_identical: {'yes' if (s7.abs_diff == 0).all() and len(s7) == 50 else 'no'}")
+
+    # post-freeze diagnostics (deep dive); keys only appear once deep_dive_results.csv exists
+    dpath = os.path.join(P, "deep_dive_results.csv")
+    if os.path.exists(dpath):
+        d = pd.read_csv(dpath)
+        for _, r in d.iterrows():
+            out.append(f"{r.key}: {r.value}")
     print("\n".join(out))
 
 
