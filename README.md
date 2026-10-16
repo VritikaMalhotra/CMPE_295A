@@ -1,4 +1,4 @@
-# CMPE 295A: Reliable Local Tool Calling
+# Measuring and Repairing Quantization Damage in Small LLM Agents on Commodity Hardware
 
 **A research testbed for measuring tool-call accuracy, output validity, and inference cost across local model configurations.**
 
