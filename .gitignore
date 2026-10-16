@@ -1,0 +1,7 @@
+# local-only files
+STATUS.md
+PLAN_3WEEKS.md
+*.log
+scratch/
+__pycache__/
+*.gguf
