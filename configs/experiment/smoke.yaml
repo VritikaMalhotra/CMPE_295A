@@ -1,0 +1,38 @@
+# @package _global_
+# Two-minute end-to-end check on CPU only (no GPU needed): 2 tasks, 1 seed, a baseline and an R1 run.
+#   python -m testbed.run +experiment=smoke local=true allow_sha_mismatch=true
+# Uses whatever Q8_0 / pure Q4_0 GGUFs sit in TESTBED_MODELS; results are throwaway.
+experiment:
+  name: smoke
+  model: qwen3-0.6b
+  benchmark: bfcl_multi_turn_base
+  n_tasks: 2
+  thinking: false
+  max_steps_per_turn: 20
+
+  baselines:
+    - {variant: q4_0, backend: cpu}
+    - {variant: q8_0, backend: cpu}
+  baseline_seeds: [1]
+
+  repairs:
+    - {repair: r1, variant: q4_0, backend: cpu, constraint: free}
+  repair_seeds: [1]
+
+  decoding:
+    temperature: 0.7
+    top_p: 0.8
+    top_k: 20
+    min_p: 0.0
+    n_predict: 4096                 # cap; per request min(4096, ctx - prompt - 2), as bfcl's local handler
+    cache_prompt: false
+
+  server:
+    ctx: 40960                      # Qwen3-0.6B max_position_embeddings, what bfcl budgets against
+
+models:
+  qwen3-0.6b:
+    hf_repo: Qwen/Qwen3-0.6B
+    files:
+      q4_0: Qwen3-0.6B-Q4_0-pure.gguf
+      q8_0: Qwen3-0.6B-Q8_0.gguf
