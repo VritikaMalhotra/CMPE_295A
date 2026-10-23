@@ -1,0 +1,19 @@
+#!/bin/bash
+# Written by `python -m testbed.run +experiment={experiment}` (local=false). One array task per configuration;
+# each task starts its own llama-server and runs that configuration's pending episodes (resumable).
+# report.sbatch runs once after the whole array (afterany) and writes the report.
+#SBATCH -J {job}
+#SBATCH -p {partition}
+#SBATCH --gres={gres}
+#SBATCH -c 4
+#SBATCH --mem=24G
+#SBATCH -t {time}
+#SBATCH --array=0-{n}%{max_conc}
+#SBATCH -o {logdir}/%A_%a.out
+{account_line}
+set -euo pipefail
+cd {repo}
+source .venv/bin/activate
+KEY=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" {cfg_list})
+echo "config $KEY on $(hostname), GPU: $(nvidia-smi --query-gpu=name --format=csv,noheader || true)"
+python -m testbed.run +experiment={experiment} local=true only_config="$KEY"

@@ -1,0 +1,54 @@
+# @package _global_
+# M1 walking skeleton (Workbook Ch. 8, Table 36), Colab version agreed 2026-10-24:
+# BFCL multi-turn base only (tau2 airline + C4 move to M2); cluster criteria move to M2.
+#   4 baseline configs x 20 tasks x 2 seeds = 160 episodes
+#   3 repair configs   x 20 tasks x 1 seed  =  60 episodes
+experiment:
+  name: skeleton
+  model: qwen3-0.6b
+  benchmark: bfcl_multi_turn_base
+  n_tasks: 20                       # first 20 ids of BFCL_v4_multi_turn_base, file order
+  thinking: false
+  max_steps_per_turn: 20
+
+  baselines:
+    - {variant: bf16,   backend: cuda}
+    - {variant: q4_k_m, backend: cuda}
+    - {variant: q4_0,   backend: cuda}
+    - {variant: q4_0,   backend: cpu}
+  baseline_seeds: [1, 2]
+
+  # one minimal run of each repair family, all compared against q4_0 on CUDA
+  repairs:
+    - {repair: r1, variant: q4_0,        backend: cuda, constraint: free}   # GBNF with free-text branch
+    - {repair: r2, variant: q8_0,        backend: cuda, constraint: none}   # uniform added bits
+    - {repair: r3, variant: r3_qad_q4_0, backend: cuda, constraint: none}   # S7 toy QAD -> S8 export
+  repair_seeds: [1]
+
+  # Qwen3 model card, non-thinking: T 0.7, top_p 0.8, top_k 20, min_p 0 (the pilot's sampled lane).
+  # Greedy would make the two seeds identical on llama.cpp.
+  decoding:
+    temperature: 0.7
+    top_p: 0.8
+    top_k: 20
+    min_p: 0.0
+    n_predict: 4096                 # cap; per request min(4096, ctx - prompt - 2), as bfcl's local handler
+    cache_prompt: false
+
+  server:
+    ctx: 40960                      # Qwen3-0.6B max_position_embeddings, what bfcl budgets against
+
+models:
+  qwen3-0.6b:
+    hf_repo: Qwen/Qwen3-0.6B
+    files:
+      bf16: Qwen3-0.6B-BF16.gguf
+      q4_k_m: Qwen3-0.6B-Q4_K_M.gguf
+      q4_0: Qwen3-0.6B-Q4_0-pure.gguf
+      q8_0: Qwen3-0.6B-Q8_0.gguf
+      r3_qad_q4_0: Qwen3-0.6B-S7QAD-Q4_0-pure.gguf
+    # SHA-256 of the Oct 8 pilot files (progress/quant_files.csv); checked before any run
+    sha256:
+      bf16: 9a07b327d6114b23cd022cd0b188629aa0d02f88c863becaa34af5fc374281a2
+      q4_k_m: 40b0bbe7c787ac694f2f635ead2bcfebf19a7d6f1130d63155155fc0b83bdc6c
+      q4_0: 90d6e31f1034a14e7d382c0a5de3e0c2bafa1e1b6b2d1869ebea5b8e2c4482ab

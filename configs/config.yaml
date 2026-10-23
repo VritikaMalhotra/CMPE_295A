@@ -1,0 +1,37 @@
+# Root config for `python -m testbed.run`. Pick an experiment with +experiment=<name>.
+#   uv run python -m testbed.run +experiment=skeleton dry_run=true     # list run specs, run nothing
+#   uv run python -m testbed.run +experiment=skeleton local=true       # run here (Colab / laptop)
+#   uv run python -m testbed.run +experiment=skeleton                  # write the Slurm array job
+local: false
+dry_run: false
+submit: false            # with local=false: also call sbatch (needs a Slurm account association)
+limit: null              # run only the first N pending specs (smoke tests)
+only_config: null        # run one configuration (a config_key); used by each Slurm array task
+report_only: false       # rebuild report.md from finished episodes, run nothing
+report_partial: false    # write the report even when episodes are still pending
+skip_hash: false         # skip SHA-256 of model files (they are cached in <file>.sha256 after the first run)
+allow_sha_mismatch: false
+allow_model_change: false   # resume into a directory whose model files changed (mixes results)
+
+paths:
+  out_root: ${oc.env:TESTBED_OUT,runs}
+  models_dir: ${oc.env:TESTBED_MODELS,models}
+  llama_cuda: ${oc.env:LLAMA_CUDA_BIN,llama.cpp/build-cuda/bin/llama-server}
+  llama_cpu: ${oc.env:LLAMA_CPU_BIN,llama.cpp/build-cpu/bin/llama-server}
+
+cpu_threads: null        # llama-server -t for the CPU backend; null = llama.cpp default
+
+slurm:
+  partition_gpu: gpuqs
+  partition_cpu: defq
+  gres_gpu: "gpu:p100:1"
+  time: "02:00:00"
+  account: null          # -A <account>, once the cluster grants one
+  max_concurrent: 8
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null
+  job:
+    chdir: false
