@@ -16,11 +16,15 @@ done
 
 command -v uv >/dev/null || pip install -q uv
 cd "$ROOT"
+# Colab exports UV_SYSTEM_PYTHON=true, which makes `uv pip` install into the system Python even with a
+# venv active; always name the venv's interpreter explicitly.
+unset UV_SYSTEM_PYTHON
 [ -d .venv ] || uv venv -p 3.12 .venv
 . .venv/bin/activate
-uv pip install -q -e ".[dev]"
+PY=$ROOT/.venv/bin/python
+uv pip install -q --python "$PY" -e ".[dev]"
 # bfcl-eval pins heavy provider SDKs it never uses for local checking; the checker needs only numpy + mpmath
-uv pip install -q --no-deps "$BFCL"
+uv pip install -q --python "$PY" --no-deps "$BFCL"
 python -c "import bfcl_eval, hydra, testbed; print('python ok:', bfcl_eval.__name__, hydra.__version__)"
 
 if [ $WANT_LLAMA = 1 ]; then
