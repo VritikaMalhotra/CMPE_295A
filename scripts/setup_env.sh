@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 # One-time environment setup (Colab, laptop, or the CoE HPC login node).
-#   scripts/setup_env.sh [--llama] [--cuda] [--cache DIR]
+#   scripts/setup_env.sh [--llama] [--cuda] [--tau2] [--cache DIR]
 # --llama   also build llama.cpp at the pilot's pinned commit (CPU build; add --cuda for the CUDA build)
+# --tau2    also install tau2-bench-verified (Amazon AGI) at the pinned commit, editable, into ext/
 # --cache   directory to keep/restore the llama.cpp builds between sessions (e.g. a Drive folder on Colab)
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 LLAMA_TAG=v0.6.0                                   # pilot: d81235049384534c167caea52b85a694f6103d14
 LLAMA_COMMIT=d81235049384534c167caea52b85a694f6103d14
 BFCL=bfcl-eval==2026.3.23
-WANT_LLAMA=0; WANT_CUDA=0; CACHE=""
+TAU2_REPO=https://github.com/amazon-agi/tau2-bench-verified
+TAU2_COMMIT=864350a8971a8f8ee9e7b8472e2edc380a806b0c     # = configs/experiment/skeleton.yaml tau2.commit
+WANT_LLAMA=0; WANT_CUDA=0; WANT_TAU2=0; CACHE=""
 while [ $# -gt 0 ]; do
-  case $1 in --llama) WANT_LLAMA=1;; --cuda) WANT_CUDA=1;; --cache) CACHE=$2; shift;; *) echo "unknown $1"; exit 2;; esac
+  case $1 in --llama) WANT_LLAMA=1;; --cuda) WANT_CUDA=1;; --tau2) WANT_TAU2=1;; --cache) CACHE=$2; shift;;
+    *) echo "unknown $1"; exit 2;; esac
   shift
 done
 
@@ -26,6 +30,19 @@ uv pip install -q --python "$PY" -e ".[dev]"
 # bfcl-eval pins heavy provider SDKs it never uses for local checking; the checker needs only numpy + mpmath
 uv pip install -q --python "$PY" --no-deps "$BFCL"
 python -c "import bfcl_eval, hydra, testbed; print('python ok:', bfcl_eval.__name__, hydra.__version__)"
+
+if [ $WANT_TAU2 = 1 ]; then
+  T=$ROOT/ext/tau2-bench-verified
+  if [ ! -d "$T/.git" ]; then
+    mkdir -p "$ROOT/ext"
+    git clone --filter=blob:none "$TAU2_REPO" "$T"
+  fi
+  git -C "$T" fetch -q origin "$TAU2_COMMIT" 2>/dev/null || true
+  git -C "$T" checkout -q "$TAU2_COMMIT"
+  # editable, so the task data under data/ is found without TAU2_DATA_DIR (README)
+  uv pip install -q --python "$PY" -e "$T"
+  LITELLM_LOCAL_MODEL_COST_MAP=True python -c "from tau2.run import load_tasks; t = load_tasks('airline', 'base'); print('tau2 ok:', len(t), 'airline base tasks')"
+fi
 
 if [ $WANT_LLAMA = 1 ]; then
   SRC=$ROOT/llama.cpp

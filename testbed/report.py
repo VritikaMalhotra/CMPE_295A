@@ -33,8 +33,24 @@ COMPARISONS = [
 ]
 
 
+SHORT = {"bfcl_multi_turn_base": "bfcl", "tau2_verified_airline": "tau2"}
+
+
 def _cfg_label(row) -> str:
-    return f"{row['variant']}/{row['backend']}" + ("" if row["repair"] == "none" else f" +{row['repair']}")
+    b = SHORT.get(row.get("benchmark", ""), row.get("benchmark", "")) if hasattr(row, "get") else ""
+    return (f"{b}:" if b else "") + f"{row['variant']}/{row['backend']}" + (
+        "" if row["repair"] == "none" else f" +{row['repair']}")
+
+
+def _benchmarks(run_dir: str) -> dict:
+    """config_key -> benchmark, from specs.jsonl (episode records predate the benchmark column)."""
+    p = os.path.join(run_dir, "specs.jsonl")
+    out = {}
+    if os.path.exists(p):
+        for line in open(p):
+            d = json.loads(line)
+            out[d["config_key"]] = d.get("benchmark", "")
+    return out
 
 
 def _md(df: pd.DataFrame) -> str:
@@ -56,14 +72,19 @@ def write_report(run_dir: str) -> str:
     manifest = json.load(open(os.path.join(run_dir, "manifest.json"))) if os.path.exists(
         os.path.join(run_dir, "manifest.json")) else {}
     planned = {k: v["episodes"] for k, v in manifest.get("configs", {}).items()}
+    bmap = _benchmarks(run_dir)
+    if not eps.empty:
+        eps["benchmark"] = eps["config_key"].map(lambda k: bmap.get(k, ""))
+    if not steps.empty:
+        steps["benchmark"] = steps["config_key"].map(lambda k: bmap.get(k, ""))
+    benches = sorted(set(bmap.values())) or [""]
 
     L = ["# M1 walking-skeleton report", "",
          "> **Development data.** Produced by the M1 walking skeleton to check the pipeline end to end. "
          "Not a study result; excluded from all M2+ analyses.", "",
          f"- Experiment: `{manifest.get('experiment')}` / `{manifest.get('experiment_hash')}`",
          f"- Episodes logged: {len(eps)} of {manifest.get('n_specs', '?')} planned; steps logged: {len(steps)}",
-         f"- Tasks: {len(manifest.get('task_ids', []))} BFCL multi-turn base "
-         f"({', '.join(manifest.get('task_ids', [])[:1])} … {', '.join(manifest.get('task_ids', [])[-1:])})",
+         f"- Tasks: {len(manifest.get('task_ids', []))} across {', '.join(manifest.get('benchmarks', ['bfcl_multi_turn_base']))}",
          f"- Decoding: `{json.dumps(manifest.get('decoding', {}))}`; thinking={manifest.get('thinking')}; "
          f"prompt cache={manifest.get('prompt_cache')}", ""]
 
@@ -72,10 +93,11 @@ def write_report(run_dir: str) -> str:
     if not eps.empty:
         if "context_overflow" not in eps:
             eps["context_overflow"] = False
-        g = eps.groupby(["config_key", "variant", "backend", "repair"], sort=False)
+        g = eps.groupby(["config_key", "benchmark", "variant", "backend", "repair"], sort=False)
         acc = g.agg(episodes=("valid", "size"), accuracy=("valid", "mean"), forced_quit=("forced_quit", "sum"),
                     context_overflow=("context_overflow", "sum"), mean_steps=("n_steps", "mean")).reset_index()
         acc.insert(0, "config", acc.apply(_cfg_label, axis=1))
+        acc = acc.drop(columns=["benchmark"])
         acc["planned"] = acc["config_key"].map(planned)
         for seed, sub in eps.groupby("seed"):
             acc[f"acc_seed{seed}"] = acc["config_key"].map(sub.groupby("config_key")["valid"].mean())
@@ -100,33 +122,51 @@ def write_report(run_dir: str) -> str:
           "acc(reference) − acc(other). With 20 tasks these intervals are wide by design: M1 checks the "
           "machinery, not the effect.", ""]
     rows = []
-    for label, ref, other in COMPARISONS:
-        c = compare(eps, ref, other) if not eps.empty else {"n_pairs": 0}
-        if c["n_pairs"]:
-            rows.append({"comparison": label, "pairs": c["n_pairs"], "acc_ref": c["acc_a"], "acc_other": c["acc_b"],
-                         "n10": c["n10"], "n01": c["n01"], "p": c["p"], "diff": c["ci_diff"],
-                         "ci_lo": c["ci_lo"], "ci_hi": c["ci_hi"]})
-        else:
-            rows.append({"comparison": label, "pairs": 0})
+    for bench in benches:
+        for label, ref, other in COMPARISONS:
+            fb = {"benchmark": bench} if bench else {}
+            c = compare(eps, {**ref, **fb}, {**other, **fb}) if not eps.empty else {"n_pairs": 0}
+            name = (f"{SHORT.get(bench, bench)}: " if len(benches) > 1 else "") + label
+            if c["n_pairs"]:
+                rows.append({"comparison": name, "pairs": c["n_pairs"], "acc_ref": c["acc_a"],
+                             "acc_other": c["acc_b"], "n10": c["n10"], "n01": c["n01"], "p": c["p"],
+                             "diff": c["ci_diff"], "ci_lo": c["ci_lo"], "ci_hi": c["ci_hi"]})
+            else:
+                rows.append({"comparison": name, "pairs": 0})
     L.append(_md(pd.DataFrame(rows)))
 
     # 3b. CPU vs CUDA output parity (FR-E17 preview): same variant, same task, seed, turn, step
     L += ["## 3b. Output parity: CPU vs CUDA (Q4_0)", "",
           "Share of steps whose raw model text is identical on the two backends, for the same task, seed, turn "
           "and step. Paths diverge after the first differing step, so the first-step rate is the cleanest number.", ""]
-    if not steps.empty:
-        base = steps[(steps.variant == "q4_0") & (steps.repair == "none")]
+    for bench in (benches if not steps.empty else []):
+        base = steps[(steps.variant == "q4_0") & (steps.repair == "none") & (steps.benchmark == bench)]
         a = base[base.backend == "cuda"].set_index(["task_id", "seed", "turn", "step"])["raw_text"]
         b = base[base.backend == "cpu"].set_index(["task_id", "seed", "turn", "step"])["raw_text"]
         j = a.to_frame("cuda").join(b.to_frame("cpu"), how="inner")
+        tag = f"{bench}: " if len(benches) > 1 else ""
         if len(j):
             first = j.reset_index()
             first = first[(first.turn == 0) & (first.step == 0)]
-            L += [f"- Aligned steps: {len(j)}; identical: {int((j.cuda == j.cpu).sum())} "
+            L += [f"- {tag}Aligned steps: {len(j)}; identical: {int((j.cuda == j.cpu).sum())} "
                   f"({(j.cuda == j.cpu).mean():.1%})",
-                  f"- First step of each episode: {int((first.cuda == first.cpu).sum())} of {len(first)} identical", ""]
+                  f"- {tag}First step of each episode: {int((first.cuda == first.cpu).sum())} of {len(first)} identical"]
         else:
-            L += ["_(no CPU-backend episodes yet)_", ""]
+            L += [f"- {tag}_(no CPU-backend episodes yet)_"]
+    L.append("")
+
+    # 3c. C4 simulated-user cache
+    db = os.path.join(run_dir, "simuser_cache.sqlite")
+    if os.path.exists(db):
+        from .simuser_cache import report as cache_report
+        st = cache_report(db)
+        L += ["## 3c. Simulated-user cache (C4)", "",
+              f"Simulator `{manifest.get('simuser', {}).get('model', '?')}` "
+              f"(`{(manifest.get('simuser', {}).get('sha256') or '')[:16]}`), greedy, behind the cache. "
+              f"Stored replies: {st['stored_replies']}; simulator time: {st['upstream_hours'] * 60:.1f} min.", ""]
+        rows = [{"role": role, "outcome": oc, "requests": v["n"], "upstream_s": v["upstream_s"]}
+                for role, d in st["by_role"].items() for oc, v in d.items()]
+        L.append(_md(pd.DataFrame(rows)))
 
     # 4. costs
     L += ["## 4. Costs (C9)", "",

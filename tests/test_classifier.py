@@ -30,3 +30,13 @@ def test_classes():
 def test_forced_quit_wins_over_call_errors():
     assert classify_step(row(decoded_calls=["cd(folder='x')"], n_tool_call_blocks=1, forced_quit=True,
                              execution_results=["Error during execution: no such folder"])) == "forced_quit"
+
+
+def test_tau2_text_is_a_reply_not_a_missing_call():
+    t = dict(benchmark="tau2_verified_airline", turn_has_ground_truth=False)
+    assert classify_step(row(raw_text="Could you give me your user id?", **t)) == "reply"
+    assert classify_step(row(raw_text="<tool_call>\n{bad\n</tool_call>", n_tool_call_blocks=1, **t)) == "malformed"
+    assert classify_step(row(decoded_calls=['{"name": "get_user_details"}'], n_tool_call_blocks=1,
+                             execution_results=["Error during execution: User not found"], **t)) == "exec_error"
+    # rows written before tau2 joined (benchmark "") keep their BFCL classes
+    assert classify_step(row(raw_text="Sure, done.")) == "missing_call"
