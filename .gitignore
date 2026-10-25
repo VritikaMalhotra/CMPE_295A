@@ -5,3 +5,11 @@ PLAN_3WEEKS.md
 scratch/
 __pycache__/
 *.gguf
+# testbed (M1): local results, model files, builds, environments
+runs/
+models/
+llama.cpp/
+.venv/
+*.sha256
+.pytest_cache/
+*.egg-info/
