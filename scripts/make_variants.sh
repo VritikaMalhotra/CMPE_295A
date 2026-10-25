@@ -5,6 +5,7 @@
 set -euo pipefail
 M=${1:-${TESTBED_MODELS:-models}}
 Q=${2:-llama.cpp/build-cuda/bin/llama-quantize}
+Q=$(realpath "$Q")          # resolve before cd: a relative path would break below
 cd "$M"
 
 declare -A PILOT=(
