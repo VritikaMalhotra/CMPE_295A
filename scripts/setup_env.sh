@@ -40,13 +40,20 @@ if [ $WANT_LLAMA = 1 ]; then
   [ "$got" = "$LLAMA_COMMIT" ] || echo "WARNING: llama.cpp at $got, pilot used $LLAMA_COMMIT"
   if [ ! -x "$SRC/build-cpu/bin/llama-server" ]; then
     cmake -S "$SRC" -B "$SRC/build-cpu" -DGGML_CUDA=OFF -DLLAMA_CURL=OFF -DCMAKE_BUILD_TYPE=Release
-    cmake --build "$SRC/build-cpu" -j "$(nproc)" --target llama-server llama-quantize
+    cmake --build "$SRC/build-cpu" -j "$(nproc)" --target llama-server llama-quantize llama-bench
   fi
   if [ $WANT_CUDA = 1 ] && [ ! -x "$SRC/build-cuda/bin/llama-server" ]; then
     ARCH=$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader | head -1 | tr -d .)
     cmake -S "$SRC" -B "$SRC/build-cuda" -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="${ARCH:-80}" \
           -DLLAMA_CURL=OFF -DCMAKE_BUILD_TYPE=Release
-    cmake --build "$SRC/build-cuda" -j "$(nproc)" --target llama-server llama-quantize
+    cmake --build "$SRC/build-cuda" -j "$(nproc)" --target llama-server llama-quantize llama-bench
+  fi
+  # CPU llama-bench (C9 speed tables) was added after the first cached build. The cache keeps binaries but not
+  # object files, so this recompiles the CPU libraries (~10-15 min on 2 cores). The CUDA build is not touched:
+  # GPU speed comes from the per-step timings of the episodes.
+  if [ $WANT_CUDA = 0 ] && [ ! -x "$SRC/build-cpu/bin/llama-bench" ]; then   # CPU machines only
+    cmake -S "$SRC" -B "$SRC/build-cpu" -DGGML_CUDA=OFF -DLLAMA_CURL=OFF -DCMAKE_BUILD_TYPE=Release >/dev/null
+    cmake --build "$SRC/build-cpu" -j "$(nproc)" --target llama-bench
   fi
   if [ -n "$CACHE" ] && [ ! -f "$CACHE/llama.cpp-$LLAMA_COMMIT.tar" ]; then
     mkdir -p "$CACHE"

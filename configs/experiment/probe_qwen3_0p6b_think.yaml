@@ -1,0 +1,35 @@
+# @package _global_
+# M2 model probe: Qwen3-0.6B in thinking mode (the skeleton used non-thinking). Qwen3 model-card sampling
+# for thinking mode (T 0.6, top_p 0.95, top_k 20); same 20 tasks; BF16 and pure Q4_0 on CUDA; seed 1.
+experiment:
+  name: probe_qwen3_0p6b_think
+  model: qwen3-0.6b
+  benchmark: bfcl_multi_turn_base
+  n_tasks: 20
+  thinking: true
+  max_steps_per_turn: 20
+  baselines:
+    - {variant: bf16, backend: cuda}
+    - {variant: q4_0, backend: cuda}
+  baseline_seeds: [1]
+  repairs: []
+  repair_seeds: [1]
+  decoding:
+    temperature: 0.6
+    top_p: 0.95
+    top_k: 20
+    min_p: 0.0
+    n_predict: 4096
+    cache_prompt: false
+  server:
+    ctx: 40960
+
+models:
+  qwen3-0.6b:
+    hf_repo: Qwen/Qwen3-0.6B
+    files:
+      bf16: Qwen3-0.6B-BF16.gguf
+      q4_0: Qwen3-0.6B-Q4_0-pure.gguf
+    sha256:
+      bf16: 9a07b327d6114b23cd022cd0b188629aa0d02f88c863becaa34af5fc374281a2
+      q4_0: 90d6e31f1034a14e7d382c0a5de3e0c2bafa1e1b6b2d1869ebea5b8e2c4482ab

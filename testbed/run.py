@@ -73,6 +73,8 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
     pending = r.pending()
     if cfg.only_config:
         pending = [s for s in pending if s.config_key == cfg.only_config]
+    if cfg.backend:
+        pending = [s for s in pending if s.backend == cfg.backend]
     if cfg.limit:
         pending = pending[: int(cfg.limit)]
     if not pending:
@@ -133,6 +135,15 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
             srv.__exit__(None, None, None)
             lock.close()                                # releases the flock
     print(f"finished {n_done} episodes in {time.time() - t_all:.0f}s")
+
+
+def _cpu_info(cfg) -> dict:
+    model = ""
+    try:
+        model = next(l.split(":", 1)[1].strip() for l in open("/proc/cpuinfo") if l.startswith("model name"))
+    except Exception:
+        pass
+    return {"threads_flag": cfg.cpu_threads, "logical_cpus": os.cpu_count(), "model": model}
 
 
 def _try_lock(path: str):
@@ -228,7 +239,10 @@ def main(cfg: DictConfig) -> None:
           f"{len(task_ids)} tasks [{task_ids[0]} .. {task_ids[-1]}]\n  dir: {r.dir}")
     for k, c in s["configs"].items():
         print(f"  {k}  {c['variant']:<12} {c['backend']:<5} {c['repair']:<5} {c['done']:>3}/{c['planned']}")
-    problems = _preflight(specs, model_files, binaries, model)
+    scope = [s for s in specs if (not cfg.backend or s.backend == cfg.backend)
+             and (not cfg.only_config or s.config_key == cfg.only_config)]
+    problems = _preflight(scope, {v: p for v, p in model_files.items() if any(x.variant == v for x in scope)},
+                          {b: p for b, p in binaries.items() if any(x.backend == b for x in scope)}, model)
     for p in problems:
         print("  WARNING:", p)
 
@@ -240,22 +254,24 @@ def main(cfg: DictConfig) -> None:
         return
     # file hashes are cached in <file>.sha256 sidecars, so re-checking on every run (and on each
     # compute node) costs a stat unless the file changed
-    if array_task:
-        keep = {s.variant for s in specs if s.config_key == cfg.only_config}
-        files = {v: p for v, p in model_files.items() if v in keep}
-    else:
-        files = model_files
-    manifest = reg.build_manifest(specs, files, binaries, model.get("sha256"), hash_files=not cfg.skip_hash)
+    keep = {s.variant for s in scope}
+    files = {v: p for v, p in model_files.items() if v in keep}
+    bins = {b: p for b, p in binaries.items() if any(x.backend == b for x in scope)}
+    manifest = reg.build_manifest(specs, files, bins, model.get("sha256"), hash_files=not cfg.skip_hash)
+    manifest["cpu"] = _cpu_info(cfg)
     bad = [v for v, e in manifest["model_files"].items() if e.get("sha256_matches_pilot") is False]
     if bad and not cfg.allow_sha_mismatch:
         sys.exit(f"model files differ from the pilot's SHA-256: {bad} (allow_sha_mismatch=true to override)")
     _check_model_hashes(r, manifest, cfg.allow_model_change)
-    if not array_task:
+    # one record per machine; manifest.json is the full-run host's (or the first host's) record
+    import platform
+    reg.atomic_json(os.path.join(r.dir, "manifests", f"{cfg.backend or 'all'}-{platform.node()}.json"), manifest)
+    if not array_task and (not cfg.backend or not os.path.exists(os.path.join(r.dir, "manifest.json"))):
         r.write_manifest(manifest)
     if not cfg.local:
         write_slurm(cfg, r, exp["name"])
         return
-    if problems and not array_task:
+    if problems:
         sys.exit("cannot run locally:\n  " + "\n  ".join(problems))
     run_local(cfg, r, specs, category, model_files, binaries)
     if array_task:

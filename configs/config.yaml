@@ -7,6 +7,7 @@ dry_run: false
 submit: false            # with local=false: also call sbatch (needs a Slurm account association)
 limit: null              # run only the first N pending specs (smoke tests)
 only_config: null        # run one configuration (a config_key); used by each Slurm array task
+backend: null            # run only cuda or cpu configurations (two machines sharing one experiment)
 report_only: false       # rebuild report.md from finished episodes, run nothing
 report_partial: false    # write the report even when episodes are still pending
 skip_hash: false         # skip SHA-256 of model files (they are cached in <file>.sha256 after the first run)
