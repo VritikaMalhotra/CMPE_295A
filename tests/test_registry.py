@@ -76,3 +76,52 @@ def test_config_lock_is_exclusive_and_released(tmp_path):
     b = _try_lock(p)
     assert b is not None
     b.close()
+
+
+# config keys of the BFCL configurations as run on Oct 24-25 (report.md, d92a85e486)
+OCT25_KEYS = {"8bae173bdd21", "ec9d23f8549d", "dc08400d1b5b", "7d5318997f9f", "b373660af0bb", "74260a9a88e3",
+              "80e76cc888af"}
+
+
+def _tasks(exp):
+    t = {exp["benchmark"]: TASKS}
+    for e in exp.get("extra_benchmarks", []):
+        t[e["name"]] = [str(i) for i in e["task_ids"]]
+    return t
+
+
+def test_adding_tau2_keeps_bfcl_run_ids(skeleton_exp):
+    specs = reg.expand_all(skeleton_exp, _tasks(skeleton_exp))
+    bfcl = [s for s in specs if s.benchmark == "bfcl_multi_turn_base"]
+    tau2 = [s for s in specs if s.benchmark == "tau2_verified_airline"]
+    assert len(bfcl) == 220 and len(tau2) == 24 + 9
+    assert {s.config_key for s in bfcl} == OCT25_KEYS          # finished BFCL episodes carry over
+    assert [s.run_id for s in bfcl] == [s.run_id for s in reg.expand(skeleton_exp, TASKS)]
+    assert len({s.config_key for s in tau2}) == 7 and not ({s.config_key for s in tau2} & OCT25_KEYS)
+    t = tau2[0]
+    assert t.server["simuser"]["sha256"] and t.server["tau2"]["commit"] and t.max_steps_per_turn == 200
+
+
+def test_simulator_change_changes_tau2_ids_only(skeleton_exp):
+    exp2 = json.loads(json.dumps(skeleton_exp))
+    exp2["extra_benchmarks"][0]["simuser"]["sha256"] = "f" * 64
+    a = reg.expand_all(skeleton_exp, _tasks(skeleton_exp))
+    b = reg.expand_all(exp2, _tasks(exp2))
+    for x, y in zip(a, b):
+        assert (x.run_id == y.run_id) == (x.benchmark == "bfcl_multi_turn_base")
+
+
+def test_import_from_copies_only_matching_finished_episodes(tmp_path, skeleton_exp):
+    specs = reg.expand(skeleton_exp, TASKS[:2])
+    old = reg.Registry(str(tmp_path / "old"), specs)
+    for s in specs[:3]:
+        json.dump({"run_id": s.run_id}, open(os.path.join(old.dir, "episodes", f"{s.run_id}.json"), "w"))
+        os.makedirs(os.path.join(old.dir, "steps"), exist_ok=True)
+        open(os.path.join(old.dir, "steps", f"{s.run_id}.jsonl"), "w").write("{}\n")
+    # one finished episode without its step file is not imported (it would have no steps)
+    os.remove(os.path.join(old.dir, "steps", f"{specs[2].run_id}.jsonl"))
+    new = reg.Registry(str(tmp_path / "new"), specs[:2] + specs[5:7])
+    assert new.import_from(old.dir) == 2
+    assert new.done_ids() == {specs[0].run_id, specs[1].run_id}
+    assert new.import_from(old.dir) == 0                          # idempotent
+    assert json.load(open(os.path.join(new.dir, "imports.json")))[0]["episodes"] == 2
