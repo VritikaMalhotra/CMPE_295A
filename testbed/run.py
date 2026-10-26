@@ -144,8 +144,9 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
     tau2_ids = sorted({s.task_id for s in pending if s.benchmark.startswith("tau2")}, key=int)
     if tau2_ids:
         from .tau2_bench import load_tau2_tasks
-        split = next(s.server["tau2"].get("split", "base") for s in pending if s.benchmark.startswith("tau2"))
-        tasks.update({(t.benchmark, t.id): t for t in load_tau2_tasks(tau2_ids, split)})
+        t2 = next(s.server["tau2"] for s in pending if s.benchmark.startswith("tau2"))
+        tasks.update({(t.benchmark, t.id): t for t in load_tau2_tasks(tau2_ids, t2.get("split", "base"),
+                                                                       t2.get("write_tools"))})
     sim: SimStack | None = None
     sim_down = False
     logs = os.path.join(r.dir, "server_logs")

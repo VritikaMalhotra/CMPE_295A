@@ -43,7 +43,13 @@ experiment:
   # Everything that can change a tau2 output is in the spec (server.tau2, server.simuser), so it is hashed.
   extra_benchmarks:
     - name: tau2_verified_airline
-      task_ids: ["0", "1", "2"]       # first three ids of the airline base split (numeric order)
+      # The first three base-split tasks (numeric order) whose gold actions write to the database.
+      # Tasks 0-2 (first tried, Oct 25) only need lookups or a refusal, so an agent that never calls a
+      # tool scores 1.0 on them: Qwen3-0.6B "passed" 29 of 30 without a single tool call.
+      task_ids: ["7", "8", "11"]
+      require_write: true             # loader refuses a task whose gold actions contain no write tool
+      write_tools: [book_reservation, cancel_reservation, update_reservation_baggages,
+                    update_reservation_flights, update_reservation_passengers, send_certificate]
       tau2:
         repo: amazon-agi/tau2-bench-verified
         commit: 864350a8971a8f8ee9e7b8472e2edc380a806b0c

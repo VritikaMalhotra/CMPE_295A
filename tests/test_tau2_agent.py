@@ -161,3 +161,18 @@ def test_empty_reply_ends_the_episode(monkeypatch):
     with pytest.raises(AgentEmptyReply):
         a.generate_next_message(m.UserMessage(role="user", content="hi"), st)
     assert len(rows) == 1
+
+
+def test_tasks_without_a_database_write_are_refused():
+    from types import SimpleNamespace as NS
+    from testbed.tau2_bench import write_actions
+    w = ["cancel_reservation", "book_reservation"]
+    lookup_only = NS(evaluation_criteria=NS(actions=[NS(name="get_user_details"), NS(name="get_reservation_details")]))
+    writes = NS(evaluation_criteria=NS(actions=[NS(name="get_user_details"), NS(name="cancel_reservation")]))
+    assert write_actions(lookup_only, w) == [] and write_actions(writes, w) == ["cancel_reservation"]
+    assert write_actions(NS(evaluation_criteria=None), w) == []
+
+
+def test_skeleton_tau2_tasks_are_the_write_tasks(skeleton_exp):
+    t = skeleton_exp["extra_benchmarks"][0]
+    assert t["task_ids"] == ["7", "8", "11"] and t["require_write"] and "cancel_reservation" in t["write_tools"]
