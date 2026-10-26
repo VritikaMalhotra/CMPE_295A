@@ -49,8 +49,29 @@ class AgentEmptyReply(RuntimeError):
     """The model produced neither text nor a tool call."""
 
 
+_QUIET = False
+
+
 def _quiet_litellm() -> None:
-    os.environ.setdefault("LITELLM_LOCAL_MODEL_COST_MAP", "True")   # no network fetch at import
+    """No network fetch at import, and tau2/LiteLLM logs at WARNING: their DEBUG/INFO lines (every message
+    of every conversation) buried the run log on Oct 25. The full conversation is kept in tau2_sims/."""
+    global _QUIET
+    os.environ.setdefault("LITELLM_LOCAL_MODEL_COST_MAP", "True")
+    os.environ.setdefault("LITELLM_LOG", "ERROR")
+    if _QUIET:
+        return
+    _QUIET = True
+    try:
+        import logging
+        import sys
+        from loguru import logger
+        logger.remove()
+        logger.add(sys.stderr, level="WARNING", filter=lambda r: "isn't mapped yet" not in r["message"]
+                   and "has no cost" not in r["message"])
+        for name in ("LiteLLM", "litellm", "LiteLLM Router", "LiteLLM Proxy", "httpx"):
+            logging.getLogger(name).setLevel(logging.ERROR)
+    except Exception:
+        pass
 
 
 @dataclass
@@ -77,7 +98,16 @@ class Tau2Task:
         return None
 
 
-def load_tau2_tasks(ids: list[str], split: str = "base") -> list[Tau2Task]:
+def write_actions(task_raw, write_tools) -> list[str]:
+    """Gold actions of a tau2 task that change the database (empty = a do-nothing agent can pass)."""
+    ec = getattr(task_raw, "evaluation_criteria", None)
+    acts = (getattr(ec, "actions", None) or []) if ec is not None else []
+    return [a.name for a in acts if a.name in set(write_tools)]
+
+
+def load_tau2_tasks(ids: list[str], split: str = "base", write_tools: list[str] | None = None) -> list[Tau2Task]:
+    """``write_tools`` given: every task must need at least one database write, so that an agent which
+    never acts cannot score 1.0 (the trap tasks 0-2 fell into on Oct 25)."""
     _quiet_litellm()
     from tau2.registry import registry
     from tau2.run import load_tasks
@@ -88,6 +118,10 @@ def load_tau2_tasks(ids: list[str], split: str = "base") -> list[Tau2Task]:
     missing = [i for i in ids if i not in by_id]
     if missing:
         raise KeyError(f"tau2 {DOMAIN}/{split} has no tasks {missing}")
+    if write_tools:
+        no_write = [i for i in ids if not write_actions(by_id[i], write_tools)]
+        if no_write:
+            raise ValueError(f"tau2 tasks {no_write} need no database write; a do-nothing agent passes them")
     return [Tau2Task(id=i, benchmark=BENCHMARK, tools=tools, policy=policy, raw=by_id[i]) for i in ids]
 
 
@@ -248,7 +282,8 @@ def run_tau2_episode(spec: RunSpec, task: Tau2Task, backend, grammar_for, log_st
     termination, error_type, reward, sim_run, nl_info = "", "", 0.0, None, None
     try:
         sim_run = orch.run()
-        termination = str(sim_run.termination_reason)
+        tr = sim_run.termination_reason
+        termination = str(getattr(tr, "value", tr))     # "user_stop", "max_steps", ... (an enum in tau2)
     except ContextOverflow:
         termination, error_type = "context_overflow", "tau2:context_overflow"
     except AgentEmptyReply:

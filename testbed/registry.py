@@ -52,6 +52,8 @@ def benchmark_exp(exp: dict, extra: dict) -> dict:
     for k in ("tau2", "simuser"):
         if k in extra:
             server[k] = dict(extra[k])
+    if extra.get("require_write") and "tau2" in server:
+        server["tau2"]["write_tools"] = list(extra.get("write_tools", []))
     out = {**exp, "benchmark": extra["name"], "server": server}
     if "tau2" in extra:                        # tau2's limit is per episode (orchestrator steps), not per turn
         out["max_steps_per_turn"] = int(extra["tau2"].get("max_steps", 200))
