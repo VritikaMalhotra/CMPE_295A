@@ -105,3 +105,33 @@ def test_proxy_speaks_openai_chat_completions(tmp_path):
         assert SimUserCache(str(tmp_path / "copy.sqlite"), SIM, mode="replay").complete(BODY)[0] == 200
     finally:
         up.close()
+
+
+def test_empty_reply_escalates_reasoning_and_stores_the_first_nonempty(tmp_path):
+    up = FakeUpstream()
+    orig = up.httpd.RequestHandlerClass.do_POST
+
+    def do_post(self):
+        n = int(self.headers["Content-Length"])
+        body = json.loads(self.rfile.read(n))
+        up.calls.append(body)
+        effort = (body.get("chat_template_kwargs") or {}).get("reasoning_effort")
+        content = "" if effort == "low" else f"reply at {effort}"
+        out = json.dumps({"choices": [{"index": 0, "message": {"role": "assistant", "content": content}}]}).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(out)))
+        self.end_headers()
+        self.wfile.write(out)
+
+    up.httpd.RequestHandlerClass.do_POST = do_post
+    try:
+        c = SimUserCache(str(tmp_path / "c.sqlite"), SIM, upstream=up.url,
+                         inject={"chat_template_kwargs": {"reasoning_effort": "low"}})
+        status, r = c.complete(BODY)
+        assert status == 200 and r["choices"][0]["message"]["content"] == "reply at medium" and len(up.calls) == 2
+        assert c.complete(BODY)[1] == r and len(up.calls) == 2          # replay serves the stored reply
+        assert c.stats()["by_role"]["simuser"]["empty_reply_0"]["n"] == 1
+    finally:
+        up.httpd.RequestHandlerClass.do_POST = orig
+        up.close()
