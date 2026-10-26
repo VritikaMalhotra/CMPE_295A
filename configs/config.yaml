@@ -26,15 +26,18 @@ paths:
   llama_cpu: ${oc.env:LLAMA_CPU_BIN,llama.cpp/build-cpu/bin/llama-server}
   simuser_cache_local: ${oc.env:TESTBED_CACHE_LOCAL,null}   # local SQLite path while running (Drive is unsafe)
 
-cpu_threads: null        # llama-server -t for the CPU backend; null = llama.cpp default
+cpu_threads: ${oc.decode:${oc.env:TESTBED_CPU_THREADS,null}}   # llama-server -t for the CPU backend; null = llama.cpp default.
+                         # On the cluster hpc_env.sh sets it to the job's CPUs: Slurm does not pin CPUs there,
+                         # and llama.cpp would otherwise start one thread per core of the node (28 on g2).
 
 slurm:
   partition_gpu: gpuqs
   partition_cpu: defq
   gres_gpu: "gpu:p100:1"
   time: "02:00:00"
-  account: null          # -A <account>, once the cluster grants one
+  account: coe           # -A coe: the CoE HPC Slurm account (association fixed 2026-10-26)
   max_concurrent: 8
+  max_requeue: 5         # walltime requeues per array task before it gives up (spike S10)
 
 hydra:
   run:
