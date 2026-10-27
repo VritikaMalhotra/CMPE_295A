@@ -1,0 +1,35 @@
+[project]
+name = "cmpe295a-testbed"
+version = "0.1.0.dev0"
+description = "Testbed for measuring and repairing quantization damage in small LLM agents (CMPE 295A, M1 walking skeleton)"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "hydra-core==1.3.2",
+    "omegaconf==2.3.0",
+    "numpy==1.26.4",       # bfcl-eval 2026.3.23 pins numpy 1.26.4
+    "pandas>=2.2,<3",
+    "pyarrow>=17,<20",     # pyarrow 20+ needs numpy 2; bfcl-eval pins numpy 1.26.4
+    "requests>=2.32",
+    "scipy>=1.13",
+    "mpmath==1.3.0",       # needed by bfcl-eval's MathAPI backend
+    "nvidia-ml-py>=12.535; sys_platform == 'linux'",
+]
+
+[project.optional-dependencies]
+# R3 export and its logit check (Colab already ships torch + transformers)
+train = ["torch>=2.4", "transformers>=4.51", "safetensors>=0.4", "sentencepiece>=0.2"]
+dev = ["pytest>=8"]
+
+# bfcl-eval 2026.3.23 is installed separately with --no-deps (see scripts/setup_env.sh):
+# its full dependency list pulls vllm-era pins (sentence-transformers, faiss, cloud SDKs)
+# that the multi-turn executor and checker do not import.
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["testbed"]
