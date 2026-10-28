@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+import signal
 import sys
 import time
 import traceback
@@ -342,7 +343,8 @@ def write_slurm(cfg, r: reg.Registry, exp_name: str) -> str:
     out = os.path.join(r.dir, "array.sbatch")
     with open(out, "w") as f:
         f.write(open(os.path.join(REPO, "slurm", "array.sbatch.tmpl")).read().format(
-            n=len(keys) - 1, max_conc=sb.max_concurrent, cfg_list=cfg_list, **common))
+            n=len(keys) - 1, max_conc=sb.max_concurrent, cfg_list=cfg_list,
+            max_requeue=sb.get("max_requeue", 5), **common))
     rep = os.path.join(r.dir, "report.sbatch")
     with open(rep, "w") as f:
         f.write(open(os.path.join(REPO, "slurm", "report.sbatch.tmpl")).read().format(
@@ -374,6 +376,10 @@ def _check_model_hashes(r: reg.Registry, manifest: dict, allow: bool) -> None:
 
 @hydra.main(version_base=None, config_path="../configs", config_name="config")
 def main(cfg: DictConfig) -> None:
+    # Slurm stops a job with SIGTERM (walltime, requeue, scancel). Turn it into SystemExit so every context
+    # manager runs: llama-server and the simulator are stopped and the C4 store is copied back. Finished
+    # episodes are already on disk (atomic writes); the one in flight is redone on resume.
+    signal.signal(signal.SIGTERM, lambda signum, frame: sys.exit(128 + signum))
     if "experiment" not in cfg:
         sys.exit("choose an experiment: +experiment=skeleton")
     exp, model, category, task_ids, specs, model_files, binaries = _plan(cfg)
