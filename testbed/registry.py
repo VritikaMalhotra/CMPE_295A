@@ -45,6 +45,33 @@ def expand(exp: dict, task_ids: list[str]) -> list[RunSpec]:
     return specs
 
 
+def benchmark_exp(exp: dict, extra: dict) -> dict:
+    """The experiment as seen by one extra benchmark: its name, and its harness settings folded into
+    ``server`` (so they are part of every run_id), with the main benchmark's configs, seeds and decoding."""
+    server = dict(exp["server"])
+    for k in ("tau2", "simuser"):
+        if k in extra:
+            server[k] = dict(extra[k])
+    if extra.get("require_write") and "tau2" in server:
+        server["tau2"]["write_tools"] = list(extra.get("write_tools", []))
+    out = {**exp, "benchmark": extra["name"], "server": server}
+    if "tau2" in extra:                        # tau2's limit is per episode (orchestrator steps), not per turn
+        out["max_steps_per_turn"] = int(extra["tau2"].get("max_steps", 200))
+    return out
+
+
+def expand_all(exp: dict, tasks: dict[str, list[str]]) -> list[RunSpec]:
+    """Main benchmark first (its specs are exactly what ``expand`` gives, so adding a benchmark never changes
+    existing run_ids), then each ``extra_benchmarks`` entry. ``tasks`` maps benchmark name -> task ids."""
+    specs = expand(exp, tasks[exp["benchmark"]])
+    for extra in exp.get("extra_benchmarks", []) or []:
+        specs += expand(benchmark_exp(exp, extra), tasks[extra["name"]])
+    dup = [k for k, n in Counter(s.run_id for s in specs).items() if n > 1]
+    if dup:
+        raise ValueError(f"duplicate run specs: {dup[:5]}")
+    return specs
+
+
 def experiment_hash(specs: Iterable[RunSpec]) -> str:
     return sha256_text(canonical_json(sorted(s.run_id for s in specs)))[:10]
 
@@ -100,14 +127,16 @@ def build_manifest(specs: list[RunSpec], model_files: dict[str, str], binaries: 
     configs = {}
     for s in specs:
         configs.setdefault(s.config_key, {"variant": s.variant, "backend": s.backend, "repair": s.repair,
-                                          "constraint": s.constraint, "episodes": 0})
+                                          "constraint": s.constraint, "benchmark": s.benchmark, "episodes": 0})
         configs[s.config_key]["episodes"] += 1
     return {
         "experiment": specs[0].experiment if specs else None,
         "experiment_hash": experiment_hash(specs),
         "n_specs": len(specs),
         "configs": configs,
-        "task_ids": sorted({s.task_id for s in specs}, key=lambda t: int(t.rsplit("_", 1)[-1])),
+        "task_ids": sorted({s.task_id for s in specs}, key=lambda t: (not t.startswith("multi_turn"),
+                                                                       int(t.rsplit("_", 1)[-1]))),
+        "benchmarks": sorted({s.benchmark for s in specs}),
         "decoding": specs[0].decoding if specs else {},
         "server": specs[0].server if specs else {},
         "thinking": specs[0].thinking if specs else None,
@@ -122,6 +151,11 @@ def build_manifest(specs: list[RunSpec], model_files: dict[str, str], binaries: 
         "gpu": _cmd(["nvidia-smi", "--query-gpu=name,memory.total,driver_version", "--format=csv,noheader"]),
         "label": "development data (M1 walking skeleton), excluded from the study",
     }
+
+
+def time_iso() -> str:
+    import datetime
+    return datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
 
 
 def atomic_json(path: str, obj) -> str:
@@ -153,6 +187,38 @@ class Registry:
     def done_ids(self) -> set[str]:
         return {os.path.basename(p)[:-5] for p in glob.glob(os.path.join(self.dir, "episodes", "*.json"))}
 
+    def import_from(self, src_dir: str) -> int:
+        """Copy finished episodes of this spec list from another experiment directory (same run_id = same
+        spec content, so the result is the same experiment unit). Returns the number imported; the source
+        directory is recorded in ``imports.json``."""
+        import shutil
+        want = {s.run_id for s in self.specs} - self.done_ids()
+        n = 0
+        for rid in sorted(want):
+            ep = os.path.join(src_dir, "episodes", f"{rid}.json")
+            st = os.path.join(src_dir, "steps", f"{rid}.jsonl")
+            if not (os.path.exists(ep) and os.path.exists(st)):
+                continue
+            os.makedirs(os.path.join(self.dir, "steps"), exist_ok=True)
+            shutil.copyfile(st, os.path.join(self.dir, "steps", f"{rid}.jsonl.part"))
+            os.replace(os.path.join(self.dir, "steps", f"{rid}.jsonl.part"), os.path.join(self.dir, "steps", f"{rid}.jsonl"))
+            shutil.copyfile(ep, os.path.join(self.dir, "episodes", f"{rid}.json.part"))
+            os.replace(os.path.join(self.dir, "episodes", f"{rid}.json.part"), os.path.join(self.dir, "episodes", f"{rid}.json"))
+            n += 1
+        if n:
+            for sub in ("manifests",):                 # keep the source hosts' records next to the copies
+                src = os.path.join(src_dir, sub)
+                if os.path.isdir(src):
+                    os.makedirs(os.path.join(self.dir, sub), exist_ok=True)
+                    for f in os.listdir(src):
+                        dst = os.path.join(self.dir, sub, f"imported-{f}")
+                        if not os.path.exists(dst):
+                            shutil.copyfile(os.path.join(src, f), dst)
+            p = os.path.join(self.dir, "imports.json")
+            prev = json.load(open(p)) if os.path.exists(p) else []
+            atomic_json(p, prev + [{"from": os.path.abspath(src_dir), "episodes": n, "at": time_iso()}])
+        return n
+
     def pending(self) -> list[RunSpec]:
         done = self.done_ids()
         return [s for s in self.specs if s.run_id not in done]
@@ -162,7 +228,7 @@ class Registry:
         by_cfg: dict = {}
         for s in self.specs:
             c = by_cfg.setdefault(s.config_key, {"variant": s.variant, "backend": s.backend, "repair": s.repair,
-                                                  "planned": 0, "done": 0})
+                                                  "benchmark": s.benchmark, "planned": 0, "done": 0})
             c["planned"] += 1
             c["done"] += s.run_id in done
         return {"dir": self.dir, "planned": len(self.specs), "done": len(done & {s.run_id for s in self.specs}),

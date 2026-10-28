@@ -17,6 +17,8 @@ outputs to multi-turn steps, and adds the proposed "missing call with a direct a
     missing_call   first step of a turn that has ground truth, answered in text with no call
     abstain_ok     no call on a turn whose ground truth is empty (correct refusal)
     end_turn       no call after one or more calls: the model closes the turn
+    reply          tau2 only: a text message to the simulated user (tau2 has no per-turn ground truth,
+                   so a text reply is neither a missing call nor a refusal; episode reward judges it)
 
 Episode-level correctness (state + response checks) stays with bfcl's multi_turn_checker; these
 classes describe *how* a step behaved, for the damage map.
@@ -30,7 +32,7 @@ if TYPE_CHECKING:
     from .spec import StepRow
 
 CLASSES = ["truncated", "malformed", "forced_quit", "unknown_tool", "invalid_args", "exec_error",
-           "ok_call", "missing_call", "abstain_ok", "end_turn"]
+           "ok_call", "missing_call", "abstain_ok", "end_turn", "reply"]
 FAILURES = {"truncated", "malformed", "unknown_tool", "invalid_args", "exec_error", "forced_quit", "missing_call"}
 
 _PY_TYPES = {"string": (str,), "integer": (int,), "number": (int, float), "boolean": (bool,),
@@ -86,6 +88,8 @@ def classify_step(row: "StepRow") -> str:
         return "exec_error"
     if n_parsed:
         return "ok_call"
+    if str(getattr(row, "benchmark", "") or "").startswith("tau2"):
+        return "reply"
     if not row.turn_has_ground_truth:
         return "abstain_ok"
     if row.step == 0:

@@ -43,12 +43,28 @@ def _plan(cfg: DictConfig):
     model = OmegaConf.to_container(cfg.models[exp["model"]], resolve=True)
     category = exp["benchmark"].removeprefix("bfcl_")
     task_ids = skeleton_task_ids(int(exp["n_tasks"]), category)
-    specs = reg.expand(exp, task_ids)
+    tasks = {exp["benchmark"]: task_ids}
+    for extra in exp.get("extra_benchmarks", []) or []:
+        tasks[extra["name"]] = [str(t) for t in extra["task_ids"]]
+    specs = reg.expand_all(exp, tasks)
     model_files = {v: os.path.join(_abs(cfg.paths.models_dir), f) for v, f in model["files"].items()
                    if any(s.variant == v for s in specs)}
     binaries = {"cuda": _abs(cfg.paths.llama_cuda), "cpu": _abs(cfg.paths.llama_cpu)}
-    binaries = {k: v for k, v in binaries.items() if any(s.backend == k for s in specs)}
+    need = {s.backend for s in specs} | ({"cuda"} if _simuser(specs) else set())   # the simulator runs on CUDA
+    binaries = {k: v for k, v in binaries.items() if k in need}
     return exp, model, category, task_ids, specs, model_files, binaries
+
+
+def _simuser(specs) -> dict:
+    """The simulated-user settings of the experiment's tau2 specs ({} if none)."""
+    for s in specs:
+        if s.server.get("simuser"):
+            return dict(s.server["simuser"])
+    return {}
+
+
+def _sim_file(cfg, sim: dict) -> str:
+    return os.path.join(_abs(cfg.paths.models_dir), sim["file"])
 
 
 def _group(specs: list[RunSpec]) -> "OrderedDict[str, list[RunSpec]]":
@@ -69,18 +85,70 @@ def _preflight(specs, model_files, binaries, model) -> list[str]:
     return problems
 
 
+class SimStack:
+    """C4 for one run: the simulator's llama-server (CUDA) + the caching proxy in front of it.
+    The SQLite store lives on local disk while running (SQLite on a Drive mount is unsafe) and is copied
+    into the experiment directory after every episode."""
+
+    def __init__(self, cfg, r: reg.Registry, sim: dict, binary: str, mode: str = "live"):
+        from .simuser_cache import CacheProxy, SimUserCache
+        self.dir_copy = os.path.join(r.dir, "simuser_cache.sqlite")
+        local = cfg.paths.get("simuser_cache_local") or None
+        self.db = local or self.dir_copy
+        if local and not os.path.exists(local) and os.path.exists(self.dir_copy):
+            import shutil
+            shutil.copyfile(self.dir_copy, local)
+        self.server = None
+        upstream = None
+        if mode == "live":
+            scfg = ServerConfig(binary=binary, model_path=_sim_file(cfg, sim), backend="cuda",
+                                ctx=int(sim.get("ctx", 32768)), seed=0, extra_args=("--jinja",))
+            logs = os.path.join(r.dir, "server_logs")
+            os.makedirs(logs, exist_ok=True)
+            self.server = LlamaServer(scfg, log_path=os.path.join(logs, "simuser.log"), startup_timeout_s=900).__enter__()
+            upstream = self.server.base
+        identity = {k: sim.get(k) for k in ("model", "file", "sha256", "ctx", "temperature")}
+        inject = {"chat_template_kwargs": sim["chat_template_kwargs"]} if sim.get("chat_template_kwargs") else {}
+        self.cache = SimUserCache(self.db, identity, upstream=upstream, mode=mode, inject=inject,
+                                  max_upstream_hours=cfg.get("simuser_max_hours"))
+        self.proxy = CacheProxy(self.cache).__enter__()
+        self.base_url = self.proxy.base_url
+
+    def sync(self) -> None:
+        if self.db != self.dir_copy:
+            self.cache.backup_to(self.dir_copy)
+
+    def close(self) -> None:
+        self.sync()
+        self.proxy.__exit__(None, None, None)
+        self.cache.close()
+        if self.server:
+            self.server.__exit__(None, None, None)
+
+
 def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> None:
     pending = r.pending()
     if cfg.only_config:
         pending = [s for s in pending if s.config_key == cfg.only_config]
     if cfg.backend:
         pending = [s for s in pending if s.backend == cfg.backend]
+    if cfg.only_benchmark:
+        pending = [s for s in pending if s.benchmark == cfg.only_benchmark]
     if cfg.limit:
         pending = pending[: int(cfg.limit)]
     if not pending:
         print("nothing pending")
         return
-    tasks = {t.id: t for t in load_bfcl_multi_turn(category, ids=sorted({s.task_id for s in pending}))}
+    tasks = {(t.benchmark, t.id): t for t in load_bfcl_multi_turn(
+        category, ids=sorted({s.task_id for s in pending if s.benchmark.startswith("bfcl")}))}
+    tau2_ids = sorted({s.task_id for s in pending if s.benchmark.startswith("tau2")}, key=int)
+    if tau2_ids:
+        from .tau2_bench import load_tau2_tasks
+        t2 = next(s.server["tau2"] for s in pending if s.benchmark.startswith("tau2"))
+        tasks.update({(t.benchmark, t.id): t for t in load_tau2_tasks(tau2_ids, t2.get("split", "base"),
+                                                                       t2.get("write_tools"))})
+    sim: SimStack | None = None
+    sim_down = False
     logs = os.path.join(r.dir, "server_logs")
     os.makedirs(logs, exist_ok=True)
     t_all = time.time()
@@ -96,6 +164,17 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
             lock.close()
             continue
         s0 = group[0]
+        is_tau2 = s0.benchmark.startswith("tau2")
+        if is_tau2 and sim is None and not sim_down:
+            try:
+                sim = SimStack(cfg, r, dict(s0.server["simuser"]), binaries["cuda"], mode=cfg.simuser_mode)
+                print(f"simulated user up ({cfg.simuser_mode}): {sim.base_url}", flush=True)
+            except Exception as e:
+                print(f"simulated user failed to start: {e}; tau2 episodes stay pending", flush=True)
+                sim_down = True
+        if is_tau2 and sim_down:
+            lock.close()
+            continue
         if s0.constraint not in GRAMMARS:
             raise ValueError(f"unknown constraint {s0.constraint!r}")
         scfg = ServerConfig(binary=binaries[s0.backend], model_path=model_files[s0.variant], backend=s0.backend,
@@ -118,23 +197,91 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
                 log = StepLogger(r.dir, s.run_id)
                 try:
                     with GpuMeter() if s.backend == "cuda" else _NullMeter() as m:
-                        ep = run_episode(s, tasks[s.task_id], be, gfn, log)
+                        if is_tau2:
+                            from .tau2_bench import run_tau2_episode
+                            ep = run_tau2_episode(s, tasks[(s.benchmark, s.task_id)], be, gfn, log,
+                                                  api_base=sim.base_url, cache=sim.cache,
+                                                  sim_dir=os.path.join(r.dir, "tau2_sims"))
+                        else:
+                            ep = run_episode(s, tasks[(s.benchmark, s.task_id)], be, gfn, log)
                     ep.energy_j, ep.peak_gpu_mib = m.energy_j, m.peak_mib
                     log.finish(ep)
+                    if is_tau2:
+                        sim.sync()
                     n_done += 1
                     print(f"  {s.task_id} seed={s.seed} valid={ep.valid} steps={ep.n_steps} "
                           f"{ep.wall_s:.1f}s  ({n_done}/{len(pending)})", flush=True)
                 except KeyboardInterrupt:
                     log.abort()
                     raise
-                except Exception:
+                except Exception as e:
+                    if type(e).__name__ == "SimulatorUnavailable":
+                        log.abort()
+                        print(f"  {s.task_id} seed={s.seed}: simulated user unavailable ({e}); "
+                              "stopping tau2 scheduling, episodes stay pending", flush=True)
+                        sim_down = True
+                        break
                     log.abort()
                     print(f"  {s.task_id} seed={s.seed} FAILED (will retry on next run)\n"
                           + traceback.format_exc(limit=3), flush=True)
         finally:
             srv.__exit__(None, None, None)
             lock.close()                                # releases the flock
+    if sim is not None:
+        print("simulated-user cache:", json.dumps(sim.cache.stats()["by_role"]), flush=True)
+        sim.close()
     print(f"finished {n_done} episodes in {time.time() - t_all:.0f}s")
+
+
+def replay_one(cfg, r: reg.Registry, specs, category, model_files, binaries, run_id: str) -> dict:
+    """FR-E6 check: re-run one finished tau2 episode with the simulated user in replay mode (cache only,
+    no simulator process). Passes if every simulator request is a cache hit and the reward matches."""
+    import shutil
+    from .simuser_cache import SimUserCache
+    spec = next((s for s in specs if s.run_id == run_id), None)
+    if spec is None or not spec.benchmark.startswith("tau2"):
+        sys.exit(f"{run_id} is not a tau2 spec of this experiment")
+    orig = os.path.join(r.dir, "episodes", f"{run_id}.json")
+    if not os.path.exists(orig):
+        sys.exit(f"{run_id} has not been run yet")
+    scratch = reg.Registry(os.path.join(r.dir, "replays"), [spec])
+    for d in ("episodes", "steps"):
+        p = os.path.join(scratch.dir, d, f"{run_id}.json" + ("l" if d == "steps" else ""))
+        if os.path.exists(p):
+            os.remove(p)
+    src_db = os.path.join(r.dir, "simuser_cache.sqlite")
+    shutil.copyfile(src_db, os.path.join(scratch.dir, "simuser_cache.sqlite"))
+    before = SimUserCache(os.path.join(scratch.dir, "simuser_cache.sqlite"), {}, mode="replay").stats()
+    sub = OmegaConf.merge(cfg, {"simuser_mode": "replay", "replay": None, "only_config": None, "limit": None,
+                                "backend": None, "only_benchmark": None,
+                                "paths": {"simuser_cache_local": None}})
+    run_local(sub, scratch, [spec], category, model_files, binaries)
+    after = SimUserCache(os.path.join(scratch.dir, "simuser_cache.sqlite"), {}, mode="replay").stats()
+    def n(st, outcome):
+        return sum(v.get(outcome, {}).get("n", 0) for v in st["by_role"].values())
+    out_p = os.path.join(scratch.dir, "episodes", f"{run_id}.json")
+    res = {"run_id": run_id, "hits": n(after, "hit") - n(before, "hit"),
+           "misses": n(after, "replay_miss") - n(before, "replay_miss") + n(after, "miss") - n(before, "miss"),
+           "finished": os.path.exists(out_p)}
+    if res["finished"]:
+        a, b = json.load(open(orig)), json.load(open(out_p))
+        res.update(reward_matches=a["valid"] == b["valid"], steps_match=a["n_steps"] == b["n_steps"])
+    res["pass"] = bool(res["finished"] and res["misses"] == 0 and res.get("reward_matches"))
+    reg.atomic_json(os.path.join(r.dir, "replays", f"{run_id}.result.json"), res)
+    print("replay:", json.dumps(res))
+    return res
+
+
+def _tau2_version() -> dict:
+    try:
+        from importlib.metadata import version
+        import tau2
+        d = os.path.dirname(os.path.dirname(os.path.dirname(tau2.__file__)))
+        import subprocess
+        commit = subprocess.run(["git", "-C", d, "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+        return {"version": version("tau2"), "path": d, "commit": commit or "unknown"}
+    except Exception as e:
+        return {"version": f"unavailable: {type(e).__name__}"}
 
 
 def _cpu_info(cfg) -> dict:
@@ -236,16 +383,29 @@ def main(cfg: DictConfig) -> None:
         r.write_specs()
     s = r.summary()
     print(f"experiment {exp['name']}: {s['planned']} specs ({s['unique_run_ids']} unique), {s['done']} done, "
-          f"{len(task_ids)} tasks [{task_ids[0]} .. {task_ids[-1]}]\n  dir: {r.dir}")
+          f"{len({x.task_id for x in specs})} tasks over {', '.join(sorted({x.benchmark for x in specs}))}\n  dir: {r.dir}")
     for k, c in s["configs"].items():
-        print(f"  {k}  {c['variant']:<12} {c['backend']:<5} {c['repair']:<5} {c['done']:>3}/{c['planned']}")
+        print(f"  {k}  {c.get('benchmark', ''):<22} {c['variant']:<12} {c['backend']:<5} {c['repair']:<5} "
+              f"{c['done']:>3}/{c['planned']}")
     scope = [s for s in specs if (not cfg.backend or s.backend == cfg.backend)
              and (not cfg.only_config or s.config_key == cfg.only_config)]
+    if cfg.only_benchmark:
+        scope = [s for s in scope if s.benchmark == cfg.only_benchmark]
+    sim = _simuser(scope)
+    scope_bins = {b: p for b, p in binaries.items() if any(x.backend == b for x in scope) or (sim and b == "cuda")}
     problems = _preflight(scope, {v: p for v, p in model_files.items() if any(x.variant == v for x in scope)},
-                          {b: p for b, p in binaries.items() if any(x.backend == b for x in scope)}, model)
+                          scope_bins, model)
+    if sim and cfg.simuser_mode == "live" and not os.path.exists(_sim_file(cfg, sim)):
+        problems.append(f"missing simulated-user model: {_sim_file(cfg, sim)}")
     for p in problems:
         print("  WARNING:", p)
 
+    if cfg.import_from and not array_task:
+        n = r.import_from(_abs(cfg.import_from))
+        print(f"imported {n} finished episodes from {cfg.import_from}")
+    if cfg.replay:
+        replay_one(cfg, r, specs, category, model_files, binaries, str(cfg.replay))
+        return
     if cfg.report_only:
         from .report import write_report
         print("report:", write_report(r.dir))
@@ -256,8 +416,15 @@ def main(cfg: DictConfig) -> None:
     # compute node) costs a stat unless the file changed
     keep = {s.variant for s in scope}
     files = {v: p for v, p in model_files.items() if v in keep}
-    bins = {b: p for b, p in binaries.items() if any(x.backend == b for x in scope)}
-    manifest = reg.build_manifest(specs, files, bins, model.get("sha256"), hash_files=not cfg.skip_hash)
+    expected = dict(model.get("sha256") or {})
+    if sim and cfg.simuser_mode == "live":
+        files["simuser"] = _sim_file(cfg, sim)
+        expected["simuser"] = sim.get("sha256")
+    bins = scope_bins
+    manifest = reg.build_manifest(specs, files, bins, expected, hash_files=not cfg.skip_hash)
+    if sim:
+        manifest["simuser"] = sim
+        manifest["tau2"] = _tau2_version()
     manifest["cpu"] = _cpu_info(cfg)
     bad = [v for v, e in manifest["model_files"].items() if e.get("sha256_matches_pilot") is False]
     if bad and not cfg.allow_sha_mismatch:

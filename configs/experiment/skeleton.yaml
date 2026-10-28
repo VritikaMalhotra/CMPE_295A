@@ -1,8 +1,9 @@
 # @package _global_
-# M1 walking skeleton (Workbook Ch. 8, Table 36), Colab version agreed 2026-10-24:
-# BFCL multi-turn base only (tau2 airline + C4 move to M2); cluster criteria move to M2.
-#   4 baseline configs x 20 tasks x 2 seeds = 160 episodes
-#   3 repair configs   x 20 tasks x 1 seed  =  60 episodes
+# M1 walking skeleton (Workbook Ch. 8, Table 36), Colab version. 23 tasks: 20 BFCL multi-turn base + 3
+# tau2-bench-verified airline (tau2 kept in M1, decided 2026-10-25); cluster criteria move to M2.
+#   BFCL: 4 baseline configs x 20 tasks x 2 seeds = 160, 3 repair configs x 20 x 1 = 60   (220, done Oct 25)
+#   tau2: 4 baseline configs x  3 tasks x 2 seeds =  24, 3 repair configs x  3 x 1 =  9   (33)
+# The BFCL specs are unchanged by adding tau2 (same run_ids), so their finished episodes carry over.
 experiment:
   name: skeleton
   model: qwen3-0.6b
@@ -37,6 +38,33 @@ experiment:
 
   server:
     ctx: 40960                      # Qwen3-0.6B max_position_embeddings, what bfcl budgets against
+
+  # Further benchmarks: same model, configs, seeds and decoding; their own task ids and harness settings.
+  # Everything that can change a tau2 output is in the spec (server.tau2, server.simuser), so it is hashed.
+  extra_benchmarks:
+    - name: tau2_verified_airline
+      # The first three base-split tasks (numeric order) whose gold actions write to the database.
+      # Tasks 0-2 (first tried, Oct 25) only need lookups or a refusal, so an agent that never calls a
+      # tool scores 1.0 on them: Qwen3-0.6B "passed" 29 of 30 without a single tool call.
+      task_ids: ["7", "8", "11"]
+      require_write: true             # loader refuses a task whose gold actions contain no write tool
+      write_tools: [book_reservation, cancel_reservation, update_reservation_baggages,
+                    update_reservation_flights, update_reservation_passengers, send_certificate]
+      tau2:
+        repo: amazon-agi/tau2-bench-verified
+        commit: 864350a8971a8f8ee9e7b8472e2edc380a806b0c
+        split: base
+        max_steps: 200                # tau2 CLI defaults (orchestrator messages, tool errors)
+        max_errors: 10
+      simuser:                        # C4: simulated user and NL judge, self-hosted, greedy, cached
+        model: gpt-oss-20b            # one of the S5 candidates; S5's choice replaces it in M2
+        file: gpt-oss-20b-MXFP4.gguf
+        hf_repo: ggml-org/gpt-oss-20b-GGUF
+        hf_revision: ef9b12f2ff56c69cf32153a02784e7a3c88bf524
+        sha256: 27cd6c432c7672cb812a92f611cf3ba7bbc35928262bb1e1253ff4ee6ae35901
+        ctx: 32768
+        temperature: 0.0
+        chat_template_kwargs: {reasoning_effort: low}
 
 models:
   qwen3-0.6b:
