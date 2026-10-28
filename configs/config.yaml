@@ -8,6 +8,11 @@ submit: false            # with local=false: also call sbatch (needs a Slurm acc
 limit: null              # run only the first N pending specs (smoke tests)
 only_config: null        # run one configuration (a config_key); used by each Slurm array task
 backend: null            # run only cuda or cpu configurations (two machines sharing one experiment)
+only_benchmark: null     # run only one benchmark's specs (e.g. bfcl_multi_turn_base on a CPU-only machine)
+import_from: null        # copy finished episodes with the same run_id from another experiment directory
+simuser_mode: live       # C4: live (forward cache misses to the simulator) | replay (misses are errors)
+simuser_max_hours: null  # C4 ceiling on simulator upstream hours; null = no ceiling
+replay: null             # a tau2 run_id: re-run it from the C4 cache alone and check zero simulator calls
 report_only: false       # rebuild report.md from finished episodes, run nothing
 report_partial: false    # write the report even when episodes are still pending
 skip_hash: false         # skip SHA-256 of model files (they are cached in <file>.sha256 after the first run)
@@ -19,6 +24,7 @@ paths:
   models_dir: ${oc.env:TESTBED_MODELS,models}
   llama_cuda: ${oc.env:LLAMA_CUDA_BIN,llama.cpp/build-cuda/bin/llama-server}
   llama_cpu: ${oc.env:LLAMA_CPU_BIN,llama.cpp/build-cpu/bin/llama-server}
+  simuser_cache_local: ${oc.env:TESTBED_CACHE_LOCAL,null}   # local SQLite path while running (Drive is unsafe)
 
 cpu_threads: null        # llama-server -t for the CPU backend; null = llama.cpp default
 
