@@ -9,5 +9,6 @@
 {account_line}
 set -euo pipefail
 cd {repo}
+if [ -f scripts/hpc_env.sh ] && [ -d /scratch/cmpe295-bertin ]; then source scripts/hpc_env.sh; fi
 source .venv/bin/activate
 python -m testbed.run +experiment={experiment} report_only=true
