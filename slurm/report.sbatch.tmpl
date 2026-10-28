@@ -1,0 +1,13 @@
+#!/bin/bash
+# Written next to array.sbatch; submitted with --dependency=afterany:<array job id>.
+#SBATCH -J {job}-report
+#SBATCH -p {partition_cpu}
+#SBATCH -c 2
+#SBATCH --mem=8G
+#SBATCH -t 00:30:00
+#SBATCH -o {logdir}/report_%j.out
+{account_line}
+set -euo pipefail
+cd {repo}
+source .venv/bin/activate
+python -m testbed.run +experiment={experiment} report_only=true
