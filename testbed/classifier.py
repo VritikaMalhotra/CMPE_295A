@@ -1,7 +1,5 @@
 """C6 Failure Classifier, rules v0: one class per logged step.
 
-Owner: Vritika Malhotra (draft by Yashashav for review).
-
 Extends the Oct 8 pilot's ``failure_class()`` (spikes/s4_bfcl_single_turn.py) from single-turn
 outputs to multi-turn steps, and adds the proposed "missing call with a direct answer" class
 (Workbook v3, decisions for the advisor). Order matters: the first rule that fires wins.

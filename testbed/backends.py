@@ -1,7 +1,5 @@
 """C3 Inference Backends: llama-server on CUDA and CPU behind one ``generate`` call.
 
-Owner: Ekant Kapgate (draft by Yashashav for review).
-
 Protocol pinned from the Oct 8 pilot (v2 harness): raw ``/completion`` with the Qwen3 prompt
 built in ``qwen_format``, non-thinking suffix, ``cache_prompt=false`` (prompt-cache reuse changed
 61/400 greedy Q4_0 outputs), greedy decoding unless the spec says otherwise, one slot.

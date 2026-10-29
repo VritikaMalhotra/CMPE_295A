@@ -1,7 +1,5 @@
 """C1 Benchmark Adapter: BFCL multi-turn tasks with tool schemas in one JSON-schema form.
 
-Owner: Vritika Malhotra (draft by Yashashav for review).
-
 Mirrors bfcl-eval 2026.3.23 exactly for the prompt side (``populate_test_cases_with_predefined_functions``
 + the Python-syntax hint), so scores stay comparable with the official evaluator:
   * tools = every function doc of every involved class, in bfcl's own format (``type: dict`` etc.),

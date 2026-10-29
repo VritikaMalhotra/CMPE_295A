@@ -1,7 +1,5 @@
 """C2 Episode Runner: synchronous multi-turn loop (model -> tool executor -> model), fixed seeds.
 
-Owner: Ekant Kapgate (draft by Yashashav for review).
-
 Follows bfcl-eval 2026.3.23 ``BaseHandler.inference_multi_turn_prompting`` step for step:
 a turn ends when the model's reply decodes to no calls (or fails to decode); a turn is force-quit
 after 20 steps; execution results go back as ``tool`` messages; the episode is scored like bfcl's

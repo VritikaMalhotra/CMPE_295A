@@ -1,7 +1,5 @@
 """C5 Step Logger: one JSONL record per step, converted to Parquet after each run.
 
-Owner: Ekant Kapgate (draft by Yashashav for review).
-
 Layout under the run directory:  steps/<run_id>.jsonl, episodes/<run_id>.json  ->  steps.parquet, episodes.parquet
 Each JSONL line is ``StepRow.to_dict()`` with ``failure_class`` filled by C6 before writing.
 """
