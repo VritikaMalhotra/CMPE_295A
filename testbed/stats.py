@@ -1,7 +1,5 @@
 """C10 Analysis & Stats (M1 draft): paired comparisons of episode success between configurations.
 
-Owner: Vritika Malhotra (draft by Yashashav for review).
-
 * ``mcnemar_exact``  - two-sided exact McNemar test on paired binary outcomes (same task x seed).
 * ``paired_bootstrap_ci`` - percentile bootstrap CI for the difference in success rate,
                          resampling tasks (clusters) so the two seeds of a task stay together.

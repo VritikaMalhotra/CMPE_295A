@@ -1,7 +1,5 @@
 """C4 Simulated-User Cache: a content-addressed caching proxy in front of the self-hosted simulator.
 
-Owner: Vritika Malhotra (draft by Yashashav for review).
-
 tau2-bench's user simulator and its natural-language-assertion judge call an LLM through LiteLLM. We point
 both at ``openai/<role>`` with ``api_base`` = this proxy, so the harness runs unmodified and never knows it is
 cached (Workbook Ch. 6, "Proxy (simulated-user cache)"). The proxy:

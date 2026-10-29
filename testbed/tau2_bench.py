@@ -1,7 +1,5 @@
 """tau2-bench-verified airline: C1 loader + the C2 episode for a simulated-user benchmark.
 
-Owners: Vritika Malhotra (C1 adapter), Ekant Kapgate (C2 runner); draft by Yashashav for review.
-
 The harness is Amazon AGI's tau2-bench-verified (pinned commit in the experiment config), used unmodified:
 its environment executes tools and keeps the database, its ``UserSimulator`` plays the customer, its
 ``Orchestrator`` routes messages and enforces the step and error limits, and its evaluator gives the reward.

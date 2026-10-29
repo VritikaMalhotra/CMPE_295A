@@ -1,8 +1,6 @@
 """C9 Cost Profiler: per-episode GPU energy and peak memory (NVML), plus TTFT and tokens/s from
 llama-server's timings (already in each StepRow).
 
-Owner: Ekant Kapgate (draft by Yashashav for review).
-
 M1 measures one episode per configuration on a shared Colab GPU, so the numbers are a smoke test of
 the protocol, not cost results (those need the exclusive-node protocol of M6). Energy uses NVML's
 total-energy counter delta, the estimator the S6 spike validated against sampled power.
