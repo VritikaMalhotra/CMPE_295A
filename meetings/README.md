@@ -16,5 +16,7 @@ Action items carry an owner and a due date; open items roll forward to the next 
 | 2026-09-19 | Team | Ekant, Vritika, Yashashav | Sprint 2 planning: environments, spikes |
 | 2026-09-26 | Team | Ekant, Vritika, Yashashav | Sprint 2 review: workbook chapter drafts |
 | 2026-09-30 | Team | Ekant, Vritika, Yashashav | Hardware plan change to CoE HPC; workbook consolidation |
+| 2026-10-16 | Advisor | Ekant, Vritika, Yashashav, Dr. Cordova-Diba | Results reporting, analysis plan, architecture and project schedule |
+| 2026-10-17 | Team | Ekant, Vritika, Yashashav | Advisor feedback, workbook revisions and M1 responsibilities |
 
-Next advisor meeting: week of 2026-10-12 (advisor has midterm exams the week of 2026-10-05).
+Next advisor meeting: to be scheduled after the 2026-10-16 review.
