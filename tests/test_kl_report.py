@@ -97,3 +97,35 @@ def test_incomplete_log_is_flagged(tmp_path):
     (d / "Q4_0-pure.log").write_text("print_info: file type   = Q4_0\nCUDA error: out of memory\n")
     rep = kl_report.build_report("M", str(d), None, None, 512, 50)
     assert rep["variants"]["Q4_0-pure"]["complete"] is False and rep["complete"] is False
+
+
+def _write_gguf(path, tensors, kv=None):
+    """Minimal GGUF v3 header: kv pairs (string or u32) and tensor infos; payload is padding only."""
+    import struct
+    b = bytearray(b"GGUF") + struct.pack("<I", 3) + struct.pack("<QQ", len(tensors), len(kv or {}))
+
+    def s(x):
+        x = x.encode()
+        return struct.pack("<Q", len(x)) + x
+    for k, v in (kv or {}).items():
+        b += s(k)
+        if isinstance(v, str):
+            b += struct.pack("<I", 8) + s(v)
+        elif isinstance(v, list):
+            b += struct.pack("<I", 9) + struct.pack("<IQ", 4, len(v)) + b"".join(struct.pack("<I", i) for i in v)
+        else:
+            b += struct.pack("<I", 4) + struct.pack("<I", v)
+    for name, dims in tensors:
+        b += s(name) + struct.pack("<I", len(dims)) + b"".join(struct.pack("<Q", d) for d in dims)
+        b += struct.pack("<IQ", 0, 0)
+    b += bytes(1000)
+    path.write_bytes(bytes(b))
+
+
+def test_gguf_weight_count_and_bpw(tmp_path):
+    f = tmp_path / "M-Q4_0-pure.gguf"
+    _write_gguf(f, [("tok_embd", [64, 100]), ("blk.0.attn_q", [64, 64]), ("norm", [64])],
+                kv={"general.name": "toy", "general.file_type": 2, "tokenizer.ggml.token_type": [1, 2, 3]})
+    assert kl_report.gguf_n_elements(str(f)) == 64 * 100 + 64 * 64 + 64
+    st = kl_report.file_stats(str(f))
+    assert st["n_weights"] == 10560 and st["bpw_file"] == round(os.path.getsize(f) * 8 / 10560, 4)
