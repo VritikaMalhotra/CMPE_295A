@@ -32,7 +32,7 @@ Consequences for the plan:
 On the login node, in your own clone under the group folder:
 ```bash
 mkdir -p /scratch/cmpe295-bertin/src/$USER && cd /scratch/cmpe295-bertin/src/$USER
-git clone -b m1/cluster https://github.com/VritikaMalhotra/CMPE_295A.git && cd CMPE_295A
+git clone -b main https://github.com/VritikaMalhotra/CMPE_295A.git && cd CMPE_295A   # M2 work: -b m2
 source scripts/hpc_env.sh                          # paths, caches, modules (every new shell)
 bash scripts/setup_env.sh --llama --cuda           # login node: Python env + llama.cpp source, no compiling
 uv pip install -q --python .venv/bin/python -e ".[train]"   # converter deps (torch, transformers)
@@ -51,6 +51,36 @@ S1 on other GPUs: `sbatch --gres=gpu:a100:1 --exclude=cs002 slurm/smoke_s1.sbatc
 Experiments: `python -m testbed.run +experiment=<name>` writes `array.sbatch` + `report.sbatch` under
 `$TESTBED_OUT` (`submit=true` also submits them). Each array task requeues itself 3 minutes before its
 walltime and resumes (spike S10); finished episodes are never rerun.
+
+## M2 runs (branch `m2`)
+BF16 references with KL checks for the six models of Workbook 2 Table 13, spike S7 under a 10-minute limit and
+spike S10. First check that a job can requeue itself (S7 and S10 depend on it):
+```bash
+sbatch slurm/requeue_probe.sbatch            # pass: its log shows "restart 1" and PASS
+scontrol show config | grep -i requeue
+```
+Login node (network): llama.cpp perplexity tool, checkpoints, eval text, S7 data.
+```bash
+git fetch origin && git checkout m2 && source scripts/hpc_env.sh
+uv pip install -q --python .venv/bin/python -e ".[train,dev]"
+for r in LiquidAI/LFM2.5-1.2B-Instruct HuggingFaceTB/SmolLM3-3B LiquidAI/LFM2.5-2.6B; do
+  DOWNLOAD_ONLY=1 bash scripts/make_probe_models.sh $r $TESTBED_MODELS; done
+bash scripts/get_eval_text.sh                                   # WikiText-2 raw test + SHA-256
+```
+Jobs:
+```bash
+B=$(sbatch --parsable slurm/build_llama.sbatch)                # adds llama-perplexity, llama-imatrix
+for r in Qwen/Qwen3-0.6B Qwen/Qwen3-1.7B Qwen/Qwen3-4B LiquidAI/LFM2.5-1.2B-Instruct \
+         HuggingFaceTB/SmolLM3-3B LiquidAI/LFM2.5-2.6B; do
+  M=$(sbatch --parsable -d afterok:$B -t 02:00:00 --mem=48G slurm/make_models.sbatch $r)  # skips existing files
+  sbatch -d afterok:$M slurm/kl_check.sbatch ${r#*/}           # $TESTBED_OUT/kl/<model>/kl_<model>.json
+done
+RUN=A S7_STEPS=50 sbatch -t 01:00:00 slurm/s7_qad.sbatch        # seconds per step, then choose S7_STEPS
+python -m testbed.run +experiment=s10_requeue submit=true 'slurm.time="00:06:00"'   # time from episode speed
+```
+Checks: `scripts/kl_report.py` (inside kl_check), `train/compare_loss.py` (S7), `scripts/check_s10.py` (S10).
+KL checks use WikiText-2 test text only. For M3, add logged agent prompts as a second corpus, plus IQ4_XS
+variants with an imatrix whose calibration text shares no 13-gram with any benchmark task.
 
 ## First results (2026-10-26, development data)
 - Onboarding step 2: llama.cpp d812350 built in job 96279 on g2 (P100 node) in 17 min, CPU build plus CUDA 12.6 for sm 60, 80 and 90.
