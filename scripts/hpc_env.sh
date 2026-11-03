@@ -14,6 +14,8 @@ export XDG_CACHE_HOME=${XDG_CACHE_HOME:-$CMPE295_GROUP/cache/xdg}
 export LLAMA_DIR=${LLAMA_DIR:-$CMPE295_GROUP/src/llama.cpp-d812350}
 export LLAMA_CUDA_BIN=${LLAMA_CUDA_BIN:-$LLAMA_DIR/build-cuda/bin/llama-server}
 export LLAMA_CPU_BIN=${LLAMA_CPU_BIN:-$LLAMA_DIR/build-cpu/bin/llama-server}
+export LLAMA_QUANTIZE=${LLAMA_QUANTIZE:-$LLAMA_DIR/build-cuda/bin/llama-quantize}
+export LLAMA_PERPLEXITY=${LLAMA_PERPLEXITY:-$LLAMA_DIR/build-cuda/bin/llama-perplexity}   # KL checks (scripts/kl_check.sh)
 export CUDA_ARCHS=${CUDA_ARCHS:-"60;80;90"}
 # Portable CPU code: a binary built on one node type must run on every other (no -march=native).
 export LLAMA_CPU_FLAGS=${LLAMA_CPU_FLAGS:-"-DGGML_NATIVE=OFF -DGGML_AVX=ON -DGGML_AVX2=ON -DGGML_FMA=ON -DGGML_F16C=ON"}
