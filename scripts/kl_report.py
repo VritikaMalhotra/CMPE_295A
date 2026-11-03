@@ -4,7 +4,7 @@
 For each variant log (<variant>.log, written with --kl-divergence against the BF16 base) the report keeps:
 perplexity of the variant and of BF16, mean KL divergence with its uncertainty, the KLD percentiles, RMS and
 mean change in the top token's probability, the share of positions where both models pick the same top token,
-the file size and the measured whole-file bits per weight from the model loader, and the file's SHA-256
+the file size and whole-file bits per weight (file bytes x 8 / weights, from the GGUF header), and the file's SHA-256
 (from the .sha256 sidecar that make_probe_models.sh writes). No pass/fail thresholds: Workbook 2 fixes those
 after the pilot. Two ordering checks are recorded: Q8_0 should be closer to BF16 than both 4-bit variants.
 
@@ -71,6 +71,60 @@ def parse_log(text: str) -> dict:
     return out
 
 
+_SCALAR = {0: "<B", 1: "<b", 2: "<H", 3: "<h", 4: "<I", 5: "<i", 6: "<f", 7: "<?", 10: "<Q", 11: "<q", 12: "<d"}
+
+
+def gguf_n_elements(path: str) -> int:
+    """Number of weights in a GGUF file: the sum over tensors of the product of their dimensions (header only)."""
+    import struct
+
+    with open(path, "rb") as f:
+        def rd(fmt):
+            n = struct.calcsize(fmt)
+            return struct.unpack(fmt, f.read(n))[0]
+
+        def rd_str():
+            return f.read(rd("<Q"))
+
+        def skip_value(t):
+            if t == 8:
+                rd_str()
+            elif t == 9:
+                et, n = rd("<I"), rd("<Q")
+                for _ in range(n):
+                    skip_value(et)
+            else:
+                f.read(struct.calcsize(_SCALAR[t]))
+
+        if f.read(4) != b"GGUF":
+            raise ValueError(f"{path} is not a GGUF file")
+        rd("<I")                                   # version
+        n_tensors, n_kv = rd("<Q"), rd("<Q")
+        for _ in range(n_kv):
+            rd_str()
+            skip_value(rd("<I"))
+        total = 0
+        for _ in range(n_tensors):
+            rd_str()
+            dims = [rd("<Q") for _ in range(rd("<I"))]
+            rd("<I")                               # tensor type
+            rd("<Q")                               # data offset
+            n = 1
+            for d in dims:
+                n *= d
+            total += n
+        return total
+
+
+def file_stats(path: str) -> dict:
+    """Whole-file size and bits per weight (Workbook 2: logged for every file)."""
+    if not os.path.exists(path):
+        return {}
+    size = os.path.getsize(path)
+    n = gguf_n_elements(path)
+    return {"file_bytes": size, "n_weights": n, "bpw_file": round(size * 8 / n, 4) if n else None}
+
+
 def sha256_sidecar(path: str) -> str | None:
     side = path + ".sha256"
     if os.path.exists(side):
@@ -91,7 +145,9 @@ def build_report(model: str, kl_dir: str, models_dir: str | None, text: str | No
     base_log = os.path.join(kl_dir, "BF16.log")
     base = parse_log(open(base_log).read()) if os.path.exists(base_log) else {}
     if models_dir:
-        base["sha256"] = sha256_sidecar(os.path.join(models_dir, f"{model}-BF16.gguf"))
+        f = os.path.join(models_dir, f"{model}-BF16.gguf")
+        base["sha256"] = sha256_sidecar(f)
+        base.update(file_stats(f))
     variants = {}
     for log in sorted(glob.glob(os.path.join(kl_dir, "*.log"))):
         v = os.path.basename(log)[:-4]
@@ -99,7 +155,9 @@ def build_report(model: str, kl_dir: str, models_dir: str | None, text: str | No
             continue
         row = parse_log(open(log).read())
         if models_dir:
-            row["sha256"] = sha256_sidecar(os.path.join(models_dir, f"{model}-{v}.gguf"))
+            f = os.path.join(models_dir, f"{model}-{v}.gguf")
+            row["sha256"] = sha256_sidecar(f)
+            row.update(file_stats(f))
         row["complete"] = "kld_mean" in row and "same_top_p_pct" in row
         variants[v] = row
 
@@ -143,7 +201,7 @@ def main() -> None:
     os.replace(tmp, a.out)
     for v, r in rep["variants"].items():
         print(f"{a.model} {v}: KLD {r.get('kld_mean')} ± {r.get('kld_mean_unc')}, same top {r.get('same_top_p_pct')}%,"
-              f" PPL {r.get('ppl_q')} vs {r.get('ppl_base')}, {r.get('bpw')} BPW")
+              f" PPL {r.get('ppl_q')} vs {r.get('ppl_base')}, {r.get('bpw_file') or r.get('bpw')} BPW")
     print("checks:", rep["checks"], "complete:", rep["complete"])
 
 
