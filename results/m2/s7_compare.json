@@ -1,0 +1,34 @@
+{
+ "a_dir": "/scratch/cmpe295-bertin/runs/s7/s7_580/A",
+ "b_dir": "/scratch/cmpe295-bertin/runs/s7/s7_580/B",
+ "steps_a": 580,
+ "steps_b": 580,
+ "missing_in_b": [],
+ "extra_in_b": [],
+ "max_abs_diff": 0.0,
+ "first_diff_step": null,
+ "identical": true,
+ "peak_alloc_mib_a": 18789,
+ "peak_alloc_mib_b": 19924,
+ "b_log": {
+  "walltime_signals": 1,
+  "resumed_from": [
+   365
+  ],
+  "restarts_seen": [
+   0,
+   1
+  ],
+  "done": {
+   "event": "done",
+   "peak_alloc_mib": 19924,
+   "peak_reserved_mib": 20652
+  },
+  "limits": [
+   "10:00",
+   "10:00"
+  ]
+ },
+ "b_was_cut_and_resumed": true,
+ "pass": true
+}
