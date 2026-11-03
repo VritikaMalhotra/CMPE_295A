@@ -19,7 +19,7 @@ git fetch origin
 for b in m1/interfaces m1/vritika-c1-c6-c10 m1/ekant-c2-c3-c5-c9 m1/c11-registry-runner m1/repairs-r2-r3 m1/skeleton; do
   git show-ref --verify --quiet "refs/heads/$b" && { echo "branch $b already exists; delete it or rename before re-running"; exit 1; }
 done
-TRAILER=$'\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_016i9tdctb7EVYczN4Wjz7p5'
+TRAILER=""
 
 put() {  # copy files from the drop into the work tree and stage them
   for f in "$@"; do mkdir -p "$(dirname "$f")"; cp "$DROP/$f" "$f"; git add "$f"; done
