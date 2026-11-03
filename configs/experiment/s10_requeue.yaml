@@ -1,0 +1,56 @@
+# @package _global_
+# Spike S10 (Workbook 2 Table 35; onboarding step 5): a Slurm array of 8 evaluation jobs over about 100 BFCL
+# episodes, with a walltime short enough that tasks are cut, requeue themselves and resume. Pass: no missing
+# and no duplicate episodes (scripts/check_s10.py). Plumbing test only: development data, not study results.
+#   8 configurations (one array task each) x 13 BFCL multi-turn base tasks x 1 seed = 104 episodes, all on CUDA.
+# Submit from the login node with a time limit chosen from measured episode speed (docs/cluster.md, M2 runs):
+#   python -m testbed.run +experiment=s10_requeue submit=true 'slurm.time="00:06:00"'
+#   python scripts/check_s10.py $TESTBED_OUT/s10_requeue/<hash> --out s10_check.json
+experiment:
+  name: s10_requeue
+  model: qwen3-0.6b
+  benchmark: bfcl_multi_turn_base
+  n_tasks: 13                       # first 13 ids of BFCL_v4_multi_turn_base, file order
+  thinking: false
+  max_steps_per_turn: 20
+
+  baselines:
+    - {variant: bf16,   backend: cuda}
+    - {variant: q4_k_m, backend: cuda}
+    - {variant: q4_0,   backend: cuda}
+    - {variant: q8_0,   backend: cuda}
+  baseline_seeds: [1]
+
+  # four more configurations so the array has 8 tasks; each is a valid repair run
+  repairs:
+    - {repair: r1, variant: q4_0,   backend: cuda, constraint: free}
+    - {repair: r1, variant: q4_0,   backend: cuda, constraint: forced}
+    - {repair: r1, variant: q4_k_m, backend: cuda, constraint: free}
+    - {repair: r2, variant: q8_0,   backend: cuda, constraint: none}
+  repair_seeds: [1]
+
+  # same decoding and server settings as the skeleton
+  decoding:
+    temperature: 0.7
+    top_p: 0.8
+    top_k: 20
+    min_p: 0.0
+    n_predict: 4096
+    cache_prompt: false
+
+  server:
+    ctx: 40960
+
+models:
+  qwen3-0.6b:
+    hf_repo: Qwen/Qwen3-0.6B
+    files:
+      bf16: Qwen3-0.6B-BF16.gguf
+      q4_k_m: Qwen3-0.6B-Q4_K_M.gguf
+      q4_0: Qwen3-0.6B-Q4_0-pure.gguf
+      q8_0: Qwen3-0.6B-Q8_0.gguf
+    # SHA-256 of the Oct 8 pilot files (progress/quant_files.csv), as in skeleton.yaml
+    sha256:
+      bf16: 9a07b327d6114b23cd022cd0b188629aa0d02f88c863becaa34af5fc374281a2
+      q4_k_m: 40b0bbe7c787ac694f2f635ead2bcfebf19a7d6f1130d63155155fc0b83bdc6c
+      q4_0: 90d6e31f1034a14e7d382c0a5de3e0c2bafa1e1b6b2d1869ebea5b8e2c4482ab
