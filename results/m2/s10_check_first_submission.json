@@ -1,0 +1,123 @@
+{
+ "run_dir": "/scratch/cmpe295-bertin/runs/s10_requeue/4375dbd0be",
+ "planned": 104,
+ "configs": 8,
+ "episodes_per_config": {
+  "4e1d5fa26e99": 13,
+  "a4299c06b255": 13,
+  "5e2b5317625b": 13,
+  "f178123a4116": 13,
+  "62d40036f4df": 13,
+  "4bffd5ef157d": 13,
+  "8446635aacca": 13,
+  "6cfaaa74b6db": 13
+ },
+ "done": 101,
+ "missing": [
+  "62f1acda1ca1",
+  "8b6fc1fa6a57",
+  "96a3c4274e70"
+ ],
+ "unplanned": [],
+ "duplicate_planned_run_ids": [],
+ "bad_episode_files": [],
+ "duplicate_step_rows": {},
+ "leftover_part_files": [
+  "steps/8b6fc1fa6a57.jsonl.part"
+ ],
+ "array_tasks": {
+  "101640_0": {
+   "starts": 3,
+   "max_restart": 2,
+   "walltime_signals": 2,
+   "hosts": [
+    "g2.hpc.coe"
+   ],
+   "config": "4e1d5fa26e99"
+  },
+  "101640_1": {
+   "starts": 2,
+   "max_restart": 1,
+   "walltime_signals": 1,
+   "hosts": [
+    "g2.hpc.coe"
+   ],
+   "config": "a4299c06b255"
+  },
+  "101640_2": {
+   "starts": 2,
+   "max_restart": 1,
+   "walltime_signals": 1,
+   "hosts": [
+    "g2.hpc.coe",
+    "g4.hpc.coe"
+   ],
+   "config": "5e2b5317625b"
+  },
+  "101640_3": {
+   "starts": 2,
+   "max_restart": 1,
+   "walltime_signals": 1,
+   "hosts": [
+    "g2.hpc.coe"
+   ],
+   "config": "f178123a4116"
+  },
+  "101640_4": {
+   "starts": 2,
+   "max_restart": 1,
+   "walltime_signals": 1,
+   "hosts": [
+    "g2.hpc.coe",
+    "g4.hpc.coe"
+   ],
+   "config": "62d40036f4df"
+  },
+  "101640_5": {
+   "starts": 6,
+   "max_restart": 5,
+   "walltime_signals": 6,
+   "hosts": [
+    "g2.hpc.coe"
+   ],
+   "config": "4bffd5ef157d"
+  },
+  "101640_6": {
+   "starts": 2,
+   "max_restart": 1,
+   "walltime_signals": 1,
+   "hosts": [
+    "g4.hpc.coe"
+   ],
+   "config": "8446635aacca"
+  },
+  "101640_7": {
+   "starts": 2,
+   "max_restart": 1,
+   "walltime_signals": 1,
+   "hosts": [
+    "g2.hpc.coe"
+   ],
+   "config": "6cfaaa74b6db"
+  },
+  "report_101641": {
+   "starts": 0,
+   "max_restart": 0,
+   "walltime_signals": 0,
+   "hosts": []
+  }
+ },
+ "tasks_requeued_by_walltime": [
+  "101640_0",
+  "101640_1",
+  "101640_2",
+  "101640_3",
+  "101640_4",
+  "101640_5",
+  "101640_6",
+  "101640_7"
+ ],
+ "pass": false,
+ "slurm_time": "00:05:00",
+ "time_choice": "Oct 28 damage_0p6b on P100: 13 BFCL tasks take 34-150 s of episodes per configuration (bf16 141 s, q4_k_m 150 s, q4_0 36 s, r2/q8_0 34 s); USR1 fires 180 s before a 5-minute limit, i.e. at 120 s, so bf16/q4_k_m tasks are cut and the fast ones finish"
+}

@@ -17,7 +17,7 @@ login with the smoke test below and adds a line to "Checked accounts".
 | Storage | home is on a file system at 100%: config only. Group folder `/scratch/cmpe295-bertin` (12 TB free, group `cmpe295-bertin`, setgid): `models/ envs/ src/ runs/ cache/ logs/`. `/data/cmpe295-bertin` (3.8 TB free) for long-lived copies |
 | GPU isolation | Slurm sets `CUDA_VISIBLE_DEVICES`, but `nvidia-smi` in a 1-GPU A100 job lists all four GPUs: use only the assigned device, never explicit IDs; every job logs it (`log_gpu`) |
 
-| Known bad node | **cs002** (A100): CUDA context creation fails (`CUDA_ERROR_UNKNOWN` from PyTorch, "device busy or unavailable" from llama.cpp) on 2026-10-26 while nvidia-smi looks normal. Add `--exclude=cs002` to A100 jobs until the administrator fixes it |
+| Known bad nodes | **cs001** (A100, 2026-11-03): GPUs 1–3 fail CUDA initialisation, GPU 0 works. **cs002** (A100): CUDA context creation fails (`CUDA_ERROR_UNKNOWN` from PyTorch, "device busy or unavailable" from llama.cpp) on 2026-10-26 while nvidia-smi looks normal. Add `--exclude=cs001,cs002` to A100 jobs until the administrator fixes them |
 | CPU pinning | none either: llama.cpp started 28 threads in a 4-CPU job. `hpc_env.sh` sets `TESTBED_CPU_THREADS=$SLURM_CPUS_PER_TASK`, which `cpu_threads` in configs/config.yaml reads |
 
 Consequences for the plan:
@@ -46,7 +46,7 @@ sbatch -d afterok:$M slurm/smoke_s1.sbatch                            # step 4: 
 squeue -u $USER;  tail -f /scratch/cmpe295-bertin/logs/smoke-s1_*.out
 ```
 The llama.cpp build and the model files are shared: once they exist, other members skip those two jobs.
-S1 on other GPUs: `sbatch --gres=gpu:a100:1 --exclude=cs002 slurm/smoke_s1.sbatch` (or `gpu:h100:1`).
+S1 on other GPUs: `sbatch --gres=gpu:a100:1 --exclude=cs001,cs002 slurm/smoke_s1.sbatch` (or `gpu:h100:1`).
 
 Experiments: `python -m testbed.run +experiment=<name>` writes `array.sbatch` + `report.sbatch` under
 `$TESTBED_OUT` (`submit=true` also submits them). Each array task requeues itself 3 minutes before its
@@ -79,8 +79,47 @@ RUN=A S7_STEPS=50 sbatch -t 01:00:00 slurm/s7_qad.sbatch        # seconds per st
 python -m testbed.run +experiment=s10_requeue submit=true 'slurm.time="00:06:00"'   # time from episode speed
 ```
 Checks: `scripts/kl_report.py` (inside kl_check), `train/compare_loss.py` (S7), `scripts/check_s10.py` (S10).
+Environment notes (2026-11-03): `train/make_qad_data.py` needs `datasets`, whose pyarrow wants NumPy 2 while the
+testbed pins NumPy 1.26, so build S7 data in a separate env (`$CMPE295_GROUP/envs/qad-data`, with `UV_LINK_MODE=copy`
+because uv's default link mode fails on this NFS). The report job needs `fastparquet` in the testbed venv.
 KL checks use WikiText-2 test text only. For M3, add logged agent prompts as a second corpus, plus IQ4_XS
 variants with an imatrix whose calibration text shares no 13-gram with any benchmark task.
+
+## M2 results (2026-11-03, development data; JSON in `results/m2/`)
+- **Requeue probe** (job 101628): `JobRequeue=1`; USR1 arrived 60 s before the 2-minute limit, the job requeued
+  itself and restarted with `SLURM_RESTART_COUNT=1`. PASS.
+- **llama.cpp** d812350: `llama-perplexity` and `llama-imatrix` added to the shared build (job 101629); the other
+  binaries were not rebuilt.
+- **BF16 conversions** of the three new models at the pinned converter (jobs 101634, 101636, 101638), with Q4_K_M,
+  pure Q4_0 and Q8_0 from the same BF16 file. Revisions, SHA-256, sizes and bits per weight:
+  `results/m2/models_manifest.json`.
+- **KL checks** against BF16 (jobs 101630–101632, 101635, 101637, 101639): `llama-perplexity --kl-divergence`,
+  WikiText-2 raw test (SHA-256 173c87a5…), ctx 512, 50 chunks, CUDA on a P100. Mean KLD / same top token /
+  whole-file bits per weight. Q8_0 is closer to BF16 than both 4-bit variants for every model.
+
+| Model | BF16 PPL | Q4_0-pure | Q4_K_M | Q8_0 |
+|---|---|---|---|---|
+| LFM2.5-1.2B-Instruct | 17.45 | 0.1840 / 78.5% / 4.52 | 0.1020 / 83.3% / 5.00 | 0.0030 / 96.2% / 8.52 |
+| LFM2.5-2.6B | 42.09 | 0.2475 / 77.4% / 4.53 | 0.1648 / 81.1% / 4.97 | 0.0056 / 95.6% / 8.53 |
+| Qwen3-0.6B | 20.40 | 0.2455 / 75.3% / 4.57 | 0.1083 / 83.3% / 5.15 | 0.0033 / 95.8% / 8.57 |
+| Qwen3-1.7B | 15.70 | 0.2184 / 81.2% / 4.53 | 0.1069 / 87.0% / 5.05 | 0.0054 / 95.9% / 8.52 |
+| Qwen3-4B | 13.31 | 0.1250 / 85.7% / 4.51 | 0.0780 / 88.9% / 4.97 | 0.0118 / 94.9% / 8.51 |
+| SmolLM3-3B | 9.16 | 0.2400 / 74.7% / 4.52 | 0.0448 / 88.3% / 4.98 | 0.0060 / 94.8% / 8.52 |
+
+- **S7** (Workbook 2 Table 35, onboarding step 6). 50 steps took 94 s on an A100 (1.33 s/step), so a 10-minute
+  limit would never cut them; the run was lengthened to 580 steps (data: 2336 x 512 tokens). A: uninterrupted,
+  job 101642 on cs001. B: `-t 00:10:00`, job 101653 on cs004; USR1 at step ~368, requeued, resumed from the
+  step-365 checkpoint and finished. **All 580 per-step losses identical to A (max abs diff 0.0), across two
+  nodes.** Peak GPU memory 18.8 GB (A) / 19.9 GB (B) of 40 GB. `results/m2/s7_compare.json`. PASS.
+- **S10** (Workbook 2 Table 35, onboarding step 5): `configs/experiment/s10_requeue.yaml`, 8 configurations x 13
+  BFCL tasks = 104 episodes on P100s, `slurm.time=00:05:00` (USR1 at 2:00; chosen from the Oct 28 timings, 34–150 s
+  of episodes per configuration). Array 101640: every task was cut and resumed; R1 with the forced grammar on Q4_0
+  (no prior timing) progressed on each attempt but used all 5 requeues with 3 episodes left. Resubmitting
+  (array 101658) ran only those 3. **104/104 episodes, no missing, no duplicate episodes or step rows.**
+  `results/m2/s10_check.json` (first submission: `s10_check_first_submission.json`). PASS after one resubmission.
+  For the main runs, size `slurm.time` from the slowest configuration, or raise `max_requeue`.
+- **Bad node: cs001** (A100). On 2026-11-03 GPUs 1, 2 and 3 failed CUDA initialisation ("No CUDA GPUs are
+  available") in three jobs; GPU 0 works. Until fixed, A100 jobs use `--exclude=cs001,cs002`.
 
 ## First results (2026-10-26, development data)
 - Onboarding step 2: llama.cpp d812350 built in job 96279 on g2 (P100 node) in 17 min, CPU build plus CUDA 12.6 for sm 60, 80 and 90.
