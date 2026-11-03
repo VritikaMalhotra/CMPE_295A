@@ -8,12 +8,12 @@
 # Choosing S7_STEPS: run A with 50 steps first and read the seconds per step from loss.jsonl. If 50 steps end
 # well inside 9 minutes, raise S7_STEPS (about 1.5 x the steps that fit before the signal) so the limit cuts B
 # mid-run, and build matching data first: train/make_qad_data.py --n $((4 * S7_STEPS + 16)) (login node).
-# A and B run on the same GPU type (A100); cs002 is excluded (docs/cluster.md).
+# A and B run on the same GPU type (A100); cs001 and cs002 are excluded (docs/cluster.md).
 #SBATCH -J s7-qad
 #SBATCH -A coe
 #SBATCH -p gpuqs
 #SBATCH --gres=gpu:a100:1
-#SBATCH --exclude=cs002
+#SBATCH --exclude=cs001,cs002
 #SBATCH -c 8
 #SBATCH --mem=64G
 #SBATCH -t 01:00:00
