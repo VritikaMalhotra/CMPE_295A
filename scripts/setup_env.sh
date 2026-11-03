@@ -78,14 +78,14 @@ if [ $WANT_LLAMA = 1 ]; then
   fi
   if [ ! -x "$SRC/build-cpu/bin/llama-server" ]; then
     cmake -S "$SRC" -B "$SRC/build-cpu" -DGGML_CUDA=OFF -DLLAMA_CURL=OFF -DCMAKE_BUILD_TYPE=Release ${LLAMA_CPU_FLAGS:-}
-    cmake --build "$SRC/build-cpu" -j "$JOBS" --target llama-server llama-quantize llama-bench
+    cmake --build "$SRC/build-cpu" -j "$JOBS" --target llama-server llama-quantize llama-bench llama-perplexity llama-imatrix
   fi
   if [ $WANT_CUDA = 1 ] && [ ! -x "$SRC/build-cuda/bin/llama-server" ]; then
     # CUDA_ARCHS (the cluster: "60;80;90") or this machine's GPU; a build only runs on the GPUs it targets
     ARCH=${CUDA_ARCHS:-$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null | head -1 | tr -d .)}
     cmake -S "$SRC" -B "$SRC/build-cuda" -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="${ARCH:-80}" \
           -DLLAMA_CURL=OFF -DCMAKE_BUILD_TYPE=Release ${LLAMA_CPU_FLAGS:-}
-    cmake --build "$SRC/build-cuda" -j "$JOBS" --target llama-server llama-quantize llama-bench
+    cmake --build "$SRC/build-cuda" -j "$JOBS" --target llama-server llama-quantize llama-bench llama-perplexity llama-imatrix
   fi
   # CPU llama-bench (C9 speed tables) was added after the first cached build. The cache keeps binaries but not
   # object files, so this recompiles the CPU libraries (~10-15 min on 2 cores). The CUDA build is not touched:
@@ -93,6 +93,18 @@ if [ $WANT_LLAMA = 1 ]; then
   if [ $WANT_CUDA = 0 ] && [ ! -x "$SRC/build-cpu/bin/llama-bench" ]; then   # CPU machines only
     cmake -S "$SRC" -B "$SRC/build-cpu" -DGGML_CUDA=OFF -DLLAMA_CURL=OFF -DCMAKE_BUILD_TYPE=Release ${LLAMA_CPU_FLAGS:-} >/dev/null
     cmake --build "$SRC/build-cpu" -j "$JOBS" --target llama-bench
+  fi
+  # llama-perplexity (KL checks against BF16, M2) and llama-imatrix (IQ4_XS variants, M3) came after the first
+  # builds, so existing build trees get just these two targets added; the other binaries are left as they are.
+  if [ -x "$SRC/build-cpu/bin/llama-server" ] && [ ! -x "$SRC/build-cpu/bin/llama-perplexity" ]; then
+    cmake -S "$SRC" -B "$SRC/build-cpu" -DGGML_CUDA=OFF -DLLAMA_CURL=OFF -DCMAKE_BUILD_TYPE=Release ${LLAMA_CPU_FLAGS:-} >/dev/null
+    cmake --build "$SRC/build-cpu" -j "$JOBS" --target llama-perplexity llama-imatrix
+  fi
+  if [ $WANT_CUDA = 1 ] && [ -x "$SRC/build-cuda/bin/llama-server" ] && [ ! -x "$SRC/build-cuda/bin/llama-perplexity" ]; then
+    ARCH=${CUDA_ARCHS:-$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null | head -1 | tr -d .)}
+    cmake -S "$SRC" -B "$SRC/build-cuda" -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="${ARCH:-80}" \
+          -DLLAMA_CURL=OFF -DCMAKE_BUILD_TYPE=Release ${LLAMA_CPU_FLAGS:-} >/dev/null
+    cmake --build "$SRC/build-cuda" -j "$JOBS" --target llama-perplexity llama-imatrix
   fi
   if [ -n "$CACHE" ] && [ ! -f "$CACHE/llama.cpp-$LLAMA_COMMIT.tar" ] && [ "$SRC" = "$ROOT/llama.cpp" ]; then
     mkdir -p "$CACHE"
