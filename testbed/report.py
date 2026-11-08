@@ -5,6 +5,7 @@ the planted-effect check (C10), and the manifest (C11). Everything is marked dev
 """
 from __future__ import annotations
 
+import glob
 import json
 import os
 
@@ -109,6 +110,24 @@ def write_report(run_dir: str) -> str:
             rows.append({"comparison": label, "pairs": 0})
     L.append(_md(pd.DataFrame(rows)))
 
+    # 3b. CPU vs CUDA output parity (FR-E17 preview): same variant, same task, seed, turn, step
+    L += ["## 3b. Output parity: CPU vs CUDA (Q4_0)", "",
+          "Share of steps whose raw model text is identical on the two backends, for the same task, seed, turn "
+          "and step. Paths diverge after the first differing step, so the first-step rate is the cleanest number.", ""]
+    if not steps.empty:
+        base = steps[(steps.variant == "q4_0") & (steps.repair == "none")]
+        a = base[base.backend == "cuda"].set_index(["task_id", "seed", "turn", "step"])["raw_text"]
+        b = base[base.backend == "cpu"].set_index(["task_id", "seed", "turn", "step"])["raw_text"]
+        j = a.to_frame("cuda").join(b.to_frame("cpu"), how="inner")
+        if len(j):
+            first = j.reset_index()
+            first = first[(first.turn == 0) & (first.step == 0)]
+            L += [f"- Aligned steps: {len(j)}; identical: {int((j.cuda == j.cpu).sum())} "
+                  f"({(j.cuda == j.cpu).mean():.1%})",
+                  f"- First step of each episode: {int((first.cuda == first.cpu).sum())} of {len(first)} identical", ""]
+        else:
+            L += ["_(no CPU-backend episodes yet)_", ""]
+
     # 4. costs
     L += ["## 4. Costs (C9)", "",
           "Shared Colab GPU, so these check the measurement path only; cost results need the exclusive-node "
@@ -145,6 +164,12 @@ def write_report(run_dir: str) -> str:
               f"- bfcl-eval {manifest.get('bfcl_eval', {}).get('version')}; testbed commit "
               f"`{manifest.get('testbed_git', {}).get('commit', '')[:10]}` (dirty={manifest.get('testbed_git', {}).get('dirty')})",
               f"- GPU: {manifest.get('gpu')}; host {manifest.get('host')}; Python {manifest.get('python')}", ""]
+    others = sorted(glob.glob(os.path.join(run_dir, "manifests", "*.json")))
+    for p in others:
+        m = json.load(open(p))
+        L.append(f"- Host record `{os.path.basename(p)}`: GPU {m.get('gpu') or 'none'}; CPU {m.get('cpu', {}).get('model', '?')} "
+                 f"× {m.get('cpu', {}).get('logical_cpus', '?')} logical, threads flag {m.get('cpu', {}).get('threads_flag')}")
+    L.append("")
     out = os.path.join(run_dir, "report.md")
     with open(out, "w") as f:
         f.write("\n".join(L))
