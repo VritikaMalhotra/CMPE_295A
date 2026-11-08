@@ -125,6 +125,7 @@ def build_manifest(specs: list[RunSpec], model_files: dict[str, str], binaries: 
 
 
 def atomic_json(path: str, obj) -> str:
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     tmp = f"{path}.{os.getpid()}.part"
     with open(tmp, "w") as f:
         json.dump(obj, f, indent=2)
