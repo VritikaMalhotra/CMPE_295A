@@ -138,5 +138,5 @@ variants with an imatrix whose calibration text shares no 13-gram with any bench
 | Member | Date | Smoke test |
 |---|---|---|
 | Yashashav (017856371) | 2026-10-26 | srun on gpuqs: P100, A100, H100 |
-| Ekant | | |
+| Ekant (015945761) | 2026-11-08 | srun on gpuqs: P100 (g2, job 109435); SSH key login, group cmpe295-bertin, Slurm account coe |
 | Vritika | | |
