@@ -31,10 +31,25 @@ import requests
 
 from .spec import canonical_json, sha256_text
 
-KEY_VERSION = 1
+KEY_VERSION = 2   # 2: replies are never empty (escalation below); v1 stores may hold empty replies
 # transport-only fields LiteLLM or clients may add; they never change the reply
 VOLATILE = {"stream", "stream_options", "user", "metadata", "num_retries", "timeout", "request_timeout",
             "api_key", "api_base", "extra_headers"}
+
+
+# gpt-oss can spend its whole turn reasoning and return an empty message; tau2 then rejects the user turn
+# (Oct 25: 3 of 33 episodes). On an empty reply the proxy asks again with more reasoning effort, in this
+# fixed order, and stores the first non-empty reply under the original key, so replays stay identical.
+ESCALATION = ({}, {"chat_template_kwargs": {"reasoning_effort": "medium"}},
+              {"chat_template_kwargs": {"reasoning_effort": "high"}})
+
+
+def is_empty_reply(resp: dict) -> bool:
+    try:
+        m = resp["choices"][0]["message"]
+    except (KeyError, IndexError, TypeError):
+        return True
+    return not (m.get("content") or "").strip() and not m.get("tool_calls")
 
 
 def request_key(sim_identity: dict, body: dict) -> str:
@@ -109,23 +124,30 @@ class SimUserCache:
             if self.max_upstream_hours is not None and self.upstream_hours() >= self.max_upstream_hours:
                 self._log(key, role, "budget_stop")
                 return 503, {"error": {"message": "simulator budget ceiling reached"}}
-        fwd = {k: v for k, v in body.items() if k not in VOLATILE}
-        fwd.update(self.inject)
-        t0 = time.time()
-        try:
-            r = requests.post(self.upstream + "/v1/chat/completions", json=fwd, timeout=self.timeout_s)
-            dt = time.time() - t0
-            if r.status_code != 200:
+        dt = 0.0
+        for step, extra in enumerate(ESCALATION):
+            fwd = {k: v for k, v in body.items() if k not in VOLATILE}
+            fwd.update(self.inject)
+            fwd.update(extra)
+            t0 = time.time()
+            try:
+                r = requests.post(self.upstream + "/v1/chat/completions", json=fwd, timeout=self.timeout_s)
+                dt += time.time() - t0
+                if r.status_code != 200:
+                    with self._lock:
+                        self.upstream_failures += 1
+                        self._log(key, role, f"upstream_{r.status_code}", dt)
+                    return 503, {"error": {"message": f"upstream returned {r.status_code}: {r.text[:300]}"}}
+                resp = r.json()
+            except requests.RequestException as e:
                 with self._lock:
                     self.upstream_failures += 1
-                    self._log(key, role, f"upstream_{r.status_code}", dt)
-                return 503, {"error": {"message": f"upstream returned {r.status_code}: {r.text[:300]}"}}
-            resp = r.json()
-        except requests.RequestException as e:
+                    self._log(key, role, "upstream_unreachable", time.time() - t0)
+                return 503, {"error": {"message": f"simulator unreachable: {type(e).__name__}"}}
+            if not is_empty_reply(resp):
+                break
             with self._lock:
-                self.upstream_failures += 1
-                self._log(key, role, "upstream_unreachable", time.time() - t0)
-            return 503, {"error": {"message": f"simulator unreachable: {type(e).__name__}"}}
+                self._log(key, role, f"empty_reply_{step}", 0.0)
         with self._lock:
             self._db.execute("INSERT OR REPLACE INTO replies VALUES (?,?,?,?,?,?)",
                              (key, role, canonical_json(fwd), json.dumps(resp), time.time(), dt))
