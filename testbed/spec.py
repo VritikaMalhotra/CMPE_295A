@@ -131,6 +131,7 @@ class StepRow:
     forced_quit: bool
     failure_class: str = ""           # filled by C6
     schema_version: int = SCHEMA_VERSION
+    benchmark: str = ""               # additive (Oct 25): "" = BFCL rows written before tau2 joined M1
 
     def to_dict(self) -> dict:
         return dataclasses.asdict(self)
