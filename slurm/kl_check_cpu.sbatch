@@ -20,6 +20,6 @@ NAME=${1:?usage: sbatch slurm/kl_check_cpu.sbatch <ModelName> [variant ...]}
 shift
 export LLAMA_PERPLEXITY=$LLAMA_DIR/build-cpu/bin/llama-perplexity
 export KL_NGL=0
-export KL_OUT=$TESTBED_OUT/kl_cpu/$NAME
+export KL_OUT=${KL_OUT:-$TESTBED_OUT/kl_cpu/$NAME}   # override per batch: each run rewrites kl_<model>.json
 export TESTBED_CPU_THREADS=${SLURM_CPUS_PER_TASK:-32}
 bash scripts/kl_check.sh "$NAME" ${*:-Q4_0-pure Q4_K_M IQ4_XS Q5_0-pure Q6_K-pure Q8_0}
