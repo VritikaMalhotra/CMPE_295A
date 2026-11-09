@@ -55,6 +55,9 @@ Workbook 2 (Ch. 3 Hypotheses, Ch. 7 Statistical Analysis Plan); deviations from 
 - Costs (RQ4): weight memory, TTFT, decode tokens/s, extra tokens, NVML energy (CUDA); exclusive-node protocol.
 
 ## 5. Inclusion and exclusion (fixed in advance)
+_[pending decision 11: as written below, the rule would leave too few multi-turn tasks (Qwen3-0.6B BF16 solves
+11 and Qwen3-4B 27 of 200 BFCL base tasks in 2 sampled trials), so it may apply only to the episode-success
+analysis if failures per step are primary]_
 - Tasks the 16-bit reference fails in all 4 sampled trials are excluded per model from confirmatory tests; counts
   and an all-task sensitivity analysis are reported. The inclusion set is stored per model
   (`results/m2/inclusion_<model>.json`, with the reference experiment hash) _[pending: Stage 1 reference runs]_.
