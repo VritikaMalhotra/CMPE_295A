@@ -85,6 +85,22 @@ because uv's default link mode fails on this NFS). The report job needs `fastpar
 KL checks use WikiText-2 test text only. For M3, add logged agent prompts as a second corpus, plus IQ4_XS
 variants with an imatrix whose calibration text shares no 13-gram with any benchmark task.
 
+### τ² runs: the simulated user as its own job (decision 4)
+One A100 (or H100) job per experiment runs the simulator (gpt-oss-20b, 4 slots of 32,768 tokens) and writes
+`$TESTBED_OUT/simuser/<experiment>.endpoint.json` (URL, model file, SHA-256, context, job id). Each agent
+array task waits for that file (up to `simuser_wait_s`), checks that it names the experiment's simulator, and
+sends its C4 cache misses there; it keeps its own store, `simuser_cache.<config>[.shard].sqlite`, so concurrent
+jobs never overwrite each other's copy. Replays (`replay=<run_id>`) merge the stores, the episode's own first.
+```bash
+bash scripts/get_simuser_model.sh $TESTBED_MODELS          # login node, once: 12 GB + SHA-256 check
+.venv/bin/python -c "import tau2"                        # setup_env.sh --tau2 installs it (login node)
+bash scripts/tau2_submit.sh ref_qwen3_0p6b                 # simulator, agent array (after it starts), report, stop
+```
+QoS: the simulator holds one of the 2 GPU nodes a user may use, so agent tasks default to A100s
+(`AGENT_GRES`): 3 next to the simulator plus 4 on a second node. Not run end to end yet: the first run must
+show that an agent job on another node reaches the simulator's port (compute nodes have no outside access,
+but node-to-node traffic is expected to work).
+
 ## M2 results (2026-11-03, development data; JSON in `results/m2/`)
 - **Requeue probe** (job 101628): `JobRequeue=1`; USR1 arrived 60 s before the 2-minute limit, the job requeued
   itself and restarted with `SLURM_RESTART_COUNT=1`. PASS.

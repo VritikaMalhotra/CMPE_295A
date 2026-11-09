@@ -1,11 +1,12 @@
 """NFR-5 pilot pieces: the shard option that splits one configuration across jobs, and the overlap count."""
 import datetime as dt
+from types import SimpleNamespace
 import importlib.util
 import os
 
 import pytest
 
-from testbed.run import _shard
+from testbed.run import _shard, shard_members
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -18,9 +19,10 @@ def test_shard_parsing():
 
 
 def test_shards_partition_the_specs():
-    ids = [f"{i:012x}" for i in range(50)]
-    parts = [[x for k, x in enumerate(sorted(ids)) if k % 4 == i] for i in range(4)]   # as run_local does
-    assert sorted(sum(parts, [])) == sorted(ids) and all(len(p) in (12, 13) for p in parts)
+    specs = [SimpleNamespace(benchmark="bfcl_multi_turn_base", task_id=str(i), run_id=f"{i:012x}") for i in range(50)]
+    parts = [shard_members(specs, i, 4) for i in range(4)]                # as run_local does
+    assert sorted(sum(map(list, parts), [])) == sorted(s.run_id for s in specs)
+    assert all(len(p) in (12, 13) for p in parts)
 
 
 def test_max_overlap():

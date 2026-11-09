@@ -230,3 +230,24 @@ def report(db_path: str) -> dict:
         return c.stats()
     finally:
         c.close()
+
+
+def merge_stores(srcs: list[str], dst: str) -> dict:
+    """Copy the replies of several per-job stores into one (``dst``), for replays. On a key present in more
+    than one store the first store wins, so pass the replayed episode's own store first. Ledgers are not
+    copied: the merged store starts with an empty ledger. Returns {src: replies added}."""
+    SimUserCache(dst, {}, mode="replay").close()        # creates the tables
+    db = sqlite3.connect(dst)
+    added = {}
+    try:
+        for i, src in enumerate(srcs):
+            db.execute(f"ATTACH DATABASE ? AS s{i}", (src,))
+            before = db.total_changes
+            db.execute(f"INSERT OR IGNORE INTO replies SELECT key, role, request, response, created, upstream_s "
+                       f"FROM s{i}.replies")
+            db.commit()
+            added[src] = db.total_changes - before
+            db.execute(f"DETACH DATABASE s{i}")
+    finally:
+        db.close()
+    return added
