@@ -6,6 +6,7 @@ local: false
 dry_run: false
 submit: false            # with local=false: also call sbatch (needs a Slurm account association)
 limit: null              # run only the first N pending specs (smoke tests)
+shard: null              # "i/n": run every n-th pending spec (by run_id) so n jobs share one configuration
 only_config: null        # run one configuration (a config_key); used by each Slurm array task
 backend: null            # run only cuda or cpu configurations (two machines sharing one experiment)
 only_benchmark: null     # run only one benchmark's specs (e.g. bfcl_multi_turn_base on a CPU-only machine)
