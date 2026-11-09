@@ -7,9 +7,9 @@ login with the smoke test below and adds a line to "Checked accounts".
 | | |
 |---|---|
 | Login | `coe-hpc2.sjsu.edu`, SJSU VPN or campus network only; SSH key login (see each member's `~/.ssh/config`) |
-| Slurm account | `coe` (`-A coe`), QOS `normal`, no per-user job caps |
+| Slurm account | `coe` (`-A coe`). GPU partitions use QoS `gpu3nodes`: **at most 2 nodes per user** (a third GPU job waits with `QOSMaxNodePerUserLimit`), so one account runs at most 2 P100 jobs, or up to 8 single-GPU jobs on two A100 nodes (measured 2026-11-08). `defq` allows at most 2 CPUs per job; `cpuqs` up to 128 |
 | GPU partitions | `gpuqs` (max 2 d 1 h), `gpuqm` (max 7 d 1 h); same GPU nodes |
-| GPUs | 15 x P100 PCIe 12 GB (`gpu:p100:1`), 4 nodes x 4 A100 PCIe 40 GB (`gpu:a100:N`), 3 x H100 PCIe 80 GB (`gpu:h100:1`); drivers differ by node (575.57 on P100 node g2, 590.44 on an H100 node), so every job logs it |
+| GPUs | 15 x P100 PCIe 12 GB (Qwen3-4B BF16 at ctx 40,960 does not fit: 8 GB weights + 5.8 GB KV cache; use A100/H100) (`gpu:p100:1`), 4 nodes x 4 A100 PCIe 40 GB (`gpu:a100:N`), 3 x H100 PCIe 80 GB (`gpu:h100:1`); drivers differ by node (575.57 on P100 node g2, 590.44 on an H100 node), so every job logs it |
 | CPU partitions | `defq` (6 h), `cpuqs` (5 d 1 h), `cpuqm` (14 d 1 h), `cpuql` (21 d 1 h); 24 nodes |
 | Default walltime | none: every job sets `-t` |
 | Modules | `nvhpc-hpcx-cuda12/24.11` (NVIDIA HPC SDK 24.11: nvcc from CUDA 12.6, targets sm_50 to sm_90; it also sets CC/CXX to nvc/nvc++, which `scripts/hpc_env.sh` undoes), `nvhpc-hpcx-cuda11/24.11`, `cmake/3.24.2`, `python3/3.12.12`; system gcc 11.5, git, apptainer. Load modules in batch jobs via `scripts/hpc_env.sh` (non-login shells have no `module`) |
@@ -120,6 +120,35 @@ variants with an imatrix whose calibration text shares no 13-gram with any bench
   For the main runs, size `slurm.time` from the slowest configuration, or raise `max_requeue`.
 - **Bad node: cs001** (A100). On 2026-11-03 GPUs 1, 2 and 3 failed CUDA initialisation ("No CUDA GPUs are
   available") in three jobs; GPU 0 works. Until fixed, A100 jobs use `--exclude=cs001,cs002`.
+
+## M2 results (2026-11-08, development data; JSON in `results/m2/`)
+- **Clean-clone check, Ekant's account** (job 109482, P100 g2, commit 893fd70): fresh clone, `setup_env.sh`,
+  10 skeleton episodes; experiment hash 3e3a25e70f and all 253 specs equal Yashashav's run, model SHA-256 matches
+  the pilot, 0 unclassified steps. `results/m2/clean_clone_ekant.json`. **PASS** (the M1 criterion moved to M2).
+- **FR-E17 CUDA vs CPU parity** (`scripts/parity_submit.sh`): 200 fixed prompts per model (Oct 28 BF16 seed-1
+  episodes replayed), greedy, ctx 40,960, cache off, same GGUF file; CUDA on P100, CPU on `cpuqs` (32 CPUs).
+  Prompt token IDs identical on both backends in 100% of prompts. Token-identical outputs / same call-or-reply
+  decision / same decoded calls / median first divergent token:
+
+  | Model | BF16 | Q4_0-pure |
+  |---|---|---|
+  | Qwen3-0.6B | 90.5% / 100% / 97.5% / 28 | 53.0% / 97.0% / 92.0% / 15 |
+  | Qwen3-1.7B | 92.0% / 100% / 99.5% / 39.5 | 66.5% / 98.5% / 93.0% / 22 |
+  | Qwen3-4B | _running_ (BF16 CUDA rerun on H100, job 109537, after a P100 out-of-memory) | _CPU running_ |
+
+  **No model reaches the 99% pooling rule: backend stays a factor in every RQ1 analysis (decision 7).**
+  The CUDA and CPU kernels round differently; 4-bit weights amplify it (outputs diverge about twice as often).
+  `results/m2/parity_qwen3-{0.6b,1.7b}.json`.
+- **NFR-5 throughput pilot** (`scripts/throughput_submit.sh`, Qwen3-0.6B Q4_0 BFCL, 24 episodes per job):
+  P100 x1: 182 episodes/h; P100 x4 requested: only 2 ran at once (the 2-node cap), 363 episodes/h, queue wait
+  ~65 min. A100 levels (4 and 8 jobs on two nodes) still queued. Short episodes (median 16 s) make episodes/h
+  optimistic for the main grid; the NFR-5 check (8 concurrent jobs) can only pass on A100 nodes.
+  `results/m2/throughput.json` (partial).
+- **LFM2.5-2.6B Q4_K_M perplexity ratio** rerun with 200 chunks (job 109483): 0.862 ± 0.003 (50 chunks: 0.871).
+  BF16 file SHA-256 equals the manifest. Mean KLD keeps the expected order (Q8_0 0.003 < Q4_K_M 0.166 <
+  Q4_0-pure 0.242; same top token 97.3% / 81.0% / 77.1%), so the low ratio is not noise or a wrong file:
+  Q4_K_M moves this model's predictions away from BF16 in a way that happens to lower WikiText perplexity.
+  Cite KLD, not the perplexity ratio, as the damage measure. `results/m2/kl_LFM2.5-2.6B_c200.json`.
 
 ## First results (2026-10-26, development data)
 - Onboarding step 2: llama.cpp d812350 built in job 96279 on g2 (P100 node) in 17 min, CPU build plus CUDA 12.6 for sm 60, 80 and 90.

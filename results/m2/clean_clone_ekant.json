@@ -1,0 +1,28 @@
+{
+  "host": "g2.hpc.coe",
+  "config": "dc08400d1b5b",
+  "limit": 10,
+  "commit": "893fd70",
+  "experiment_hash": "3e3a25e70f",
+  "specs_match": true,
+  "n_specs": 253,
+  "episodes": 10,
+  "steps": 60,
+  "unclassified_steps": 0,
+  "accuracy": 0.0,
+  "mean_steps": 6.0,
+  "reference": {
+    "accuracy": 0.0,
+    "mean_steps": 7.15,
+    "experiment_hash": "3e3a25e70f",
+    "commit": "05ec975"
+  },
+  "model_files": {
+    "q4_0": {
+      "sha256": "90d6e31f1034a14e",
+      "matches_pilot": true
+    }
+  },
+  "gpu": "Tesla P100-PCIE-12GB, 12288 MiB, 575.57.08",
+  "pass": true
+}
