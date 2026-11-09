@@ -110,6 +110,17 @@ def write_report(run_dir: str) -> str:
         n_ep_retry = int((eps["infra_retries"].fillna(0) > 0).sum()) if "infra_retries" in eps else 0
         L += [f"Infrastructure retries: {n_retry} failed attempts before {n_ep_retry} of {len(eps)} finished "
               "episodes (retries/<run_id>.jsonl has each error).", ""]
+    from .logger import MAX_INFRA_ATTEMPTS
+    finished = set(eps["run_id"]) if not eps.empty else set()
+    excluded = []
+    for p in sorted(glob.glob(os.path.join(run_dir, "retries", "*.jsonl"))):
+        rid = os.path.basename(p)[:-len(".jsonl")]
+        n = sum(1 for line in open(p) if line.strip())
+        if rid not in finished and n >= MAX_INFRA_ATTEMPTS:
+            excluded.append(rid)
+    if excluded:
+        L += [f"Excluded after {MAX_INFRA_ATTEMPTS} infrastructure failures ({len(excluded)}): "
+              + ", ".join(f"`{x}`" for x in excluded), ""]
 
     # 2. failure mix
     L += ["## 2. Failure-class mix per configuration (C6, per step)", ""]
