@@ -98,6 +98,8 @@ class GenerateResult:
     grammar_used: bool
     bad_call_blocks: int = 0          # blocks that parse as JSON but are not {"name", "arguments"} objects
     n_predict: int = 0                # token budget given to this request
+    prompt_sha256: str = ""           # SHA-256 of the rendered prompt text (FR-E17 parity)
+    prompt_tokens_sha256: str = ""    # SHA-256 of the prompt's token IDs as this server tokenized them
 
 
 @dataclass
@@ -132,6 +134,9 @@ class StepRow:
     failure_class: str = ""           # filled by C6
     schema_version: int = SCHEMA_VERSION
     benchmark: str = ""               # additive (Oct 25): "" = BFCL rows written before tau2 joined M1
+    prompt_sha256: str = ""           # additive (M2): "" = rows written before the FR-E17 parity work
+    prompt_tokens_sha256: str = ""    # additive (M2): hash of the prompt token IDs; equal on CPU and CUDA iff
+                                      # both backends saw the same tokens
 
     def to_dict(self) -> dict:
         return dataclasses.asdict(self)

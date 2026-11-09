@@ -218,7 +218,8 @@ def make_agent_class():
                 n_tool_call_blocks=g.tool_call_blocks,
                 decoded_calls=[json.dumps(c, sort_keys=True) for c in use_calls], execution_results=[],
                 known_tools=all(c["name"] in self.task.tool_names for c in use_calls), schema_errors=errs,
-                turn_has_ground_truth=False, is_last_step_of_turn=False, forced_quit=False, benchmark=BENCHMARK)
+                turn_has_ground_truth=False, is_last_step_of_turn=False, forced_quit=False, benchmark=BENCHMARK,
+                prompt_sha256=g.prompt_sha256, prompt_tokens_sha256=g.prompt_tokens_sha256)
             self.step_in_turn += 1
             if use_calls:
                 msg = AssistantMessage(role="assistant", content=None, tool_calls=[
