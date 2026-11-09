@@ -1,0 +1,41 @@
+{
+ "model": "qwen3-4b",
+ "rule": "pool backends only if output_identical >= 0.99 (FR-E17)",
+ "decoding": "greedy (temperature 0, top_k 1), cache_prompt false, ctx 40960, one slot",
+ "variants": {
+  "bf16": {
+   "n": 200,
+   "compared_on": "token_ids",
+   "prompt_tokens_identical": 1.0,
+   "output_identical": 0.96,
+   "first_divergence_median": 46.0,
+   "first_divergence_min": 24,
+   "tool_call_decision_agree": 1.0,
+   "decoded_calls_agree": 1.0,
+   "pool_backends": false,
+   "files": [
+    "Qwen3-4B-BF16.gguf"
+   ],
+   "server_build": [
+    "b1-d812350"
+   ]
+  },
+  "q4_0": {
+   "n": 200,
+   "compared_on": "token_ids",
+   "prompt_tokens_identical": 1.0,
+   "output_identical": 0.67,
+   "first_divergence_median": 21.0,
+   "first_divergence_min": 0,
+   "tool_call_decision_agree": 0.975,
+   "decoded_calls_agree": 0.95,
+   "pool_backends": false,
+   "files": [
+    "Qwen3-4B-Q4_0-pure.gguf"
+   ],
+   "server_build": [
+    "b1-d812350"
+   ]
+  }
+ }
+}

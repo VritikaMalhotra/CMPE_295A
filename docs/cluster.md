@@ -115,6 +115,22 @@ seeds + 1 greedy): one simulator (job 109565) for all three; agent arrays 109566
 109568 (`ref_qwen3_1p7b/c456da2aef`), 109570 (`ref_qwen3_4b/1c7b26d4e7`); reports 109567, 109569, 109571;
 simulator stop 109572. Inclusion sets afterwards with `python -m testbed.inclusion` (see each config).
 
+**What the first pass hit, and the rules now in the code (2026-11-09):**
+- *Telecom needs `mcp`*: telecom's simulated user has tools, and litellm then imports `mcp`, which tau2 does
+  not declare. Every telecom episode failed until it was installed; `setup_env.sh --tau2` now installs it.
+  Telecom was rerun (0.6B array 109651, 1.7B 109657).
+- *Simulated user out of context* (a 32,768-token slot): one episode ends, scored as a failure (reward 0),
+  `error_type = tau2:user_context_overflow`; the overflow is stored in the C4 cache, so a replay repeats it.
+  Before, it stopped every tau2 episode of that agent job. 1 episode so far (0.6B).
+- *Simulated user empty after every escalation step*: **excluded, not scored** (the fault is the simulator's,
+  not the agent's), and at once: the empty reply is cached, so a retry fails the same way. Recorded as a
+  `permanent` line in `retries/<run_id>.jsonl`; each report lists them. 7 of 7,515 episodes: 0.6B 3
+  (airline 8 s3, airline 42 s4, retail 29 s3), 1.7B 3 (airline 30 s1, airline 29 s3, retail 108 s3), 4B 1
+  (retail 20 s4).
+- *Config keys that look like numbers*: `only_config=2674909851e8` reached Hydra as the float 2.67e17, so the
+  4B airline seed-0 array task ran nothing (26 episodes). The array template now quotes the key; 4B rerun
+  with its own simulator (110093, agents 110094, report 110095).
+
 ## M2 results (2026-11-03, development data; JSON in `results/m2/`)
 - **Requeue probe** (job 101628): `JobRequeue=1`; USR1 arrived 60 s before the 2-minute limit, the job requeued
   itself and restarted with `SLURM_RESTART_COUNT=1`. PASS.
@@ -156,7 +172,8 @@ simulator stop 109572. Inclusion sets afterwards with `python -m testbed.inclusi
   10 skeleton episodes; experiment hash 3e3a25e70f and all 253 specs equal Yashashav's run, model SHA-256 matches
   the pilot, 0 unclassified steps. `results/m2/clean_clone_ekant.json`. **PASS** (the M1 criterion moved to M2).
 - **FR-E17 CUDA vs CPU parity** (`scripts/parity_submit.sh`): 200 fixed prompts per model (Oct 28 BF16 seed-1
-  episodes replayed), greedy, ctx 40,960, cache off, same GGUF file; CUDA on P100, CPU on `cpuqs` (32 CPUs).
+  episodes replayed), greedy, ctx 40,960, cache off, same GGUF file; CUDA on P100 (4B BF16 on H100: out of
+  memory on the P100), CPU on `cpuqs` (32 CPUs).
   Prompt token IDs identical on both backends in 100% of prompts. Token-identical outputs / same call-or-reply
   decision / same decoded calls / median first divergent token:
 
@@ -164,11 +181,11 @@ simulator stop 109572. Inclusion sets afterwards with `python -m testbed.inclusi
   |---|---|---|
   | Qwen3-0.6B | 90.5% / 100% / 97.5% / 28 | 53.0% / 97.0% / 92.0% / 15 |
   | Qwen3-1.7B | 92.0% / 100% / 99.5% / 39.5 | 66.5% / 98.5% / 93.0% / 22 |
-  | Qwen3-4B | _running_ (BF16 CUDA rerun on H100, job 109537, after a P100 out-of-memory) | _CPU running_ |
+  | Qwen3-4B | 96.0% / 100% / 100% / 46 | 67.0% / 97.5% / 95.0% / 21 |
 
   **No model reaches the 99% pooling rule: backend stays a factor in every RQ1 analysis (decision 7).**
   The CUDA and CPU kernels round differently; 4-bit weights amplify it (outputs diverge about twice as often).
-  `results/m2/parity_qwen3-{0.6b,1.7b}.json`.
+  `results/m2/parity_qwen3-{0.6b,1.7b,4b}.json`.
 - **NFR-5 throughput pilot** (`scripts/throughput_submit.sh`, Qwen3-0.6B BF16 BFCL, 24 episodes per job):
 
   | Level | Ran at once | Episodes/h | Median episode | Queue wait |

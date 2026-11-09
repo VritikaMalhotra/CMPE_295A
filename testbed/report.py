@@ -110,17 +110,21 @@ def write_report(run_dir: str) -> str:
         n_ep_retry = int((eps["infra_retries"].fillna(0) > 0).sum()) if "infra_retries" in eps else 0
         L += [f"Infrastructure retries: {n_retry} failed attempts before {n_ep_retry} of {len(eps)} finished "
               "episodes (retries/<run_id>.jsonl has each error).", ""]
-    from .logger import MAX_INFRA_ATTEMPTS
+    from .logger import MAX_INFRA_ATTEMPTS, retry_count
     finished = set(eps["run_id"]) if not eps.empty else set()
-    excluded = []
+    excluded, empty_user = [], []
     for p in sorted(glob.glob(os.path.join(run_dir, "retries", "*.jsonl"))):
         rid = os.path.basename(p)[:-len(".jsonl")]
-        n = sum(1 for line in open(p) if line.strip())
-        if rid not in finished and n >= MAX_INFRA_ATTEMPTS:
-            excluded.append(rid)
+        if rid in finished or retry_count(run_dir, rid) < MAX_INFRA_ATTEMPTS:
+            continue
+        rows = [json.loads(line) for line in open(p) if line.strip()]
+        (empty_user if rows and rows[-1].get("error") == "SimulatorEmptyReply" else excluded).append(rid)
     if excluded:
         L += [f"Excluded after {MAX_INFRA_ATTEMPTS} infrastructure failures ({len(excluded)}): "
               + ", ".join(f"`{x}`" for x in excluded), ""]
+    if empty_user:
+        L += [f"Excluded, simulated user returned an empty message after every escalation step "
+              f"({len(empty_user)}): " + ", ".join(f"`{x}`" for x in empty_user), ""]
 
     # 2. failure mix
     L += ["## 2. Failure-class mix per configuration (C6, per step)", ""]

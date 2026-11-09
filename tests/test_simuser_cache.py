@@ -135,3 +135,79 @@ def test_empty_reply_escalates_reasoning_and_stores_the_first_nonempty(tmp_path)
     finally:
         up.httpd.RequestHandlerClass.do_POST = orig
         up.close()
+
+
+def test_user_context_overflow_is_stored_not_an_outage(tmp_path):
+    """llama-server's 400 exceed_context_size: an episode outcome. Stored, so a replay reproduces it."""
+    calls = []
+
+    class H(BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def do_POST(self):
+            self.rfile.read(int(self.headers["Content-Length"]))
+            calls.append(1)
+            out = json.dumps({"error": {"code": 400, "type": "exceed_context_size_error",
+                                        "message": "request (32794 tokens) exceeds the available context size "
+                                                   "(32768 tokens)"}}).encode()
+            self.send_response(400)
+            self.send_header("Content-Length", str(len(out)))
+            self.end_headers()
+            self.wfile.write(out)
+
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        db = str(tmp_path / "c.sqlite")
+        c = SimUserCache(db, SIM, upstream=f"http://127.0.0.1:{srv.server_address[1]}")
+        status, body = c.complete(BODY)
+        assert status == 400 and "exceed_context_size" in json.dumps(body)
+        assert c.user_overflows == 1 and c.upstream_failures == 0
+        c.close()
+        rp = SimUserCache(db, SIM, mode="replay")
+        assert rp.complete(BODY) == (status, body) and rp.user_overflows == 1 and len(calls) == 1
+        rp.close()
+    finally:
+        srv.shutdown()
+        srv.server_close()
+
+
+def test_empty_after_escalation_is_counted_and_replays(tmp_path):
+    """gpt-oss empty at every reasoning effort: counted, stored, and a replay counts it again."""
+    calls = []
+
+    class H(BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def do_POST(self):
+            self.rfile.read(int(self.headers["Content-Length"]))
+            calls.append(1)
+            out = json.dumps({"choices": [{"index": 0, "message": {"role": "assistant", "content": ""}}]}).encode()
+            self.send_response(200)
+            self.send_header("Content-Length", str(len(out)))
+            self.end_headers()
+            self.wfile.write(out)
+
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        db = str(tmp_path / "c.sqlite")
+        c = SimUserCache(db, SIM, upstream=f"http://127.0.0.1:{srv.server_address[1]}")
+        assert c.complete(BODY)[0] == 200 and c.empty_replies == 1 and len(calls) == 3   # every escalation
+        c.close()
+        rp = SimUserCache(db, SIM, mode="replay")
+        assert rp.complete(BODY)[0] == 200 and rp.empty_replies == 1 and len(calls) == 3
+        rp.close()
+    finally:
+        srv.shutdown()
+        srv.server_close()
+
+
+def test_permanent_failure_excludes_at_once(tmp_path):
+    from testbed.logger import MAX_INFRA_ATTEMPTS, record_retry, retry_count
+    record_retry(str(tmp_path), "r1", ValueError("x"))
+    assert retry_count(str(tmp_path), "r1") == 1
+    record_retry(str(tmp_path), "r1", RuntimeError("empty"), permanent=True)
+    assert retry_count(str(tmp_path), "r1") == MAX_INFRA_ATTEMPTS
