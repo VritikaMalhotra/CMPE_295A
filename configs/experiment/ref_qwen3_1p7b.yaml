@@ -1,0 +1,30 @@
+# @package _global_
+# M2 Stage 1: BF16 reference for Qwen3-1.7B on CUDA (Workbook 2 Table 38, exit criterion 1).
+# BFCL multi-turn: the study's fixed-seed sample of 100 tasks per category (base, miss_func, miss_param).
+# 4 sampled trials (Qwen3 card, seeds 1-4) + 1 greedy pass (seed 0) per task. Settings follow the open
+# decisions' proposals (docs/m2_decisions.md 1 and 5: ctx 40,960 / 4,096 cap; 4 sampled + 1 greedy).
+# tau2 is added when the simulator host is decided (decision 4). Inclusion set afterwards:
+#   python -m testbed.inclusion --run-dir $TESTBED_OUT/ref_qwen3_1p7b/<hash> --out results/m2/inclusion_qwen3-1.7b.json
+experiment:
+  name: ref_qwen3_1p7b
+  model: qwen3-1.7b
+  benchmark: bfcl_multi_turn_base
+  task_sample: true
+  n_tasks: 100
+  thinking: false
+  max_steps_per_turn: 20
+  baselines:
+    - {variant: bf16, backend: cuda}
+    - {variant: bf16, backend: cuda, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}   # greedy pass
+  baseline_seeds: [1, 2, 3, 4]
+  repairs: []
+  repair_seeds: [1]
+  decoding: {temperature: 0.7, top_p: 0.8, top_k: 20, min_p: 0.0, n_predict: 4096, cache_prompt: false}
+  server: {ctx: 40960}
+  extra_benchmarks:
+    - {name: bfcl_multi_turn_miss_func}
+    - {name: bfcl_multi_turn_miss_param}
+models:
+  qwen3-1.7b:
+    hf_repo: Qwen/Qwen3-1.7B
+    files: {bf16: Qwen3-1.7B-BF16.gguf}

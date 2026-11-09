@@ -125,3 +125,19 @@ def test_import_from_copies_only_matching_finished_episodes(tmp_path, skeleton_e
     assert new.done_ids() == {specs[0].run_id, specs[1].run_id}
     assert new.import_from(old.dir) == 0                          # idempotent
     assert json.load(open(os.path.join(new.dir, "imports.json")))[0]["episodes"] == 2
+
+
+def test_baseline_decoding_and_seeds_override(skeleton_exp):
+    """A greedy pass next to sampled trials: its own decoding and seeds; other baselines keep their run_ids."""
+    ids = ["multi_turn_base_0", "multi_turn_base_1"]
+    before = {s.run_id for s in reg.expand(skeleton_exp, ids)}
+    exp = dict(skeleton_exp, baselines=list(skeleton_exp["baselines"]) + [
+        {"variant": "bf16", "backend": "cuda", "decoding": {"temperature": 0.0, "top_k": 1}, "seeds": [0]}])
+    specs = reg.expand(exp, ids)
+    greedy = [s for s in specs if s.seed == 0]
+    assert len(greedy) == 2 and all(s.decoding["temperature"] == 0.0 and s.decoding["top_k"] == 1
+                                    and s.decoding["n_predict"] == skeleton_exp["decoding"]["n_predict"]
+                                    for s in greedy)
+    assert before <= {s.run_id for s in specs}                    # nothing else changed
+    assert len({s.config_key for s in greedy}) == 1 and greedy[0].config_key not in {s.config_key for s in specs
+                                                                                       if s.seed != 0}
