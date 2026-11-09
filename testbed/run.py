@@ -23,7 +23,7 @@ import hydra
 from omegaconf import DictConfig, OmegaConf
 
 from . import registry as reg
-from .adapter import load_bfcl_multi_turn, skeleton_task_ids
+from .adapter import load_bfcl_multi_turn, sample_task_ids, skeleton_task_ids
 from .backends import Backend, LlamaServer, ServerConfig
 from .grammar import task_grammar, task_grammar_free
 from .logger import MAX_INFRA_ATTEMPTS, StepLogger, record_retry, retry_count, to_parquet
@@ -43,10 +43,18 @@ def _plan(cfg: DictConfig):
     exp = OmegaConf.to_container(cfg.experiment, resolve=True)
     model = OmegaConf.to_container(cfg.models[exp["model"]], resolve=True)
     category = exp["benchmark"].removeprefix("bfcl_")
-    task_ids = skeleton_task_ids(int(exp["n_tasks"]), category)
+    # task_sample: the study's fixed-seed sample (adapter.sample_task_ids); otherwise the first n in file order
+    pick = sample_task_ids if exp.get("task_sample") else skeleton_task_ids
+    task_ids = pick(category=category, n=int(exp["n_tasks"]))
     tasks = {exp["benchmark"]: task_ids}
     for extra in exp.get("extra_benchmarks", []) or []:
-        tasks[extra["name"]] = [str(t) for t in extra["task_ids"]]
+        if "task_ids" in extra:
+            tasks[extra["name"]] = [str(t) for t in extra["task_ids"]]
+        elif extra["name"].startswith("bfcl_"):              # another BFCL category, sampled like the main one
+            tasks[extra["name"]] = pick(category=extra["name"].removeprefix("bfcl_"),
+                                        n=int(extra.get("n_tasks", exp["n_tasks"])))
+        else:
+            raise ValueError(f"extra benchmark {extra['name']!r} needs task_ids")
     if exp.get("inclusion"):                            # Stage 1 inclusion set (testbed/inclusion.py)
         from .inclusion import filter_tasks
         tasks = filter_tasks(tasks, _abs(exp["inclusion"]))
@@ -148,14 +156,18 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
     if not pending:
         print("nothing pending")
         return
-    tasks = {(t.benchmark, t.id): t for t in load_bfcl_multi_turn(
-        category, ids=sorted({s.task_id for s in pending if s.benchmark.startswith("bfcl")}))}
-    tau2_ids = sorted({s.task_id for s in pending if s.benchmark.startswith("tau2")}, key=int)
-    if tau2_ids:
-        from .tau2_bench import load_tau2_tasks
-        t2 = next(s.server["tau2"] for s in pending if s.benchmark.startswith("tau2"))
-        tasks.update({(t.benchmark, t.id): t for t in load_tau2_tasks(tau2_ids, t2.get("split", "base"),
-                                                                       t2.get("write_tools"))})
+    tasks = {}
+    for bench in sorted({s.benchmark for s in pending}):   # each BFCL category / tau2 domain loads its own tasks
+        ids = sorted({s.task_id for s in pending if s.benchmark == bench})
+        if bench.startswith("bfcl_"):
+            tasks.update({(t.benchmark, t.id): t for t in load_bfcl_multi_turn(bench.removeprefix("bfcl_"), ids=ids)})
+        elif bench.startswith("tau2_verified_"):
+            from .tau2_bench import load_tau2_tasks
+            t2 = next(s.server["tau2"] for s in pending if s.benchmark == bench)
+            tasks.update({(t.benchmark, t.id): t for t in load_tau2_tasks(
+                ids, t2.get("split", "base"), t2.get("write_tools"), domain=bench.removeprefix("tau2_verified_"))})
+        else:
+            raise ValueError(f"unknown benchmark {bench!r}")
     sim: SimStack | None = None
     sim_down = False
     logs = os.path.join(r.dir, "server_logs")

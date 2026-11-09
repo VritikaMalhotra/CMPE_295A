@@ -262,7 +262,8 @@ def make_agent_class():
                 n_tool_call_blocks=g.tool_call_blocks,
                 decoded_calls=[json.dumps(c, sort_keys=True) for c in use_calls], execution_results=[],
                 known_tools=all(c["name"] in self.task.tool_names for c in use_calls), schema_errors=errs,
-                turn_has_ground_truth=False, is_last_step_of_turn=False, forced_quit=False, benchmark=BENCHMARK,
+                turn_has_ground_truth=False, is_last_step_of_turn=False, forced_quit=False,
+                benchmark=self.task.benchmark,
                 prompt_sha256=g.prompt_sha256, prompt_tokens_sha256=g.prompt_tokens_sha256)
             self.step_in_turn += 1
             if use_calls:
@@ -306,7 +307,7 @@ def run_tau2_episode(spec: RunSpec, task: Tau2Task, backend, grammar_for, log_st
     nl.DEFAULT_LLM_NL_ASSERTIONS = "openai/judge"
     nl.DEFAULT_LLM_NL_ASSERTIONS_ARGS = _litellm_args(api_base, sim.get("temperature", 0.0))
 
-    env = registry.get_env_constructor(DOMAIN)()
+    env = registry.get_env_constructor(task.domain)()
     try:
         user_tools = env.get_user_tools()
     except Exception:
@@ -317,7 +318,7 @@ def run_tau2_episode(spec: RunSpec, task: Tau2Task, backend, grammar_for, log_st
                   grammar=grammar, log_step=log_step)
     user = UserSimulator(tools=user_tools, instructions=str(task.raw.user_scenario), llm="openai/simuser",
                          llm_args=_litellm_args(api_base, sim.get("temperature", 0.0)))
-    orch = Orchestrator(domain=DOMAIN, agent=agent, user=user, environment=env, task=task.raw,
+    orch = Orchestrator(domain=task.domain, agent=agent, user=user, environment=env, task=task.raw,
                         max_steps=int(t2.get("max_steps", 200)), max_errors=int(t2.get("max_errors", 10)),
                         seed=spec.seed, solo_mode=False, validate_communication=False)
     fails0 = cache.upstream_failures if cache is not None else 0
@@ -341,7 +342,7 @@ def run_tau2_episode(spec: RunSpec, task: Tau2Task, backend, grammar_for, log_st
         raise SimulatorUnavailable("simulator failed during the episode")
     if sim_run is not None:
         info = evaluate_simulation(simulation=sim_run, task=task.raw, evaluation_type=EvaluationType.ALL,
-                                   solo_mode=False, domain=DOMAIN)
+                                   solo_mode=False, domain=task.domain)
         reward = float(info.reward)
         sim_run.reward_info = info
         error_type = "" if reward == 1.0 else f"tau2:{termination}:reward_{reward:g}"
