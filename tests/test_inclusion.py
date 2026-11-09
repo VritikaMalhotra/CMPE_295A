@@ -47,6 +47,17 @@ def test_incomplete_reference_refused(tmp_path):
     assert build(d, allow_incomplete=True)["benchmarks"][B]["incomplete"] == ["t1"]
 
 
+def test_excluded_trial_judged_on_the_rest(tmp_path):
+    from testbed.logger import record_retry
+    d = str(tmp_path)
+    _make(d, {"t1": [False, None, False, False], "t2": [None, True, False, False]})
+    record_retry(d, "t1-s1", RuntimeError("empty"), permanent=True)
+    record_retry(d, "t2-s0", RuntimeError("empty"), permanent=True)
+    r = build(d)
+    assert r["complete"] and r["benchmarks"][B]["excluded"] == ["t1"] and r["benchmarks"][B]["included"] == ["t2"]
+    assert [x["run_id"] for x in r["trials_excluded"]] == ["t1-s1", "t2-s0"]
+
+
 def test_filter_tasks(tmp_path):
     p = tmp_path / "inc.json"
     json.dump({"benchmarks": {B: {"included": ["t3", "t1"], "excluded": ["t2"], "incomplete": []}}}, open(p, "w"))

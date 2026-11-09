@@ -91,8 +91,11 @@ Decision 11 (Ekant 2026-11-08, advisor to confirm): the rules below apply to the
 - Dispersion: every mean shown with ± 1 SD over the 4 sampled trials and the 95% bootstrap interval for every
   effect; greedy runs show 95% Wilson intervals over tasks (SD = 0).
 - Power: ~330 failure events of one type per paired comparison for 80% power at a 1.5× ratio (α = 0.05/10), times
-  the design effect D. _[pending: recompute Table 27 from the Stage 1 references before filing]_ Rare failure
-  types are pooled or reported as exploratory.
+  the design effect D. Recomputed from the BF16 references (2026-11-09, `scripts/power_table.py`,
+  `results/m2/power_table.json`; table in `docs/cluster.md`): with 2,000 sampled episodes per configuration,
+  any failure, exec_error and tool_error_payload are detectable in every model even at the task-level D
+  (3-21); unknown_tool and missing_call only if D is near the episode-level value (1-6). Rare failure types
+  (invalid_args, malformed, forced_quit, truncated) are pooled or reported as exploratory.
 - Any analysis whose code hash differs from the registered one is labelled exploratory by C10.
 
 ## 7. What is frozen with the registration

@@ -1,0 +1,137 @@
+{
+ "criterion": "FR-E2: 100% verdict agreement with the official evaluators on >= 200 replayed trajectories",
+ "stand_ins": [
+  "anthropic",
+  "anthropic.types",
+  "cohere",
+  "datamodel_code_generator",
+  "datamodel_code_generator.model",
+  "datamodel_code_generator.parser",
+  "datamodel_code_generator.parser.jsonschema",
+  "google.genai",
+  "google.genai.types",
+  "mistralai",
+  "overrides",
+  "qwen_agent",
+  "qwen_agent.llm",
+  "tree_sitter",
+  "tree_sitter_java",
+  "tree_sitter_javascript",
+  "writerai"
+ ],
+ "models": {
+  "ref_qwen3_0p6b": {
+   "bfcl": {
+    "n": 1500,
+    "agree": 1500,
+    "disagree": [],
+    "by_benchmark": {
+     "bfcl_multi_turn_base": 500,
+     "bfcl_multi_turn_miss_func": 500,
+     "bfcl_multi_turn_miss_param": 500
+    },
+    "agree_by_benchmark": {
+     "bfcl_multi_turn_base": 500,
+     "bfcl_multi_turn_miss_func": 500,
+     "bfcl_multi_turn_miss_param": 500
+    },
+    "disagree_total": 0
+   },
+   "tau2": {
+    "n": 1001,
+    "agree": 1001,
+    "disagree": [],
+    "no_simulation": {
+     "tau2:user_context_overflow": 1
+    },
+    "by_benchmark": {
+     "tau2_verified_retail": 518,
+     "tau2_verified_airline": 128,
+     "tau2_verified_telecom": 355
+    },
+    "agree_by_benchmark": {
+     "tau2_verified_retail": 518,
+     "tau2_verified_airline": 128,
+     "tau2_verified_telecom": 355
+    },
+    "disagree_total": 0
+   }
+  },
+  "ref_qwen3_1p7b": {
+   "bfcl": {
+    "n": 1500,
+    "agree": 1500,
+    "disagree": [],
+    "by_benchmark": {
+     "bfcl_multi_turn_miss_func": 500,
+     "bfcl_multi_turn_miss_param": 500,
+     "bfcl_multi_turn_base": 500
+    },
+    "agree_by_benchmark": {
+     "bfcl_multi_turn_miss_func": 500,
+     "bfcl_multi_turn_miss_param": 500,
+     "bfcl_multi_turn_base": 500
+    },
+    "disagree_total": 0
+   },
+   "tau2": {
+    "n": 1001,
+    "agree": 1001,
+    "disagree": [],
+    "no_simulation": {
+     "tau2:context_overflow": 1
+    },
+    "by_benchmark": {
+     "tau2_verified_retail": 518,
+     "tau2_verified_telecom": 355,
+     "tau2_verified_airline": 128
+    },
+    "agree_by_benchmark": {
+     "tau2_verified_retail": 518,
+     "tau2_verified_telecom": 355,
+     "tau2_verified_airline": 128
+    },
+    "disagree_total": 0
+   }
+  },
+  "ref_qwen3_4b": {
+   "bfcl": {
+    "n": 1500,
+    "agree": 1500,
+    "disagree": [],
+    "by_benchmark": {
+     "bfcl_multi_turn_base": 500,
+     "bfcl_multi_turn_miss_func": 500,
+     "bfcl_multi_turn_miss_param": 500
+    },
+    "agree_by_benchmark": {
+     "bfcl_multi_turn_base": 500,
+     "bfcl_multi_turn_miss_func": 500,
+     "bfcl_multi_turn_miss_param": 500
+    },
+    "disagree_total": 0
+   },
+   "tau2": {
+    "n": 1004,
+    "agree": 1004,
+    "disagree": [],
+    "no_simulation": {},
+    "by_benchmark": {
+     "tau2_verified_retail": 519,
+     "tau2_verified_telecom": 355,
+     "tau2_verified_airline": 130
+    },
+    "agree_by_benchmark": {
+     "tau2_verified_retail": 519,
+     "tau2_verified_telecom": 355,
+     "tau2_verified_airline": 130
+    },
+    "disagree_total": 0
+   }
+  }
+ },
+ "n": 7506,
+ "agree": 7506,
+ "agreement": 1.0,
+ "pass": true
+}

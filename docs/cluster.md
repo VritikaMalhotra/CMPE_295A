@@ -207,6 +207,55 @@ simulator stop 109572. Inclusion sets afterwards with `python -m testbed.inclusi
   Q4_K_M moves this model's predictions away from BF16 in a way that happens to lower WikiText perplexity.
   Cite KLD, not the perplexity ratio, as the damage measure. `results/m2/kl_LFM2.5-2.6B_c200.json`.
 
+## M2 results (2026-11-09): BF16 references (development data; JSON in `results/m2/`)
+
+Runs `ref_qwen3_0p6b/cd314594fb`, `ref_qwen3_1p7b/c456da2aef`, `ref_qwen3_4b/1c7b26d4e7` (2,505 specs each:
+501 tasks = BFCL 3 x 100 + tau2 airline 26 / retail 104 / telecom 71, 4 sampled seeds at T 0.7 + 1 greedy).
+Finished: 2,502 / 2,502 / 2,504; the rest are the excluded empty-simulated-user episodes (above).
+
+- **Episode success, sampled trials** (greedy in brackets where it differs by more than 1 point):
+
+  | Model | BFCL base | miss_func | miss_param | tau2 airline | retail | telecom |
+  |---|---|---|---|---|---|---|
+  | Qwen3-0.6B | 4.5% (6.0) | 2.0% | 1.2% | 0% | 1.9% | 0% |
+  | Qwen3-1.7B | 6.2% | 2.2% | 8.5% | 0% | 3.6% (1.9) | 0% |
+  | Qwen3-4B | 12.2% | 9.5% | 11.0% | 3.8% (0) | 8.2% (10.6) | 1.1% |
+
+- **FR-E2 evaluator agreement: PASS, 7,506 / 7,506 verdicts (100%)** (`scripts/evaluator_agreement.py`, CPU job
+  110190, `results/m2/evaluator_agreement.json`). Every finished episode of the three references, re-scored
+  from its logged trajectory: BFCL (4,500) through bfcl-eval's own path for a local Qwen3 FC model (the
+  handler's response parsing and `decode_execute`, `eval_runner._evaluate_single_multi_turn_entry`, prompts
+  and ground truth from bfcl's own loaders); tau2 (3,006) through tau2's `evaluate_simulation` on the saved
+  simulations. 2 tau2 episodes have no simulation to re-score (one agent and one simulated-user context
+  overflow, scored without the evaluator). bfcl's eval_runner imports API clients that are not installed;
+  the script replaces them with inert stand-ins (listed in the JSON), which multi-turn scoring never calls.
+- **Inclusion sets** (`python -m testbed.inclusion`, `results/m2/inclusion_qwen3-{0.6b,1.7b,4b}.json`): tasks
+  the reference solves in at least one of 4 sampled trials (a trial excluded by the infrastructure rule does
+  not count; the task is judged on the rest). Multi-turn tasks included: **0.6B 17, 1.7B 33, 4B 73 of 501**,
+  all under the registered 120, as decision 11 expected. So, per decision 11: the step-level tests keep all
+  501 tasks; these sets apply only to the episode-success analysis.
+- **Power, Table 27 recomputed** (`scripts/power_table.py`, `results/m2/power_table.json`): measured base rate
+  per step, steps per episode (0.6B 9.1, 1.7B 11.2, 4B 11.8) and design effect D, for the registered test
+  (4-bit share of events 0.5 vs 0.6, alpha 0.05/10, 80% power: **330 events at D = 1**, as Workbook 2 says).
+  D by task (the clusters a paired comparison shares) is 3-21; D by episode 1-6. Pairing within a task removes
+  much of the task-level variance, so the true D lies between. Episodes needed against the 2,000 sampled
+  episodes a configuration gets (4 x 501):
+
+  | Failure type (rate/step 0.6B / 1.7B / 4B) | Episodes needed, D task | D episode | Verdict at 2,000 |
+  |---|---|---|---|
+  | any failure (30% / 27% / 23%) | 212 / 214 / 250 | 106 / 92 / 99 | detectable, all models |
+  | exec_error (7.2% / 10.4% / 6.6%) | 1,336 / 1,220 / 1,820 | 553 / 419 / 667 | detectable |
+  | tool_error_payload (9.4% / 8.0% / 6.2%) | 1,347 / 1,673 / 1,584 | 458 / 488 / 437 | detectable |
+  | unknown_tool (7.0% / 5.5% / 8.5%) | 3,156 / 2,933 / 2,719 | 1,107 / 1,114 / 746 | only if D is near the episode value |
+  | missing_call (1.0% / 1.4% / 0.9%) | 5,109 / 3,126 / 5,600 | 2,149 / 1,088 / 1,819 | borderline |
+  | missing_call_direct_answer (2.9% / 0.5% / 0.6%) | 2,439 / 6,999 / 5,428 | 850 / 2,712 / 2,025 | 0.6B only, at low D |
+  | invalid_args (2.7% / 0.9% / 0.2%) | 4,040 / 12,406 / 24,845 | 2,569 / 5,043 / 8,922 | no |
+  | malformed, forced_quit, truncated (< 0.3%) | > 13,000 | > 13,000 | no: pooled or exploratory |
+
+  So the confirmatory step-level tests are powered for any failure, exec_error and tool_error_payload;
+  unknown_tool and missing_call depend on D (estimate it from the Stage 1 pairs); the rest are pooled or
+  exploratory, as registered.
+
 ## First results (2026-10-26, development data)
 - Onboarding step 2: llama.cpp d812350 built in job 96279 on g2 (P100 node) in 17 min, CPU build plus CUDA 12.6 for sm 60, 80 and 90.
 - The rebuilt GGUF files (job 96280) are byte-identical to the Oct 8 Colab pilot: SHA-256 of BF16, Q4_K_M and
