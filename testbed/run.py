@@ -26,7 +26,7 @@ from . import registry as reg
 from .adapter import load_bfcl_multi_turn, skeleton_task_ids
 from .backends import Backend, LlamaServer, ServerConfig
 from .grammar import task_grammar, task_grammar_free
-from .logger import StepLogger, to_parquet
+from .logger import StepLogger, record_retry, retry_count, to_parquet
 from .profiler import GpuMeter
 from .runner import run_episode
 from .spec import RunSpec
@@ -206,6 +206,7 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
                         else:
                             ep = run_episode(s, tasks[(s.benchmark, s.task_id)], be, gfn, log)
                     ep.energy_j, ep.peak_gpu_mib = m.energy_j, m.peak_mib
+                    ep.infra_retries = retry_count(r.dir, s.run_id)
                     log.finish(ep)
                     if is_tau2:
                         sim.sync()
@@ -223,6 +224,7 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
                         sim_down = True
                         break
                     log.abort()
+                    record_retry(r.dir, s.run_id, e)
                     print(f"  {s.task_id} seed={s.seed} FAILED (will retry on next run)\n"
                           + traceback.format_exc(limit=3), flush=True)
         finally:
