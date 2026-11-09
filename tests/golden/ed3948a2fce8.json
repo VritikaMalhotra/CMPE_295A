@@ -1,0 +1,1 @@
+{"run_id": "ed3948a2fce8", "config_key": "046e14240c11", "task_id": "multi_turn_base_116", "seed": 1, "variant": "bf16", "backend": "cuda", "repair": "none", "constraint": "none", "valid": true, "error_type": "", "n_turns": 6, "n_steps": 12, "forced_quit": false, "wall_s": 9.219371557235718, "context_overflow": false, "energy_j": 2289.848, "peak_gpu_mib": 14577.4375}
