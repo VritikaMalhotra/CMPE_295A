@@ -96,10 +96,24 @@ bash scripts/get_simuser_model.sh $TESTBED_MODELS          # login node, once: 1
 .venv/bin/python -c "import tau2"                        # setup_env.sh --tau2 installs it (login node)
 bash scripts/tau2_submit.sh ref_qwen3_0p6b                 # simulator, agent array (after it starts), report, stop
 ```
+Several experiments with the same simulator settings share one simulator:
+`bash scripts/tau2_submit.sh ref_qwen3_0p6b ref_qwen3_1p7b ref_qwen3_4b`.
 QoS: the simulator holds one of the 2 GPU nodes a user may use, so agent tasks default to A100s
-(`AGENT_GRES`): 3 next to the simulator plus 4 on a second node. Not run end to end yet: the first run must
-show that an agent job on another node reaches the simulator's port (compute nodes have no outside access,
-but node-to-node traffic is expected to work).
+(`AGENT_GRES`): 3 next to the simulator plus 4 on a second node. The simulator's walltime is 2 d 1 h
+(`gpuqs` maximum); if it ends first, the agent jobs leave their tau2 episodes pending and a resubmission
+finishes them.
+
+**Smoke run, 2026-11-08** (`configs/experiment/tau2_smoke.yaml`, 1 BFCL + 2 airline tasks, Qwen3-0.6B BF16
+greedy): simulator job 109543 on cs003, agent array 109544 on cs004, so **an agent on another node reaches the
+simulator**. 11 simulator requests (9 user, 2 judge), all cache misses forwarded upstream; both tau2 episodes
+finished (reward 0, as expected for 0.6B); the endpoint file was removed when the stop job cancelled the
+simulator. **Replay** (job 109563, A100): both episodes 0 misses (7 and 4 hits), same reward and step count.
+PASS.
+
+**BF16 references launched 2026-11-08** (2505 specs each: BFCL 3 x 100 tasks + 201 tau2 write tasks, 4 sampled
+seeds + 1 greedy): one simulator (job 109565) for all three; agent arrays 109566 (`ref_qwen3_0p6b/cd314594fb`),
+109568 (`ref_qwen3_1p7b/c456da2aef`), 109570 (`ref_qwen3_4b/1c7b26d4e7`); reports 109567, 109569, 109571;
+simulator stop 109572. Inclusion sets afterwards with `python -m testbed.inclusion` (see each config).
 
 ## M2 results (2026-11-03, development data; JSON in `results/m2/`)
 - **Requeue probe** (job 101628): `JobRequeue=1`; USR1 arrived 60 s before the 2-minute limit, the job requeued
