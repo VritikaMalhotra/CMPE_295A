@@ -49,9 +49,10 @@ Workbook 2 (Ch. 3 Hypotheses, Ch. 7 Statistical Analysis Plan); deviations from 
 - Unit of analysis: the task. Trials are averaged within a task before paired tests; the greedy pass is
   analysed separately (flip rates, backend agreement).
 - Primary outcome (decision 2, Ekant 2026-11-08, advisor to confirm): failures per agent step, by C6 failure class (codebook v0,
-  `docs/codebook_v0.md`, commit _[hash]_). Episode success is secondary.
+  `docs/codebook_v0.md`, with `tool_error_payload` and `missing_call_direct_answer` (decisions 3a/3b), commit _[hash]_). Episode success is secondary.
 - Step type: the kind of output a step produces: tool call, text reply to the user, or end of conversation.
-- Depth: the step's index within the episode, in bins _[pending decision 8: 0–1, 2–3, 4–6, 7+]_.
+- Depth: the step's index within the episode, in bins 0–1, 2–3, 4–6, 7+ (decision 8, Ekant 2026-11-08, advisor
+  to confirm; `testbed/mixed_effects.py` `DEPTH_BINS`).
 - Costs (RQ4): weight memory, TTFT, decode tokens/s, extra tokens, NVML energy (CUDA); exclusive-node protocol.
 
 ## 5. Inclusion and exclusion (fixed in advance)

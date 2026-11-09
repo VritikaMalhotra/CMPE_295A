@@ -31,3 +31,15 @@ def test_model_a_switches_to_negative_binomial_above_threshold():
     assert m["status"] == "ok" and m["family"] == "negative_binomial" and m["nb_theta"] > 0
     q4 = next(r for r in m["fixed"] if r["term"] == "configurationq4_0")
     assert q4["ci_low"] <= truth["A"]["configurationq4_0"] <= q4["ci_high"]
+
+
+def test_registered_depth_bins():
+    """Decision 8: bins of the step index within the episode, 0-1 / 2-3 / 4-6 / 7+."""
+    import pandas as pd
+    from testbed.mixed_effects import depth_bin, with_depth_bins
+    assert [depth_bin(i) for i in (0, 1, 2, 3, 4, 6, 7, 30)] == ["d0-1", "d0-1", "d2-3", "d2-3", "d4-6", "d4-6",
+                                                                 "d7+", "d7+"]
+    s = pd.DataFrame({"run_id": ["a"] * 5 + ["b"] * 2, "turn": [1, 0, 0, 1, 2, 0, 0], "step": [0, 1, 0, 1, 0, 0, 1]})
+    got = with_depth_bins(s)
+    assert got[got.run_id == "a"].turn_depth.tolist() == ["d0-1", "d0-1", "d2-3", "d2-3", "d4-6"]   # (turn, step) order
+    assert got[got.run_id == "b"].turn_depth.tolist() == ["d0-1", "d0-1"]

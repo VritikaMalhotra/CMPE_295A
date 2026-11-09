@@ -27,7 +27,8 @@
 #   episode    = run_id;  task = task_id
 
 SCRIPT_VERSION <- "1.0.0"
-FAILURES <- c("truncated", "malformed", "unknown_tool", "invalid_args", "exec_error", "forced_quit", "missing_call")
+FAILURES <- c("truncated", "malformed", "unknown_tool", "invalid_args", "exec_error", "forced_quit", "missing_call",
+              "tool_error_payload", "missing_call_direct_answer")   # = testbed/classifier.py FAILURES
 CALL_CLASSES <- c("malformed", "unknown_tool", "invalid_args", "exec_error", "ok_call")
 
 suppressPackageStartupMessages(library(lme4))

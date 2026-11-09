@@ -18,8 +18,8 @@ docs/codebook_v0.md; keep the two in step.
     reply          tau2 only: a text message to the simulated user (tau2 has no per-turn ground truth,
                    so a text reply is neither a missing call nor a refusal; episode reward judges it)
 
-Proposed classes (codebook v0, pending the advisor's decision; only with ``classify_step(row, proposed=True)``,
-so v0 labels do not change until the decision; frozen logs can be relabelled later without rerunning):
+Classes added by decisions 3a/3b (Ekant 2026-11-08; advisor to confirm), on by default; ``classify_step(row,
+proposed=False)`` gives the earlier labels (frozen logs can be relabelled without rerunning):
 
     tool_error_payload          checked after exec_error: schema-valid call(s) that executed, but a result is a
                                 JSON object with a non-empty "error" key (the tool reported an error without
@@ -41,10 +41,12 @@ if TYPE_CHECKING:
     from .adapter import Task
     from .spec import StepRow
 
+# tool_error_payload and missing_call_direct_answer: decisions 3a/3b (Ekant 2026-11-08; advisor to confirm)
+PROPOSED_CLASSES = ["tool_error_payload", "missing_call_direct_answer"]
 CLASSES = ["truncated", "malformed", "forced_quit", "unknown_tool", "invalid_args", "exec_error",
-           "ok_call", "missing_call", "abstain_ok", "end_turn", "reply"]
-PROPOSED_CLASSES = ["tool_error_payload", "missing_call_direct_answer"]   # pending advisor decision
-ALL_CLASSES = CLASSES + PROPOSED_CLASSES
+           "tool_error_payload", "ok_call", "missing_call", "missing_call_direct_answer", "abstain_ok",
+           "end_turn", "reply"]
+ALL_CLASSES = CLASSES
 FAILURES = {"truncated", "malformed", "unknown_tool", "invalid_args", "exec_error", "forced_quit", "missing_call",
             "tool_error_payload", "missing_call_direct_answer"}
 
@@ -104,8 +106,9 @@ def answers_directly(raw_text: str) -> bool:
     return bool(text) and "?" not in text and not _ANNOUNCE.search(text)
 
 
-def classify_step(row: "StepRow", proposed: bool = False) -> str:
-    """One class per step. ``proposed=True`` also applies the two proposed classes (PROPOSED_CLASSES)."""
+def classify_step(row: "StepRow", proposed: bool = True) -> str:
+    """One class per step (codebook v0). ``proposed=False`` gives the labels from before decisions 3a/3b
+    (without tool_error_payload and missing_call_direct_answer), e.g. to compare with older logs."""
     n_parsed = len(row.decoded_calls)
     if row.stop_reason == "limit":
         return "truncated"
