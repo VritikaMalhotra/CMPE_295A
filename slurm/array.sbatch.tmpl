@@ -32,6 +32,6 @@ requeue() {{
   exit 0
 }}
 trap requeue USR1
-python -m testbed.run +experiment={experiment} local=true only_config="$KEY" &
+python -m testbed.run +experiment={experiment} local=true only_config="'$KEY'" &
 PID=$!
 wait "$PID"

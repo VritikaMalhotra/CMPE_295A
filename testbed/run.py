@@ -271,6 +271,11 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
                     log.abort()
                     raise
                 except Exception as e:
+                    if type(e).__name__ == "SimulatorEmptyReply":
+                        log.abort()
+                        record_retry(r.dir, s.run_id, e, permanent=True)
+                        print(f"  {s.task_id} seed={s.seed}: excluded, {e}", flush=True)
+                        continue
                     if type(e).__name__ == "SimulatorUnavailable":
                         log.abort()
                         print(f"  {s.task_id} seed={s.seed}: simulated user unavailable ({e}); "

@@ -47,15 +47,17 @@ class StepLogger:
 MAX_INFRA_ATTEMPTS = 4
 
 
-def record_retry(run_dir: str, run_id: str, error: BaseException) -> None:
+def record_retry(run_dir: str, run_id: str, error: BaseException, permanent: bool = False) -> None:
     """An attempt failed for an infrastructure reason (crash, server error); the episode stays pending.
-    One JSON line per attempt in retries/<run_id>.jsonl, so exclusions can be reported (design spec 6.3)."""
+    One JSON line per attempt in retries/<run_id>.jsonl, so exclusions can be reported (design spec 6.3).
+    ``permanent``: retrying would fail the same way (e.g. a cached empty simulated-user reply), so the episode
+    is excluded now."""
     import platform
     import time
     os.makedirs(os.path.join(run_dir, "retries"), exist_ok=True)
     with open(os.path.join(run_dir, "retries", f"{run_id}.jsonl"), "a") as f:
         f.write(json.dumps({"time": time.time(), "host": platform.node(), "error": type(error).__name__,
-                            "message": str(error)[:300]}) + "\n")
+                            "message": str(error)[:300], **({"permanent": True} if permanent else {})}) + "\n")
 
 
 def retry_count(run_dir: str, run_id: str) -> int:
@@ -63,7 +65,8 @@ def retry_count(run_dir: str, run_id: str) -> int:
     if not os.path.exists(p):
         return 0
     with open(p) as f:
-        return sum(1 for line in f if line.strip())
+        rows = [json.loads(line) for line in f if line.strip()]
+    return MAX_INFRA_ATTEMPTS if any(r.get("permanent") for r in rows) else len(rows)
 
 
 def to_parquet(run_dir: str) -> tuple[str, str]:
