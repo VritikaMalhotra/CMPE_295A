@@ -47,6 +47,10 @@ def _plan(cfg: DictConfig):
     tasks = {exp["benchmark"]: task_ids}
     for extra in exp.get("extra_benchmarks", []) or []:
         tasks[extra["name"]] = [str(t) for t in extra["task_ids"]]
+    if exp.get("inclusion"):                            # Stage 1 inclusion set (testbed/inclusion.py)
+        from .inclusion import filter_tasks
+        tasks = filter_tasks(tasks, _abs(exp["inclusion"]))
+        task_ids = tasks[exp["benchmark"]]
     specs = reg.expand_all(exp, tasks)
     model_files = {v: os.path.join(_abs(cfg.paths.models_dir), f) for v, f in model["files"].items()
                    if any(s.variant == v for s in specs)}
