@@ -145,26 +145,33 @@ class Backend:
         if r.status_code == 400 and "context" in r.text:
             raise ContextOverflow(r.text[:200])
         r.raise_for_status()
-        j = r.json()
-        raw = j.get("content", "")
-        _, cleaned = qwen_format.split_think(raw)
-        calls, n_blocks = qwen_format.extract_tool_calls(cleaned)
-        good = [c for c in calls if isinstance(c, dict) and "name" in c and "arguments" in c]
-        timings = j.get("timings") or {}
-        return GenerateResult(
-            text=cleaned,
-            raw_text=raw,
-            tool_calls=[ToolCall(c["name"], c["arguments"]) for c in good],
-            tool_call_blocks=n_blocks,
-            prompt_tokens=int(j.get("tokens_evaluated", timings.get("prompt_n", n_prompt)) or n_prompt),
-            completion_tokens=int(j.get("tokens_predicted", timings.get("predicted_n", 0)) or 0),
-            ttft_ms=timings.get("prompt_ms"),
-            decode_ms=timings.get("predicted_ms"),
-            latency_ms=latency_ms,
-            stop_reason=str(j.get("stop_type") or ("limit" if j.get("stopped_limit") else "eos")),
-            grammar_used=bool(constraint),
-            bad_call_blocks=len(calls) - len(good),
-            n_predict=budget,
-            prompt_sha256=sha256_text(prompt),
-            prompt_tokens_sha256=sha256_text(canonical_json(token_ids)),
-        )
+        res = parse_completion(r.json(), n_prompt=n_prompt, budget=budget, constraint=constraint,
+                               latency_ms=latency_ms)
+        res.prompt_sha256 = sha256_text(prompt)
+        res.prompt_tokens_sha256 = sha256_text(canonical_json(token_ids))
+        return res
+
+
+def parse_completion(j: dict, n_prompt: int, budget: int, constraint: Optional[str],
+                     latency_ms: float) -> GenerateResult:
+    """llama-server's /completion JSON -> GenerateResult (also used by replay tests with recorded text)."""
+    raw = j.get("content", "")
+    _, cleaned = qwen_format.split_think(raw)
+    calls, n_blocks = qwen_format.extract_tool_calls(cleaned)
+    good = [c for c in calls if isinstance(c, dict) and "name" in c and "arguments" in c]
+    timings = j.get("timings") or {}
+    return GenerateResult(
+        text=cleaned,
+        raw_text=raw,
+        tool_calls=[ToolCall(c["name"], c["arguments"]) for c in good],
+        tool_call_blocks=n_blocks,
+        prompt_tokens=int(j.get("tokens_evaluated", timings.get("prompt_n", n_prompt)) or n_prompt),
+        completion_tokens=int(j.get("tokens_predicted", timings.get("predicted_n", 0)) or 0),
+        ttft_ms=timings.get("prompt_ms"),
+        decode_ms=timings.get("predicted_ms"),
+        latency_ms=latency_ms,
+        stop_reason=str(j.get("stop_type") or ("limit" if j.get("stopped_limit") else "eos")),
+        grammar_used=bool(constraint),
+        bad_call_blocks=len(calls) - len(good),
+        n_predict=budget,
+    )
