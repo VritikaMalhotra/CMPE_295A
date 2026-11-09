@@ -2,7 +2,8 @@
 
 A task is excluded from a model's confirmatory tests when the 16-bit reference fails it in every sampled
 trial (it shows missing capability, not quantization damage). The greedy pass does not count: only
-configurations with temperature > 0. A task whose sampled trials are not all finished is "incomplete" and
+configurations with temperature > 0. A trial excluded by the infrastructure rule (``retries/``) does not
+count; the task is judged on its other trials (none left = incomplete). A task whose sampled trials are not all finished is "incomplete" and
 is neither included nor excluded, so the set is written only when the reference is complete (unless
 ``allow_incomplete``). A model with fewer than 120 included multi-turn tasks moves to single-turn-only
 confirmatory analysis; the file records that flag.
@@ -37,11 +38,16 @@ def build(run_dir: str, variant: str = "bf16", backend: str | None = None, allow
     planned: dict = defaultdict(list)
     for s in sampled:
         planned[(s["benchmark"], s["task_id"])].append(s["run_id"])
+    from .logger import MAX_INFRA_ATTEMPTS, retry_count
     out: dict = {}
+    dropped = []                    # trials excluded by the infrastructure rule: the task is judged on the rest
     for (bench, task), rids in sorted(planned.items()):
         b = out.setdefault(bench, {"included": [], "excluded": [], "incomplete": []})
+        gone = [r for r in rids if r not in eps and retry_count(run_dir, r) >= MAX_INFRA_ATTEMPTS]
+        dropped += [{"benchmark": bench, "task_id": task, "run_id": r} for r in gone]
+        rids = [r for r in rids if r not in gone]
         done = [eps[r] for r in rids if r in eps]
-        if len(done) < len(rids):
+        if not rids or len(done) < len(rids):
             b["incomplete"].append(task)
         elif any(e["valid"] for e in done):
             b["included"].append(task)
@@ -58,6 +64,7 @@ def build(run_dir: str, variant: str = "bf16", backend: str | None = None, allow
         manifest = {k: m.get(k) for k in ("experiment", "experiment_hash", "testbed_git")}
     return {"rule": RULE, "reference": {"run_dir": run_dir, "variant": variant, "backend": backend, **manifest},
             "trials_per_task": max(len(r) for r in planned.values()),
+            "trials_excluded": dropped,
             "benchmarks": out,
             "n_included": {k: len(b["included"]) for k, b in out.items()},
             "n_excluded": {k: len(b["excluded"]) for k, b in out.items()},

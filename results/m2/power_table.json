@@ -1,0 +1,366 @@
+{
+ "test": "binomial share of 4-bit events, 0.5 vs 0.6; two-sided alpha 0.05/10; power 0.8",
+ "events_needed_D1": 329.7,
+ "models": {
+  "ref_qwen3_0p6b": {
+   "run_dir": "/scratch/cmpe295-bertin/runs/ref_qwen3_0p6b/cd314594fb",
+   "sampled_episodes": 2001,
+   "tasks": 501,
+   "steps_per_episode": 9.09,
+   "rows": [
+    {
+     "failure_type": "exec_error",
+     "events_fp": 1300,
+     "rate_per_step": 0.0715,
+     "events_per_pair": 1.624,
+     "D_task": 6.58,
+     "D_episode": 2.72,
+     "episodes_needed": 1336,
+     "detectable_at_n_eps": true,
+     "episodes_needed_D_episode": 553,
+     "detectable_D_episode": true
+    },
+    {
+     "failure_type": "forced_quit",
+     "events_fp": 7,
+     "rate_per_step": 0.0004,
+     "events_per_pair": 0.009,
+     "D_task": 1.26,
+     "D_episode": 0.99,
+     "episodes_needed": 47537,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 37213,
+     "detectable_D_episode": false
+    },
+    {
+     "failure_type": "invalid_args",
+     "events_fp": 487,
+     "rate_per_step": 0.0268,
+     "events_per_pair": 0.608,
+     "D_task": 7.45,
+     "D_episode": 4.74,
+     "episodes_needed": 4040,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 2569,
+     "detectable_D_episode": false
+    },
+    {
+     "failure_type": "malformed",
+     "events_fp": 53,
+     "rate_per_step": 0.0029,
+     "events_per_pair": 0.066,
+     "D_task": 2.76,
+     "D_episode": 1.08,
+     "episodes_needed": 13736,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 5384,
+     "detectable_D_episode": false
+    },
+    {
+     "failure_type": "missing_call",
+     "events_fp": 186,
+     "rate_per_step": 0.0102,
+     "events_per_pair": 0.232,
+     "D_task": 3.6,
+     "D_episode": 1.51,
+     "episodes_needed": 5109,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 2149,
+     "detectable_D_episode": false
+    },
+    {
+     "failure_type": "missing_call_direct_answer",
+     "events_fp": 522,
+     "rate_per_step": 0.0287,
+     "events_per_pair": 0.652,
+     "D_task": 4.82,
+     "D_episode": 1.68,
+     "episodes_needed": 2439,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 850,
+     "detectable_D_episode": true
+    },
+    {
+     "failure_type": "tool_error_payload",
+     "events_fp": 1710,
+     "rate_per_step": 0.094,
+     "events_per_pair": 2.136,
+     "D_task": 8.73,
+     "D_episode": 2.96,
+     "episodes_needed": 1347,
+     "detectable_at_n_eps": true,
+     "episodes_needed_D_episode": 458,
+     "detectable_D_episode": true
+    },
+    {
+     "failure_type": "unknown_tool",
+     "events_fp": 1269,
+     "rate_per_step": 0.0698,
+     "events_per_pair": 1.585,
+     "D_task": 15.18,
+     "D_episode": 5.32,
+     "episodes_needed": 3156,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 1107,
+     "detectable_D_episode": true
+    },
+    {
+     "failure_type": "any_failure",
+     "events_fp": 5534,
+     "rate_per_step": 0.3044,
+     "events_per_pair": 6.914,
+     "D_task": 4.44,
+     "D_episode": 2.22,
+     "episodes_needed": 212,
+     "detectable_at_n_eps": true,
+     "episodes_needed_D_episode": 106,
+     "detectable_D_episode": true
+    }
+   ]
+  },
+  "ref_qwen3_1p7b": {
+   "run_dir": "/scratch/cmpe295-bertin/runs/ref_qwen3_1p7b/c456da2aef",
+   "sampled_episodes": 2001,
+   "tasks": 501,
+   "steps_per_episode": 11.23,
+   "rows": [
+    {
+     "failure_type": "exec_error",
+     "events_fp": 2345,
+     "rate_per_step": 0.1044,
+     "events_per_pair": 2.93,
+     "D_task": 10.84,
+     "D_episode": 3.72,
+     "episodes_needed": 1220,
+     "detectable_at_n_eps": true,
+     "episodes_needed_D_episode": 419,
+     "detectable_D_episode": true
+    },
+    {
+     "failure_type": "forced_quit",
+     "events_fp": 5,
+     "rate_per_step": 0.0002,
+     "events_per_pair": 0.006,
+     "D_task": 1.78,
+     "D_episode": 0.99,
+     "episodes_needed": 93997,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 52430,
+     "detectable_D_episode": false
+    },
+    {
+     "failure_type": "invalid_args",
+     "events_fp": 204,
+     "rate_per_step": 0.0091,
+     "events_per_pair": 0.255,
+     "D_task": 9.59,
+     "D_episode": 3.9,
+     "episodes_needed": 12406,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 5043,
+     "detectable_D_episode": false
+    },
+    {
+     "failure_type": "malformed",
+     "events_fp": 30,
+     "rate_per_step": 0.0013,
+     "events_per_pair": 0.037,
+     "D_task": 3.98,
+     "D_episode": 1.2,
+     "episodes_needed": 34986,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 10531,
+     "detectable_D_episode": false
+    },
+    {
+     "failure_type": "missing_call",
+     "events_fp": 305,
+     "rate_per_step": 0.0136,
+     "events_per_pair": 0.381,
+     "D_task": 3.61,
+     "D_episode": 1.26,
+     "episodes_needed": 3126,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 1088,
+     "detectable_D_episode": true
+    },
+    {
+     "failure_type": "missing_call_direct_answer",
+     "events_fp": 118,
+     "rate_per_step": 0.0053,
+     "events_per_pair": 0.147,
+     "D_task": 3.13,
+     "D_episode": 1.21,
+     "episodes_needed": 6999,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 2712,
+     "detectable_D_episode": false
+    },
+    {
+     "failure_type": "tool_error_payload",
+     "events_fp": 1806,
+     "rate_per_step": 0.0804,
+     "events_per_pair": 2.256,
+     "D_task": 11.45,
+     "D_episode": 3.34,
+     "episodes_needed": 1673,
+     "detectable_at_n_eps": true,
+     "episodes_needed_D_episode": 488,
+     "detectable_D_episode": true
+    },
+    {
+     "failure_type": "unknown_tool",
+     "events_fp": 1243,
+     "rate_per_step": 0.0553,
+     "events_per_pair": 1.553,
+     "D_task": 13.81,
+     "D_episode": 5.24,
+     "episodes_needed": 2933,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 1114,
+     "detectable_D_episode": true
+    },
+    {
+     "failure_type": "any_failure",
+     "events_fp": 6056,
+     "rate_per_step": 0.2695,
+     "events_per_pair": 7.566,
+     "D_task": 4.91,
+     "D_episode": 2.1,
+     "episodes_needed": 214,
+     "detectable_at_n_eps": true,
+     "episodes_needed_D_episode": 92,
+     "detectable_D_episode": true
+    }
+   ]
+  },
+  "ref_qwen3_4b": {
+   "run_dir": "/scratch/cmpe295-bertin/runs/ref_qwen3_4b/1c7b26d4e7",
+   "sampled_episodes": 2003,
+   "tasks": 501,
+   "steps_per_episode": 11.82,
+   "rows": [
+    {
+     "failure_type": "exec_error",
+     "events_fp": 1559,
+     "rate_per_step": 0.0658,
+     "events_per_pair": 1.946,
+     "D_task": 10.74,
+     "D_episode": 3.94,
+     "episodes_needed": 1820,
+     "detectable_at_n_eps": true,
+     "episodes_needed_D_episode": 667,
+     "detectable_D_episode": true
+    },
+    {
+     "failure_type": "forced_quit",
+     "events_fp": 10,
+     "rate_per_step": 0.0004,
+     "events_per_pair": 0.012,
+     "D_task": 2.96,
+     "D_episode": 0.99,
+     "episodes_needed": 78306,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 26125,
+     "detectable_D_episode": false
+    },
+    {
+     "failure_type": "invalid_args",
+     "events_fp": 45,
+     "rate_per_step": 0.0019,
+     "events_per_pair": 0.056,
+     "D_task": 4.23,
+     "D_episode": 1.52,
+     "episodes_needed": 24845,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 8922,
+     "detectable_D_episode": false
+    },
+    {
+     "failure_type": "malformed",
+     "events_fp": 19,
+     "rate_per_step": 0.0008,
+     "events_per_pair": 0.024,
+     "D_task": 2.99,
+     "D_episode": 1.1,
+     "episodes_needed": 41521,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 15332,
+     "detectable_D_episode": false
+    },
+    {
+     "failure_type": "missing_call",
+     "events_fp": 212,
+     "rate_per_step": 0.009,
+     "events_per_pair": 0.265,
+     "D_task": 4.49,
+     "D_episode": 1.46,
+     "episodes_needed": 5600,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 1819,
+     "detectable_D_episode": true
+    },
+    {
+     "failure_type": "missing_call_direct_answer",
+     "events_fp": 136,
+     "rate_per_step": 0.0057,
+     "events_per_pair": 0.17,
+     "D_task": 2.79,
+     "D_episode": 1.04,
+     "episodes_needed": 5428,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 2025,
+     "detectable_D_episode": false
+    },
+    {
+     "failure_type": "tool_error_payload",
+     "events_fp": 1457,
+     "rate_per_step": 0.0615,
+     "events_per_pair": 1.819,
+     "D_task": 8.74,
+     "D_episode": 2.41,
+     "episodes_needed": 1584,
+     "detectable_at_n_eps": true,
+     "episodes_needed_D_episode": 437,
+     "detectable_D_episode": true
+    },
+    {
+     "failure_type": "truncated",
+     "events_fp": 2,
+     "rate_per_step": 0.0001,
+     "events_per_pair": 0.002,
+     "D_task": 0.99,
+     "D_episode": 1.0,
+     "episodes_needed": 131406,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 131975,
+     "detectable_D_episode": false
+    },
+    {
+     "failure_type": "unknown_tool",
+     "events_fp": 2021,
+     "rate_per_step": 0.0853,
+     "events_per_pair": 2.522,
+     "D_task": 20.8,
+     "D_episode": 5.7,
+     "episodes_needed": 2719,
+     "detectable_at_n_eps": false,
+     "episodes_needed_D_episode": 746,
+     "detectable_D_episode": true
+    },
+    {
+     "failure_type": "any_failure",
+     "events_fp": 5461,
+     "rate_per_step": 0.2306,
+     "events_per_pair": 6.816,
+     "D_task": 5.17,
+     "D_episode": 2.04,
+     "episodes_needed": 250,
+     "detectable_at_n_eps": true,
+     "episodes_needed_D_episode": 99,
+     "detectable_D_episode": true
+    }
+   ]
+  }
+ }
+}
