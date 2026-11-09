@@ -55,7 +55,10 @@ if [ $WANT_TAU2 = 1 ]; then
   git -C "$T" checkout -q "$TAU2_COMMIT"
   # editable, so the task data under data/ is found without TAU2_DATA_DIR (README)
   uv pip install -q --python "$PY" -e "$T"
+  # telecom's simulated user has tools; litellm then imports mcp, which tau2 does not declare
+  uv pip install -q --python "$PY" mcp
   LITELLM_LOCAL_MODEL_COST_MAP=True python -c "from tau2.run import load_tasks; t = load_tasks('airline', 'base'); print('tau2 ok:', len(t), 'airline base tasks')"
+  python -c "import mcp; print('mcp ok')"
 fi
 fi   # BUILD_ONLY = 0
 

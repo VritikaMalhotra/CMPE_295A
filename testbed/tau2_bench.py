@@ -48,6 +48,11 @@ class SimulatorUnavailable(RuntimeError):
     """The simulated user could not be reached (or the C4 budget stopped it): retry, never score."""
 
 
+class SimulatorEmptyReply(RuntimeError):
+    """The simulated user stayed empty after every escalation step. Deterministic (the empty reply is cached),
+    so retrying cannot help: the episode is excluded at once and listed (decision of Nov 9, 2026)."""
+
+
 class AgentEmptyReply(RuntimeError):
     """The model produced neither text nor a tool call."""
 
@@ -322,6 +327,8 @@ def run_tau2_episode(spec: RunSpec, task: Tau2Task, backend, grammar_for, log_st
                         max_steps=int(t2.get("max_steps", 200)), max_errors=int(t2.get("max_errors", 10)),
                         seed=spec.seed, solo_mode=False, validate_communication=False)
     fails0 = cache.upstream_failures if cache is not None else 0
+    over0 = cache.user_overflows if cache is not None else 0
+    empty0 = cache.empty_replies if cache is not None else 0
     t0 = time.time()
     termination, error_type, reward, sim_run, nl_info = "", "", 0.0, None, None
     try:
@@ -333,14 +340,23 @@ def run_tau2_episode(spec: RunSpec, task: Tau2Task, backend, grammar_for, log_st
     except AgentEmptyReply:
         termination, error_type = "agent_error", "tau2:empty_agent_reply"
     except Exception as e:
-        if cache is not None and cache.upstream_failures > fails0:
+        if cache is not None and cache.empty_replies > empty0 and cache.upstream_failures == fails0:
+            raise SimulatorEmptyReply(f"simulated user returned an empty message ({type(e).__name__}: "
+                                      f"{str(e)[:120]})") from e
+        if cache is not None and cache.user_overflows > over0 and cache.upstream_failures == fails0:
+            # the simulated user's context ran out: scored as a failed episode (reward 0), flagged apart
+            termination, error_type = "user_context_overflow", "tau2:user_context_overflow"
+        elif cache is not None and cache.upstream_failures > fails0:
             raise SimulatorUnavailable(str(e)) from e
-        if "simulator" in str(e).lower() or "ServiceUnavailable" in type(e).__name__:
+        elif "simulator" in str(e).lower() or "ServiceUnavailable" in type(e).__name__:
             raise SimulatorUnavailable(str(e)) from e
-        raise
+        else:
+            raise
     if cache is not None and cache.upstream_failures > fails0:
         raise SimulatorUnavailable("simulator failed during the episode")
-    if sim_run is not None:
+    if cache is not None and cache.user_overflows > over0:   # also when tau2 caught the error itself
+        termination, error_type = "user_context_overflow", "tau2:user_context_overflow"
+    if sim_run is not None and termination != "user_context_overflow":
         info = evaluate_simulation(simulation=sim_run, task=task.raw, evaluation_type=EvaluationType.ALL,
                                    solo_mode=False, domain=task.domain)
         reward = float(info.reward)
