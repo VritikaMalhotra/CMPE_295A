@@ -1,0 +1,68 @@
+{
+ "levels": [
+  {
+   "level": "p100_n1",
+   "n": 1,
+   "array": "109478",
+   "tasks_ran": 1,
+   "max_concurrent": 1,
+   "queue_wait_min_median": 54.0,
+   "queue_wait_min_max": 54.0,
+   "span_h": 0.13166666666666665,
+   "episodes": 24,
+   "episodes_per_hour": 182.27848101265823,
+   "episode_wall_s_median": 15.519786834716797,
+   "states": [
+    "COMPLETED"
+   ],
+   "nodes": [
+    "g2"
+   ]
+  },
+  {
+   "level": "p100_n4",
+   "n": 4,
+   "array": "109479",
+   "tasks_ran": 4,
+   "max_concurrent": 2,
+   "queue_wait_min_median": 65.40833333333333,
+   "queue_wait_min_max": 69.91666666666667,
+   "span_h": 0.2619444444444444,
+   "episodes": 95,
+   "episodes_per_hour": 362.6723223753977,
+   "episode_wall_s_median": 16.50890302658081,
+   "states": [
+    "COMPLETED"
+   ],
+   "nodes": [
+    "g2",
+    "g4"
+   ]
+  },
+  {
+   "level": "a100_n4",
+   "n": 4,
+   "array": "109480",
+   "tasks_ran": 0,
+   "episodes": 0
+  },
+  {
+   "level": "a100_n8",
+   "n": 8,
+   "array": "109481",
+   "tasks_ran": 0,
+   "episodes": 0
+  }
+ ],
+ "config": "Qwen3-0.6B BF16, one GPU per job, BFCL multi-turn base, sampled decoding",
+ "per_user_limit": "QoS gpu3nodes: 2 nodes per user on every GPU partition (P100 nodes 1 GPU, A100 nodes 4)",
+ "max_concurrent_observed": 2,
+ "best_episodes_per_hour": 362.6723223753977,
+ "meets_nfr5": false,
+ "reduction_ladder_applies": true,
+ "targets": {
+  "concurrent": 8,
+  "episodes_per_hour": 120,
+  "ladder_below": 4
+ }
+}
