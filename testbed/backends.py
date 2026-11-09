@@ -17,7 +17,7 @@ from typing import Optional
 import requests
 
 from . import qwen_format
-from .spec import GenerateResult, ToolCall
+from .spec import GenerateResult, ToolCall, canonical_json, sha256_text
 
 
 def _free_port() -> int:
@@ -104,11 +104,14 @@ class Backend:
         self.timeout_s = timeout_s
         self.ctx = server.cfg.ctx
 
-    def count_tokens(self, prompt: str) -> int:
+    def tokenize(self, prompt: str) -> list[int]:
         r = requests.post(self.server.base + "/tokenize", json={"content": prompt, "add_special": False},
                           timeout=self.timeout_s)
         r.raise_for_status()
-        return len(r.json()["tokens"])
+        return list(r.json()["tokens"])
+
+    def count_tokens(self, prompt: str) -> int:
+        return len(self.tokenize(prompt))
 
     def generate(self, messages: list[dict], tools: list[dict], constraint: Optional[str] = None,
                  seed: int = 0) -> GenerateResult:
@@ -118,7 +121,8 @@ class Backend:
         (bfcl: 4096). A prompt that leaves no budget raises ContextOverflow.
         """
         prompt = qwen_format.format_prompt(messages, tools, thinking=self.thinking)
-        n_prompt = self.count_tokens(prompt)
+        token_ids = self.tokenize(prompt)
+        n_prompt = len(token_ids)
         budget = min(int(self.decoding.get("n_predict", 4096)), self.ctx - n_prompt - 2)
         if budget <= 0:
             raise ContextOverflow(f"prompt {n_prompt} tokens, context {self.ctx}")
@@ -161,4 +165,6 @@ class Backend:
             grammar_used=bool(constraint),
             bad_call_blocks=len(calls) - len(good),
             n_predict=budget,
+            prompt_sha256=sha256_text(prompt),
+            prompt_tokens_sha256=sha256_text(canonical_json(token_ids)),
         )
