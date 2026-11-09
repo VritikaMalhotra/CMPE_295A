@@ -105,6 +105,12 @@ def _cmd(args: list[str]) -> str:
         return f"unavailable: {type(e).__name__}"
 
 
+def _task_order(t: str):
+    """BFCL ids first, then by trailing number; ids without one (tau2 telecom) after, by name."""
+    n = t.rsplit("_", 1)[-1]
+    return (not t.startswith("multi_turn"), not n.isdigit(), int(n) if n.isdigit() else 0, t)
+
+
 def build_manifest(specs: list[RunSpec], model_files: dict[str, str], binaries: dict[str, str],
                    expected_sha: dict | None = None, hash_files: bool = True) -> dict:
     try:
@@ -137,8 +143,7 @@ def build_manifest(specs: list[RunSpec], model_files: dict[str, str], binaries: 
         "experiment_hash": experiment_hash(specs),
         "n_specs": len(specs),
         "configs": configs,
-        "task_ids": sorted({s.task_id for s in specs}, key=lambda t: (not t.startswith("multi_turn"),
-                                                                       int(t.rsplit("_", 1)[-1]))),
+        "task_ids": sorted({s.task_id for s in specs}, key=_task_order),
         "benchmarks": sorted({s.benchmark for s in specs}),
         "decoding": specs[0].decoding if specs else {},
         "server": specs[0].server if specs else {},

@@ -141,3 +141,10 @@ def test_baseline_decoding_and_seeds_override(skeleton_exp):
     assert before <= {s.run_id for s in specs}                    # nothing else changed
     assert len({s.config_key for s in greedy}) == 1 and greedy[0].config_key not in {s.config_key for s in specs
                                                                                        if s.seed != 0}
+
+
+def test_manifest_task_order_takes_any_id():
+    from testbed.registry import _task_order
+    ids = ["[mobile_data_issue]data_mode_off|data_usage_exceeded[PERSONA:None]", "10", "multi_turn_base_10",
+           "multi_turn_base_2", "7"]
+    assert sorted(ids, key=_task_order) == ["multi_turn_base_2", "multi_turn_base_10", "7", "10", ids[0]]
