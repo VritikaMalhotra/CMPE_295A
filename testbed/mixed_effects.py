@@ -51,14 +51,40 @@ def _load(t) -> pd.DataFrame:
     return pd.read_parquet(t) if str(t).endswith(".parquet") else pd.read_csv(t)
 
 
+# Registered depth bins (decision 8, Ekant 2026-11-08; advisor to confirm): the step's index within the episode,
+# 0-1, 2-3, 4-6, 7+ (about equal quarters of the Oct 28 BF16 steps for all three Qwen3 sizes).
+DEPTH_BINS = ((0, "d0-1"), (2, "d2-3"), (4, "d4-6"), (7, "d7+"))
+
+
+def depth_bin(episode_step: int) -> str:
+    label = DEPTH_BINS[0][1]
+    for lo, name in DEPTH_BINS:
+        if episode_step >= lo:
+            label = name
+    return label
+
+
+def with_depth_bins(steps: pd.DataFrame) -> pd.DataFrame:
+    """Adds ``turn_depth`` = the registered bin of each step's index within its episode (C5 rows are per
+    episode in (turn, step) order; the analysis column keeps the R script's name)."""
+    s = steps.sort_values(["run_id", "turn", "step"]).copy()
+    s["turn_depth"] = s.groupby("run_id").cumcount().map(depth_bin)
+    return s
+
+
 def run_mixed_effects(steps, episodes, out: str | None = None, configuration: str = "variant",
                       ref: str | None = None, filters: dict | None = None, depth_breaks=(0, 1, 2, 4),
-                      dispersion_threshold: float = 1.5, models: str = "A,B,C", timeout: int = 3600) -> dict:
-    """steps/episodes: DataFrames or paths to steps.parquet / episodes.parquet (or CSV). Returns the JSON."""
+                      dispersion_threshold: float = 1.5, models: str = "A,B,C", timeout: int = 3600,
+                      depth: str = "episode_step") -> dict:
+    """steps/episodes: DataFrames or paths to steps.parquet / episodes.parquet (or CSV). Returns the JSON.
+    ``depth="episode_step"`` (registered) bins each step's index within the episode (``DEPTH_BINS``);
+    ``depth="turn"`` lets the R script bin the turn index at ``depth_breaks`` instead."""
     exe = rscript()
     if not exe:
         raise RuntimeError("Rscript not found (cluster: module load gnu14 R/4.4.1)")
     s, e = _load(steps), _load(episodes)
+    if depth == "episode_step" and "turn_depth" not in s:
+        s = with_depth_bins(s)
     with tempfile.TemporaryDirectory() as d:
         sp, ep = os.path.join(d, "steps.csv"), os.path.join(d, "episodes.csv")
         s[[c for c in STEP_COLS if c in s]].to_csv(sp, index=False)
@@ -150,11 +176,11 @@ def planted_effect_check(seed: int = 0, **sim) -> dict:
     """Fit the planted dataset and a no-effect dataset; every planted term must be covered and significant,
     and no null term may be significant."""
     s, e, truth = simulate(seed=seed, **sim)
-    res = run_mixed_effects(s, e)
+    res = run_mixed_effects(s, e, depth="turn")       # the simulation plants its effect by turn
     terms = _check(res, truth)
     s0, e0, truth0 = simulate(seed=seed + 1, beta_4bit=0.0, beta_4bit_text=0.0, beta_4bit_deep=0.0,
                               log_or_success=0.0, **{k: v for k, v in sim.items() if k in ("n_tasks", "n_seeds")})
-    res0 = run_mixed_effects(s0, e0)
+    res0 = run_mixed_effects(s0, e0, depth="turn")
     null = _check(res0, truth0)
     return {
         "terms": terms, "null_terms": null,

@@ -2,8 +2,8 @@
 
 Status: **v0, for registration at M2.** It describes `testbed/classifier.py` (C6 rules v0) as the code
 stands; the classes below are the classes that code assigns. Two further classes are written down as
-**proposed, pending advisor decision** (decision 3 of the M2 plan). They are in the code but switched off
-(`classify_step(row, proposed=True)` turns them on), so no v0 label changes until the advisor decides.
+**added by decisions 3a and 3b** (Ekant, 2026-11-08; advisor to confirm). They are on by default;
+`classify_step(row, proposed=False)` gives the labels from before the decision, to compare with older logs.
 v1 is frozen at M3 with the κ report (Workbook FR-E8, Table 23).
 
 ## Unit and inputs
@@ -60,12 +60,12 @@ BFCL examples use GorillaFileSystem (multi_turn_base); the τ² example uses air
 10. `missing_call`: turn "Move final_report.pdf into temp", step 0, the model answers "Done, the file is in temp."
 11. `end_turn`: after `mv(...)` executed, the model writes "I moved the file." and stops.
 
-## Proposed classes (proposed, pending advisor decision)
+## Classes added by decisions 3a/3b
 
-Both are off by default. With `proposed=True` they are checked at the positions shown; nothing else moves.
+Both are on by default and checked at the positions shown; nothing else moves.
 
 ### `tool_error_payload`: the tool returned an error without raising
-**Status: proposed, pending advisor decision.**
+**Status: in v0 (decision 3b, Ekant 2026-11-08; advisor to confirm).**
 - **Why:** many BFCL tool methods do not raise; they *return* an error object, e.g. GorillaFileSystem's
   `{"error": "cd: temp: No such directory"}` (about 200 such returns in bfcl's function source). v0 counts these
   steps as `ok_call`, so failed actions look like successes in the damage map.
@@ -77,7 +77,7 @@ Both are off by default. With `proposed=True` they are checked at the positions 
   as one "tool rejected the call" group?
 
 ### `missing_call_direct_answer`: missing call with a direct answer
-**Status: proposed, pending advisor decision.**
+**Status: in v0 (decision 3a, Ekant 2026-11-08; advisor to confirm).**
 - **Why:** in the Oct 8 pilot, Q4_0 `--pure` lost 13 points on BFCL simple_python, mostly by not calling the tool.
   Of the 58 no-call outputs hand-labelled, 49 answered the question directly (26 with wrong or invented facts),
   5 asked the user for details, 3 said they would call the tool but did not, 1 was an unparseable call
@@ -100,3 +100,5 @@ The κ check (Workbook Ch. 7: two raters, 300 stratified steps, κ ≥ 0.80) app
 ## Change log
 - v0 (2026-11-08): written from `testbed/classifier.py` as implemented (11 classes); two proposed classes added
   behind `proposed=True`.
+- v0 (2026-11-08, later): decisions 3a/3b add `tool_error_payload` and `missing_call_direct_answer` to v0, on
+  by default; both count as failures (also in `analysis/mixed_effects.R`).
