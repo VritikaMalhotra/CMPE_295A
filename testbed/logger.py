@@ -42,6 +42,11 @@ class StepLogger:
             os.remove(self._tmp)
 
 
+# Registered exclusion rule (Workbook Ch. 7): an infrastructure failure is retried up to three times with the
+# same seed; an episode that fails all four attempts is excluded and listed.
+MAX_INFRA_ATTEMPTS = 4
+
+
 def record_retry(run_dir: str, run_id: str, error: BaseException) -> None:
     """An attempt failed for an infrastructure reason (crash, server error); the episode stays pending.
     One JSON line per attempt in retries/<run_id>.jsonl, so exclusions can be reported (design spec 6.3)."""
