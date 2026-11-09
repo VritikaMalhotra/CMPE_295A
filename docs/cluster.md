@@ -169,11 +169,21 @@ simulator stop 109572. Inclusion sets afterwards with `python -m testbed.inclusi
   **No model reaches the 99% pooling rule: backend stays a factor in every RQ1 analysis (decision 7).**
   The CUDA and CPU kernels round differently; 4-bit weights amplify it (outputs diverge about twice as often).
   `results/m2/parity_qwen3-{0.6b,1.7b}.json`.
-- **NFR-5 throughput pilot** (`scripts/throughput_submit.sh`, Qwen3-0.6B Q4_0 BFCL, 24 episodes per job):
-  P100 x1: 182 episodes/h; P100 x4 requested: only 2 ran at once (the 2-node cap), 363 episodes/h, queue wait
-  ~65 min. A100 levels (4 and 8 jobs on two nodes) still queued. Short episodes (median 16 s) make episodes/h
-  optimistic for the main grid; the NFR-5 check (8 concurrent jobs) can only pass on A100 nodes.
-  `results/m2/throughput.json` (partial).
+- **NFR-5 throughput pilot** (`scripts/throughput_submit.sh`, Qwen3-0.6B BF16 BFCL, 24 episodes per job):
+
+  | Level | Ran at once | Episodes/h | Median episode | Queue wait |
+  |---|---|---|---|---|
+  | P100 x1 | 1 | 182 | 15.5 s | 54 min |
+  | P100 x4 | 2 | 363 | 16.5 s | 65 min |
+  | A100 x4 | 2 | 1,578 | 2.4 s | 167 min |
+  | A100 x8 | 2 | 1,178 | 2.3 s | 175 min |
+
+  **NFR-5 (≥ 8 concurrent jobs) is not met: QoS `gpu3nodes` allows 2 nodes per user, and the A100 nodes are
+  shared, so free GPUs on our two nodes decide concurrency** (the A100 jobs lasted ~1 min, so they barely
+  overlapped; in the BF16 reference runs 3 agent tasks plus the simulator ran at once on cs003/cs004).
+  Episodes/h passes ≥ 120 easily: an A100 runs a 0.6B BFCL episode in ~2 s, 7 x faster than a P100. For the
+  main grid, plan on 3–7 concurrent A100 jobs, or ask the administrator for a higher node limit.
+  `results/m2/throughput.json`.
 - **LFM2.5-2.6B Q4_K_M perplexity ratio** rerun with 200 chunks (job 109483): 0.862 ± 0.003 (50 chunks: 0.871).
   BF16 file SHA-256 equals the manifest. Mean KLD keeps the expected order (Q8_0 0.003 < Q4_K_M 0.166 <
   Q4_0-pure 0.242; same top token 97.3% / 81.0% / 77.1%), so the low ratio is not noise or a wrong file:
