@@ -1,0 +1,15 @@
+{
+ "n": 13,
+ "calib_in": "/scratch/cmpe295-bertin/data/eval/wikitext-2-raw/wiki.train.raw",
+ "calib_in_sha256": "6707892fa3788b5ab9ed78ab5ff37d9fe825f6011a2ad4fcd6a6d467f0e7da57",
+ "bench_text": "/scratch/cmpe295-bertin/data/calib/benchmark_text.txt",
+ "bench_text_sha256": "b6fc5ced835c673f5ed3c2e6c99a66130a2396e127c799c2041a506df878b641",
+ "lines_in": 36719,
+ "lines_dropped": 0,
+ "dropped_line_indices": [],
+ "calib_out": "/scratch/cmpe295-bertin/data/calib/calib.txt",
+ "calib_out_sha256": "6707892fa3788b5ab9ed78ab5ff37d9fe825f6011a2ad4fcd6a6d467f0e7da57",
+ "tokens_out": 1753826,
+ "n_overlapping_after": 0,
+ "pass": true
+}
