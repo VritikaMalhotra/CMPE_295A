@@ -133,7 +133,8 @@ class StepRow:
     forced_quit: bool
     failure_class: str = ""           # filled by C6
     schema_version: int = SCHEMA_VERSION
-    benchmark: str = ""               # additive (Oct 25): "" = BFCL rows written before tau2 joined M1
+    benchmark: str = ""               # additive (Oct 25); BFCL rows fill it from Nov 8 (several BFCL categories);
+                                      # "" = a BFCL multi_turn_base row written before then
     prompt_sha256: str = ""           # additive (M2): "" = rows written before the FR-E17 parity work
     prompt_tokens_sha256: str = ""    # additive (M2): hash of the prompt token IDs; equal on CPU and CUDA iff
                                       # both backends saw the same tokens
