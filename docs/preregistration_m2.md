@@ -37,7 +37,8 @@ Workbook 2 (Ch. 3 Hypotheses, Ch. 7 Statistical Analysis Plan); deviations from 
 - Runtime: llama.cpp `d812350` (v0.6.0), raw `/completion` endpoint, one slot, prompt cache off, CUDA (P100) and
   CPU backends on the same GGUF files.
 - Benchmarks: BFCL v4 multi-turn (base, missing-function, missing-parameter; 100 tasks each, fixed-seed sample)
-  and τ²-bench-verified _[pending decision 6: write-tasks only]_. Scoring with the official, unmodified checkers.
+  and τ²-bench-verified, tasks whose gold agent actions write to the database (201 of 278; decision 6,
+  Ekant 2026-11-08, advisor to confirm). Scoring with the official, unmodified checkers.
 - Decoding (decision 5, Ekant 2026-11-08, advisor to confirm): 4 sampled trials (T 0.7, top_p 0.8, top_k 20, min_p 0) with fixed seeds plus
   1 greedy pass per task and configuration. Context (decision 1, same status): 40,960 tokens, ≤ 4,096 new tokens per
   step (budget `min(4096, ctx − prompt − 2)`, as bfcl-eval's local handler).
