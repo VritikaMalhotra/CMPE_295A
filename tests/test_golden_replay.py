@@ -64,6 +64,8 @@ def test_golden_episode_replay(run_id):
 
     assert not backend.rows, "recorded steps left over"
     keys = sorted(want_rows[0])                                   # fields that existed when recorded
+    for w in want_rows:                                           # BFCL rows logged benchmark "" until Nov 8
+        w["benchmark"] = w.get("benchmark") or spec.benchmark
     assert len(got_rows) == len(want_rows)
     for i, (g, w) in enumerate(zip(got_rows, want_rows)):
         assert json.dumps(_strip(g, keys), sort_keys=True) == json.dumps(_strip(w, keys), sort_keys=True), \
