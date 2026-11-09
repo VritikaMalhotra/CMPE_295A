@@ -26,7 +26,7 @@ from . import registry as reg
 from .adapter import load_bfcl_multi_turn, skeleton_task_ids
 from .backends import Backend, LlamaServer, ServerConfig
 from .grammar import task_grammar, task_grammar_free
-from .logger import StepLogger, record_retry, retry_count, to_parquet
+from .logger import MAX_INFRA_ATTEMPTS, StepLogger, record_retry, retry_count, to_parquet
 from .profiler import GpuMeter
 from .runner import run_episode
 from .spec import RunSpec
@@ -200,6 +200,10 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
             be = Backend(srv, s0.decoding, thinking=s0.thinking)
             for s in group:
                 if os.path.exists(os.path.join(r.dir, "episodes", f"{s.run_id}.json")):
+                    continue
+                if retry_count(r.dir, s.run_id) >= MAX_INFRA_ATTEMPTS:
+                    print(f"  {s.task_id} seed={s.seed}: excluded after {MAX_INFRA_ATTEMPTS} infrastructure "
+                          f"failures (retries/{s.run_id}.jsonl)", flush=True)
                     continue
                 log = StepLogger(r.dir, s.run_id)
                 try:
