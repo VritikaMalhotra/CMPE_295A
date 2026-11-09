@@ -35,10 +35,12 @@ class ServerConfig:
     threads: Optional[int] = None  # CPU threads; None = llama.cpp default
     seed: int = 0
     extra_args: tuple = ()
+    host: str = "127.0.0.1"        # 0.0.0.0 only for the shared simulated-user job (other nodes connect)
+    parallel: int = 1              # slots; ctx is split evenly between them
 
     def argv(self, port: int) -> list[str]:
-        a = [self.binary, "-m", self.model_path, "-c", str(self.ctx), "-np", "1",
-             "--host", "127.0.0.1", "--port", str(port), "--seed", str(self.seed), "--no-webui"]
+        a = [self.binary, "-m", self.model_path, "-c", str(self.ctx), "-np", str(self.parallel),
+             "--host", self.host, "--port", str(port), "--seed", str(self.seed), "--no-webui"]
         a += ["-ngl", "99"] if self.backend == "cuda" else ["-ngl", "0"]
         if self.threads:
             a += ["-t", str(self.threads)]
