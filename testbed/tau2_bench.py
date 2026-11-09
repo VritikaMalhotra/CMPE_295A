@@ -37,6 +37,11 @@ from .spec import EpisodeResult, RunSpec, StepRow
 
 DOMAIN = "airline"
 BENCHMARK = "tau2_verified_airline"
+VERIFIED_DOMAINS = ("airline", "retail", "telecom")   # base split: 50 + 114 + 114 = 278 tasks (Workbook Ch. 3)
+
+
+def benchmark_name(domain: str) -> str:
+    return f"tau2_verified_{domain}"
 
 
 class SimulatorUnavailable(RuntimeError):
@@ -80,6 +85,7 @@ class Tau2Task:
     tools: list[dict]                   # OpenAI function schemas ({"type": "function", "function": {...}})
     policy: str
     raw: object = field(repr=False, default=None)   # tau2.data_model.tasks.Task
+    domain: str = DOMAIN
 
     @property
     def functions(self) -> list[dict]:
@@ -97,30 +103,68 @@ class Tau2Task:
 
 
 def write_actions(task_raw, write_tools) -> list[str]:
-    """Gold actions of a tau2 task that change the database (empty = a do-nothing agent can pass)."""
+    """Gold *agent* actions of a tau2 task that change the database (empty = a do-nothing agent can pass).
+    Telecom also has gold actions the simulated user performs on its phone (``requestor: user``); those
+    are not the agent's writes and do not count."""
     ec = getattr(task_raw, "evaluation_criteria", None)
     acts = (getattr(ec, "actions", None) or []) if ec is not None else []
-    return [a.name for a in acts if a.name in set(write_tools)]
+    return [a.name for a in acts if a.name in set(write_tools)
+            and getattr(a, "requestor", "assistant") == "assistant"]
 
 
-def load_tau2_tasks(ids: list[str], split: str = "base", write_tools: list[str] | None = None) -> list[Tau2Task]:
+def domain_write_tools(domain: str) -> list[str]:
+    """The agent tools tau2 itself marks ``@is_tool(ToolType.WRITE)`` in a domain (for airline this is the
+    six-tool list in configs/experiment/skeleton.yaml)."""
+    _quiet_litellm()
+    from tau2.environment.toolkit import ToolType
+    from tau2.registry import registry
+    kit = registry.get_env_constructor(domain)().tools
+    return sorted(n for n in kit.get_tools() if kit.tool_type(n) == ToolType.WRITE)
+
+
+def load_tau2_tasks(ids: list[str], split: str = "base", write_tools: list[str] | None = None,
+                    domain: str = DOMAIN) -> list[Tau2Task]:
     """``write_tools`` given: every task must need at least one database write, so that an agent which
     never acts cannot score 1.0 (the trap tasks 0-2 fell into on Oct 25)."""
     _quiet_litellm()
     from tau2.registry import registry
     from tau2.run import load_tasks
-    env = registry.get_env_constructor(DOMAIN)()
+    env = registry.get_env_constructor(domain)()
     tools = [t.openai_schema for t in env.get_tools()]
     policy = env.get_policy()
-    by_id = {t.id: t for t in load_tasks(DOMAIN, split)}
+    by_id = {t.id: t for t in load_tasks(domain, split)}
     missing = [i for i in ids if i not in by_id]
     if missing:
-        raise KeyError(f"tau2 {DOMAIN}/{split} has no tasks {missing}")
+        raise KeyError(f"tau2 {domain}/{split} has no tasks {missing}")
     if write_tools:
         no_write = [i for i in ids if not write_actions(by_id[i], write_tools)]
         if no_write:
             raise ValueError(f"tau2 tasks {no_write} need no database write; a do-nothing agent passes them")
-    return [Tau2Task(id=i, benchmark=BENCHMARK, tools=tools, policy=policy, raw=by_id[i]) for i in ids]
+    return [Tau2Task(id=i, benchmark=benchmark_name(domain), tools=tools, policy=policy, raw=by_id[i],
+                     domain=domain) for i in ids]
+
+
+def load_tau2_verified(split: str = "base", domains: tuple[str, ...] = VERIFIED_DOMAINS,
+                       require_write: bool = True, write_tools: dict[str, list[str]] | None = None
+                       ) -> tuple[list[Tau2Task], dict[str, list[str]]]:
+    """Every task of the split in every verified domain, in tau2's file order.
+
+    ``require_write`` keeps the skeleton's rule: a task whose gold agent actions contain no database write is
+    left out (a do-nothing agent could pass it). Write tools per domain come from ``write_tools`` or, if a
+    domain is missing there, from tau2's own ``ToolType.WRITE`` marks. Returns (tasks, excluded ids per domain)
+    so the exclusions can be reported. At commit 864350a the base split has 278 tasks; the write rule keeps
+    201 (airline 26 of 50, retail 104 of 114, telecom 71 of 114)."""
+    _quiet_litellm()
+    from tau2.run import load_tasks
+    tasks: list[Tau2Task] = []
+    excluded: dict[str, list[str]] = {}
+    for d in domains:
+        raw = {t.id: t for t in load_tasks(d, split)}
+        w = ((write_tools or {}).get(d) or domain_write_tools(d)) if require_write else None
+        excluded[d] = [i for i, t in raw.items() if not write_actions(t, w)] if w else []
+        keep = [i for i in raw if i not in set(excluded[d])]
+        tasks += load_tau2_tasks(keep, split, w, domain=d)
+    return tasks, excluded
 
 
 def _to_testbed_messages(state_msgs) -> list[dict]:

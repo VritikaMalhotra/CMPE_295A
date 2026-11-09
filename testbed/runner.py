@@ -33,12 +33,13 @@ def _executor():
 
 def score_episode(task: Task, decoded: list[list[list[str]]], model_name: str) -> dict:
     """bfcl's multi_turn_runner after inference: turn-count check, then multi_turn_checker.
-    Empty steps are dropped first, as bfcl's eval does (is_empty_execute_response)."""
+    Empty steps are dropped first, as bfcl's eval does (is_empty_execute_response). The task's own category
+    (base / miss_func / miss_param) goes to the checker, as bfcl's eval passes it."""
     from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_checker import multi_turn_checker
     if len(decoded) != len(task.ground_truth):
         return {"valid": False, "error_type": "multi_turn:force_terminated"}
     cleaned = [[step for step in turn if step and not (len(step) == 1 and not step[0])] for turn in decoded]
-    return multi_turn_checker(cleaned, task.ground_truth, task.checker_entry(), "multi_turn_base", model_name)
+    return multi_turn_checker(cleaned, task.ground_truth, task.checker_entry(), task.category, model_name)
 
 
 def _execute_safe(execute, py_calls, calls, task, model_name):
