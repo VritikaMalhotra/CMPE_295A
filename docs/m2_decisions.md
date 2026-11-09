@@ -18,6 +18,7 @@ pre-registration (`docs/preregistration_m2.md`). Nothing here is decided until t
 | 8 | Depth bins (step index within the episode) | 0–1, 2–3, 4–6, 7+ (≈ quartiles of BF16 steps in the Oct 28 runs for all three Qwen3 sizes: 26 / 25 / 29 / 20%) | H1 concentration test, model B of the mixed-effects analysis, damage map | _pending_ |
 | 9 | M4 date: 2026-12-18 or 2026-12-11 | Either (37 days of float on that path) | Schedule only | _pending_ |
 | 10 | Vision-language extension (FR-O6) as optional 295B scope, go/no-go at M6 | Yes | 295B scope | _pending_ |
+| 11 | **Inclusion rule vs a step-level outcome.** The registered rule drops tasks the 16-bit reference never solves and moves a model with < 120 included multi-turn tasks to single-turn-only analysis. On the Oct 28 runs (2 sampled BF16 trials, 200 BFCL base tasks) Qwen3-0.6B solves 11 tasks and Qwen3-4B 27 (`python -m testbed.inclusion`), so every model would leave the multi-turn analysis. | If decision 2 makes step-level failures primary: keep all tasks for the step-level tests (failures per step are defined whether or not the episode succeeds), apply the success-based inclusion only to the secondary episode-success analysis, and drop the 120-task switch for the primary outcome. Report the solved-task counts. | Pre-registration §5, power analysis, Stage 1 → main-grid task lists | _pending_ |
 
 ## Facts measured for these decisions (2026-11-08)
 
