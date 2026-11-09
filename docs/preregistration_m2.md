@@ -38,8 +38,8 @@ Workbook 2 (Ch. 3 Hypotheses, Ch. 7 Statistical Analysis Plan); deviations from 
   CPU backends on the same GGUF files.
 - Benchmarks: BFCL v4 multi-turn (base, missing-function, missing-parameter; 100 tasks each, fixed-seed sample)
   and τ²-bench-verified _[pending decision 6: write-tasks only]_. Scoring with the official, unmodified checkers.
-- Decoding: _[pending decision 5]_ 4 sampled trials (T 0.7, top_p 0.8, top_k 20, min_p 0) with fixed seeds plus
-  1 greedy pass per task and configuration. Context _[pending decision 1]_ 40,960 tokens, ≤ 4,096 new tokens per
+- Decoding (decision 5, Ekant 2026-11-08, advisor to confirm): 4 sampled trials (T 0.7, top_p 0.8, top_k 20, min_p 0) with fixed seeds plus
+  1 greedy pass per task and configuration. Context (decision 1, same status): 40,960 tokens, ≤ 4,096 new tokens per
   step (budget `min(4096, ctx − prompt − 2)`, as bfcl-eval's local handler).
 - Backend parity (FR-E17): greedy outputs on 200 fixed prompts per model, BF16 and Q4_0, CUDA vs CPU
   (`results/m2/parity_*.json`). Results are pooled across backends only if ≥ 99% of outputs are token-identical;
@@ -48,16 +48,14 @@ Workbook 2 (Ch. 3 Hypotheses, Ch. 7 Statistical Analysis Plan); deviations from 
 ## 4. Measured variables
 - Unit of analysis: the task. Trials are averaged within a task before paired tests; the greedy pass is
   analysed separately (flip rates, backend agreement).
-- Primary outcome _[pending decision 2]_: failures per agent step, by C6 failure class (codebook v0,
+- Primary outcome (decision 2, Ekant 2026-11-08, advisor to confirm): failures per agent step, by C6 failure class (codebook v0,
   `docs/codebook_v0.md`, commit _[hash]_). Episode success is secondary.
 - Step type: the kind of output a step produces: tool call, text reply to the user, or end of conversation.
 - Depth: the step's index within the episode, in bins _[pending decision 8: 0–1, 2–3, 4–6, 7+]_.
 - Costs (RQ4): weight memory, TTFT, decode tokens/s, extra tokens, NVML energy (CUDA); exclusive-node protocol.
 
 ## 5. Inclusion and exclusion (fixed in advance)
-_[pending decision 11: as written below, the rule would leave too few multi-turn tasks (Qwen3-0.6B BF16 solves
-11 and Qwen3-4B 27 of 200 BFCL base tasks in 2 sampled trials), so it may apply only to the episode-success
-analysis if failures per step are primary]_
+Decision 11 (Ekant 2026-11-08, advisor to confirm): the rules below apply to the secondary episode-success analysis only. The primary step-level tests use all tasks (failures per step are defined whether or not the episode succeeds), and the 120-task switch does not apply to them. Solved-task counts per model are reported (Oct 28 runs, 2 trials: Qwen3-0.6B 11, Qwen3-4B 27 of 200).
 - Tasks the 16-bit reference fails in all 4 sampled trials are excluded per model from confirmatory tests; counts
   and an all-task sensitivity analysis are reported. The inclusion set is stored per model
   (`results/m2/inclusion_<model>.json`, with the reference experiment hash) _[pending: Stage 1 reference runs]_.
