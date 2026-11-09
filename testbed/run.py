@@ -135,6 +135,10 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
         pending = [s for s in pending if s.backend == cfg.backend]
     if cfg.only_benchmark:
         pending = [s for s in pending if s.benchmark == cfg.only_benchmark]
+    shard = _shard(cfg.get("shard"))
+    if shard:                                           # i/n: every n-th pending spec, by run_id
+        i, n = shard
+        pending = [s for k, s in enumerate(sorted(pending, key=lambda s: s.run_id)) if k % n == i]
     if cfg.limit:
         pending = pending[: int(cfg.limit)]
     if not pending:
@@ -155,7 +159,9 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
     t_all = time.time()
     n_done = 0
     for key, group in _group(pending).items():
-        lock = _try_lock(os.path.join(r.dir, "locks", f"{key}.lock"))
+        # shards of one configuration hold disjoint specs, so each takes its own lock
+        lock_name = f"{key}.shard{shard[0]}of{shard[1]}" if shard else key
+        lock = _try_lock(os.path.join(r.dir, "locks", f"{lock_name}.lock"))
         if lock is None:
             print(f"[{key}] held by another running process; skipping", flush=True)
             continue
@@ -294,6 +300,16 @@ def _cpu_info(cfg) -> dict:
     except Exception:
         pass
     return {"threads_flag": cfg.cpu_threads, "logical_cpus": os.cpu_count(), "model": model}
+
+
+def _shard(v) -> tuple[int, int] | None:
+    """``"i/n"`` (0 <= i < n) -> (i, n); None/"" -> None. Lets n jobs share one configuration's episodes."""
+    if v in (None, ""):
+        return None
+    i, n = (int(x) for x in str(v).split("/"))
+    if not 0 <= i < n:
+        raise ValueError(f"shard {v!r}: need 0 <= i < n")
+    return i, n
 
 
 def _try_lock(path: str):
