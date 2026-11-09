@@ -106,6 +106,10 @@ def write_report(run_dir: str) -> str:
         et = eps[~eps.valid].assign(config=lambda d: d.apply(_cfg_label, axis=1)) \
             .groupby(["config", "error_type"]).size().rename("n").reset_index()
         L.append(_md(et))
+        n_retry = int(eps["infra_retries"].fillna(0).sum()) if "infra_retries" in eps else 0
+        n_ep_retry = int((eps["infra_retries"].fillna(0) > 0).sum()) if "infra_retries" in eps else 0
+        L += [f"Infrastructure retries: {n_retry} failed attempts before {n_ep_retry} of {len(eps)} finished "
+              "episodes (retries/<run_id>.jsonl has each error).", ""]
 
     # 2. failure mix
     L += ["## 2. Failure-class mix per configuration (C6, per step)", ""]

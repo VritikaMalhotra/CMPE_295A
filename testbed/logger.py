@@ -42,6 +42,25 @@ class StepLogger:
             os.remove(self._tmp)
 
 
+def record_retry(run_dir: str, run_id: str, error: BaseException) -> None:
+    """An attempt failed for an infrastructure reason (crash, server error); the episode stays pending.
+    One JSON line per attempt in retries/<run_id>.jsonl, so exclusions can be reported (design spec 6.3)."""
+    import platform
+    import time
+    os.makedirs(os.path.join(run_dir, "retries"), exist_ok=True)
+    with open(os.path.join(run_dir, "retries", f"{run_id}.jsonl"), "a") as f:
+        f.write(json.dumps({"time": time.time(), "host": platform.node(), "error": type(error).__name__,
+                            "message": str(error)[:300]}) + "\n")
+
+
+def retry_count(run_dir: str, run_id: str) -> int:
+    p = os.path.join(run_dir, "retries", f"{run_id}.jsonl")
+    if not os.path.exists(p):
+        return 0
+    with open(p) as f:
+        return sum(1 for line in f if line.strip())
+
+
 def to_parquet(run_dir: str) -> tuple[str, str]:
     eps = [json.load(open(p)) for p in sorted(glob.glob(os.path.join(run_dir, "episodes", "*.json")))]
     done = {e["run_id"] for e in eps}

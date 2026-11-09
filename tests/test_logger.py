@@ -71,3 +71,14 @@ def test_parquet_roundtrip_is_lossless(tmp_path):
     assert got == want
     assert pd.read_parquet(ep)["run_id"].tolist() == ["r1"]
     assert not [p for p in os.listdir(d) if p.endswith(".part")]  # temp files renamed away
+
+
+def test_retry_count(tmp_path):
+    from testbed.logger import record_retry, retry_count
+    d = str(tmp_path)
+    assert retry_count(d, "r1") == 0
+    record_retry(d, "r1", RuntimeError("llama-server exited with 1"))
+    record_retry(d, "r1", TimeoutError("slow"))
+    assert retry_count(d, "r1") == 2 and retry_count(d, "r2") == 0
+    first = json.loads(open(os.path.join(d, "retries", "r1.jsonl")).readline())
+    assert first["error"] == "RuntimeError" and "exited" in first["message"]

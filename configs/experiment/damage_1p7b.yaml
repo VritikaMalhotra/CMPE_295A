@@ -1,0 +1,25 @@
+# @package _global_
+# Damage run for the Oct 30 review (plan of 2026-10-28): qwen3-1.7b non-thinking on BFCL multi-turn base, 200 tasks.
+# Baselines BF16, Q4_K_M, Q4_0 on CUDA x seeds [1, 2]; repairs R1 (grammar on Q4_0) and R2 (Q8_0), seed 1. No tau2.
+experiment:
+  name: damage_1p7b
+  model: qwen3-1.7b
+  benchmark: bfcl_multi_turn_base
+  n_tasks: 200
+  thinking: false
+  max_steps_per_turn: 20
+  baselines:
+    - {variant: bf16,   backend: cuda}
+    - {variant: q4_k_m, backend: cuda}
+    - {variant: q4_0,   backend: cuda}
+  baseline_seeds: [1, 2]
+  repairs:
+    - {repair: r1, variant: q4_0, backend: cuda, constraint: free}
+    - {repair: r2, variant: q8_0, backend: cuda, constraint: none}
+  repair_seeds: [1]
+  decoding: {temperature: 0.7, top_p: 0.8, top_k: 20, min_p: 0.0, n_predict: 4096, cache_prompt: false}
+  server: {ctx: 40960}
+models:
+  qwen3-1.7b:
+    hf_repo: Qwen/Qwen3-1.7B
+    files: {bf16: Qwen3-1.7B-BF16.gguf, q4_k_m: Qwen3-1.7B-Q4_K_M.gguf, q4_0: Qwen3-1.7B-Q4_0-pure.gguf, q8_0: Qwen3-1.7B-Q8_0.gguf}

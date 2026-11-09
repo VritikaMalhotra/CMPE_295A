@@ -161,6 +161,7 @@ class EpisodeResult:
     context_overflow: bool = False    # the prompt outgrew the context window; scored as a failure
     energy_j: Optional[float] = None  # C9, CUDA only
     peak_gpu_mib: Optional[float] = None
+    infra_retries: int = 0            # additive (M2): earlier attempts that failed for infrastructure reasons
 
     def to_dict(self) -> dict:
         return dataclasses.asdict(self)
