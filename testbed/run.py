@@ -24,6 +24,7 @@ from omegaconf import DictConfig, OmegaConf
 
 from . import registry as reg
 from .adapter import load_bfcl_multi_turn, sample_task_ids, skeleton_task_ids
+from . import prompt_formats
 from .backends import Backend, LlamaServer, ServerConfig
 from .grammar import task_grammar, task_grammar_free
 from .logger import MAX_INFRA_ATTEMPTS, StepLogger, record_retry, retry_count, to_parquet
@@ -241,7 +242,7 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
             lock.close()
             continue
         try:
-            be = Backend(srv, s0.decoding, thinking=s0.thinking)
+            be = Backend(srv, s0.decoding, thinking=s0.thinking, fmt=prompt_formats.for_model(s0.model))
             for s in group:
                 if os.path.exists(os.path.join(r.dir, "episodes", f"{s.run_id}.json")):
                     continue
