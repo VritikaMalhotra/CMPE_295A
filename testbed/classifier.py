@@ -5,7 +5,8 @@ outputs to multi-turn steps. Order matters: the first rule that fires wins. The 
 docs/codebook_v0.md; keep the two in step.
 
     truncated      generation hit n_predict (output cut off)
-    malformed      a <tool_call> block that is not one valid {"name", "arguments"} JSON object
+    malformed      a tool-call block that does not parse: <tool_call> not one {"name", "arguments"} JSON
+                   object (Qwen3, SmolLM3), or <|tool_call_start|> not keyword-only calls (LFM2.5)
     forced_quit    the 21st step of a turn (bfcl's MAXIMUM_STEP_LIMIT exceeded); checked before the
                    call-content rules, since that step is usually a call inside an error loop
     unknown_tool   a call names a tool that is not in the task's tool list (hallucinated tool)
@@ -50,6 +51,7 @@ ALL_CLASSES = CLASSES
 FAILURES = {"truncated", "malformed", "unknown_tool", "invalid_args", "exec_error", "forced_quit", "missing_call",
             "tool_error_payload", "missing_call_direct_answer"}
 
+_CALL_MARKERS = ("<tool_call>", "<|tool_call_start|>")
 _THINK = re.compile(r"<think>.*?(</think>|$)", re.S)
 _ANNOUNCE = re.compile(r"\b(i'll|i will|let me|i am going to|i'm going to|i need to|i should)\b[^.?!\n]*"
                        r"\b(call|use|invoke|run|execute|check|look up|fetch|search)\b", re.I)
@@ -112,7 +114,9 @@ def classify_step(row: "StepRow", proposed: bool = True) -> str:
     n_parsed = len(row.decoded_calls)
     if row.stop_reason == "limit":
         return "truncated"
-    if row.n_tool_call_blocks > n_parsed or ("<tool_call>" in row.raw_text and n_parsed == 0):
+    # call markers of every prompt format (prompt_formats.ALL_CALL_MARKERS): "<tool_call>" (Qwen3, SmolLM3) and
+    # "<|tool_call_start|>" (LFM2.5); a Qwen3 step never contains the LFM marker, so Qwen3 labels are unchanged
+    if row.n_tool_call_blocks > n_parsed or (n_parsed == 0 and any(k in row.raw_text for k in _CALL_MARKERS)):
         return "malformed"
     if row.forced_quit:
         return "forced_quit"
