@@ -51,7 +51,10 @@ output collected Jun–Sep 2025; its card says personal data was removed on a be
 - `manifest.json`: SHA-256 of every raw file and output, filter counts per source, token totals. `pass` means the
   whole rank text shares no 13-gram with the benchmarks, and the holdout is disjoint from training.
 
-## Calls made in the build (Yashashav's to overrule)
+## Calls made in the build (confirmed 11-09 by Yashashav)
+
+All three are accepted as they are: the role-prefixed ranking text, dropping the ToolACE records in the two
+other call formats, and packing in sprint 7.
 - **The R2b ranking text is plain role-prefixed text** (`user: …`, `assistant: <tool_call>{json}</tool_call>`,
   `tool: …`), one file for every model:
   - `llama-perplexity` reads chat-template markers as ordinary text, so each model's own template would add junk
