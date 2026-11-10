@@ -112,3 +112,15 @@ def test_seeded_order_is_reproducible_and_salted():
 
 def test_content_hash_ignores_key_order():
     assert qm.content_hash({"a": 1, "b": [1, 2]}) == qm.content_hash({"b": [1, 2], "a": 1})
+
+
+def test_truncate_tool_turns_cuts_only_long_tool_replies():
+    enc = lambda t: t.split()                       # noqa: E731  one "token" per word
+    dec = lambda ids: " ".join(ids)                 # noqa: E731
+    msgs = [{"role": "user", "content": "a b c d e"},
+            {"role": "tool", "content": "1 2 3 4 5 6"},
+            {"role": "tool", "content": "x y"},
+            {"role": "assistant", "content": "p q r s t u v"}]
+    out, cut = qm.truncate_tool_turns(msgs, 3, enc, dec)
+    assert cut == 1 and out[1]["content"] == "1 2 3" and out[2]["content"] == "x y"
+    assert out[0] == msgs[0] and out[3] == msgs[3] and msgs[1]["content"] == "1 2 3 4 5 6"   # input untouched
