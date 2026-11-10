@@ -52,6 +52,23 @@ def _strings(obj):
             yield from _strings(v)
 
 
+PROMPT_MODULES = ("bfcl_eval.constants.default_prompts", "tau2.agent.llm_agent")
+
+
+def module_strings(modname: str) -> tuple[list[str], str]:
+    """Every string held in a module-level constant (str, or str inside a dict/list/tuple), and a source note."""
+    import importlib
+    try:
+        mod = importlib.import_module(modname)
+    except Exception as e:  # noqa: BLE001 - recorded in the sources list, not fatal
+        return [], f"{modname} unavailable ({type(e).__name__})"
+    found = []
+    for name, val in sorted(vars(mod).items()):
+        if not name.startswith("__") and isinstance(val, (str, dict, list, tuple)):
+            found.extend(_strings(val))
+    return found, f"{modname}: {len(found)} strings"
+
+
 def dump(out: str) -> dict:
     """Write every string of the benchmark data we evaluate on (generously: all BFCL multi-turn files and
     their function docs, all tau2 tasks and policies of the three verified domains)."""
@@ -89,6 +106,12 @@ def dump(out: str) -> dict:
                 sources.append(f"tau2:{dom}:policy unavailable ({type(e).__name__})")
     except ImportError:
         sys.exit("tau2 is not installed in this venv: bash scripts/setup_env.sh --tau2 (login node)")
+    # Prompt wording the evaluated model sees is covered too, so boilerplate copied from a benchmark harness into a
+    # training or calibration source is caught: BFCL's default prompts and tau2's agent prompts.
+    for modname in PROMPT_MODULES:
+        found, note = module_strings(modname)
+        parts.extend(found)
+        sources.append(note)
     os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
     with open(out, "w") as fh:
         fh.write("\n".join(parts))

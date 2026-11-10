@@ -42,6 +42,19 @@ def test_clean_keeps_text_with_only_shorter_overlaps():
     assert dropped == [] and kept == lines
 
 
+def test_module_strings_collects_prompt_constants(tmp_path, monkeypatch):
+    (tmp_path / "fake_prompts.py").write_text(
+        'SYSTEM = "You are an expert in composing functions."\n'
+        'TEMPLATES = {"classic": ["Use the tools.", "Reply briefly."]}\n'
+        'LIMIT = 20\n_private_note = "kept too"\n')
+    monkeypatch.syspath_prepend(str(tmp_path))
+    found, note = ng.module_strings("fake_prompts")
+    assert "You are an expert in composing functions." in found and "Use the tools." in found
+    assert "kept too" in found and "classic" in found and 20 not in found
+    assert note.startswith("fake_prompts:")
+    assert ng.module_strings("no_such_module_xyz") == ([], "no_such_module_xyz unavailable (ModuleNotFoundError)")
+
+
 def test_candidates_are_2d_block_weights_only():
     assert rk.is_candidate("blk.0.ffn_down.weight", [3072, 1024])
     assert not rk.is_candidate("blk.0.attn_norm.weight", [1024])
