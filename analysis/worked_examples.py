@@ -67,6 +67,17 @@ def step_block(r: dict, n: int) -> str:
     return "\n".join(lines)
 
 
+def step_record(r: dict, n: int) -> dict:
+    return {"turn": r["turn"], "step": r["step"], "label": r["label"], "output": cut(r.get("raw_text", ""), n),
+            "calls": r.get("decoded_calls") or [], "results": [cut(x, n) for x in (r.get("execution_results") or [])]}
+
+
+def episode_record(ep: dict, n: int, max_steps: int) -> dict:
+    e = ep["episode"]
+    return {"run_id": e["run_id"], "valid": bool(e.get("valid")), "error_type": e.get("error_type") or "",
+            "n_steps": e.get("n_steps"), "steps": [step_record(r, n) for r in ep["steps"][:max_steps]]}
+
+
 def episode_block(label: str, ep: dict, n: int, max_steps: int) -> str:
     e = ep["episode"]
     head = (f"**{label}**, run `{e['run_id']}`: verdict **{'pass' if e.get('valid') else 'fail'}** "
@@ -94,7 +105,8 @@ def main() -> None:
           "Copied from the step logs (seed 1, sampled decoding); long texts cut mechanically. Labels are the "
           "classifier's (codebook v0). Development data, preview.\n",
           f"Reference: `{rd}`  \n4-bit cell: `{cd}`\n", "## One episode per domain\n"]
-    picks = {"domains": {}, "classes": {}}
+    picks = {"model": a.model, "ref_label": rl, "cell_label": cl, "ref_dir": rd, "cell_dir": cd,
+             "domains": {}, "classes": {}}
     for dom in DOMAINS:
         both = sorted(k for k in ref if k[0] == dom and k in cell)
         if not both:
@@ -104,7 +116,8 @@ def main() -> None:
             k = only[0]
             md.append(f"### {dom}, task `{k[1]}` ({cl} has not finished this domain yet)\n")
             md.append(episode_block(rl, ref[k], a.max_chars, a.max_steps) + "\n")
-            picks["domains"][dom] = {"task": k[1], "ref_run": ref[k]["episode"]["run_id"], "cell_run": None}
+            picks["domains"][dom] = {"task": k[1], "ref_run": ref[k]["episode"]["run_id"], "cell_run": None,
+                                     "ref": episode_record(ref[k], a.max_chars, a.max_steps)}
             continue
         diff = [k for k in both if bool(ref[k]["episode"].get("valid")) != bool(cell[k]["episode"].get("valid"))]
         k = (diff or both)[0]
@@ -112,7 +125,9 @@ def main() -> None:
         md.append(episode_block(rl, ref[k], a.max_chars, a.max_steps) + "\n")
         md.append(episode_block(cl, cell[k], a.max_chars, a.max_steps) + "\n")
         picks["domains"][dom] = {"task": k[1], "ref_run": ref[k]["episode"]["run_id"],
-                                 "cell_run": cell[k]["episode"]["run_id"], "verdicts_differ": bool(diff)}
+                                 "cell_run": cell[k]["episode"]["run_id"], "verdicts_differ": bool(diff),
+                                 "ref": episode_record(ref[k], a.max_chars, a.max_steps),
+                                 "cell": episode_record(cell[k], a.max_chars, a.max_steps)}
     md.append("## One step per powered failure class\n")
     md.append("Classes with enough events for a confirmatory test at 2,000 episodes, or close to it "
               "(`docs/cluster.md`, power table). For each: the first 4-bit step of that class (sorted by task), and "
@@ -136,7 +151,9 @@ def main() -> None:
         md.append(f"**{rl}, same task, turn and step**\n\n" + (step_block(twin[0], a.max_chars) if twin else
                   "- (the reference episode has no step at this position)") + "\n")
         picks["classes"][c] = {"benchmark": k[0], "task": k[1], "turn": r["turn"], "step": r["step"],
-                               "cell_run": r["run_id"], "ref_label": twin[0]["label"] if twin else None}
+                               "cell_run": r["run_id"], "ref_label": twin[0]["label"] if twin else None,
+                               "cell_step": step_record(r, a.max_chars),
+                               "ref_step": step_record(twin[0], a.max_chars) if twin else None}
     with open(a.out, "w") as f:
         f.write("\n".join(md))
     if a.json:
