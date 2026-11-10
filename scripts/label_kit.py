@@ -52,22 +52,29 @@ def _cell(v) -> str:
     return json.dumps(v, ensure_ascii=False) if isinstance(v, (list, dict, bool)) else ("" if v is None else str(v))
 
 
-def _plain(v):
-    return v.tolist() if hasattr(v, "tolist") else v
-
-
 def load_run(run_dir: str) -> list[dict]:
-    pq = os.path.join(run_dir, "steps.parquet")
-    if os.path.exists(pq):
-        import pandas as pd
-        rows = [{k: _plain(v) for k, v in r.items()} for r in pd.read_parquet(pq).to_dict("records")]
-    else:
-        rows = []
-        for p in sorted(glob.glob(os.path.join(run_dir, "steps", "*.jsonl"))):
-            with open(p) as f:
-                rows += [json.loads(line) for line in f if line.strip()]
+    """Steps of finished episodes from ``steps/*.jsonl`` (the logger's source of truth; ``steps.parquet`` stores
+    list columns as JSON text). Rows from runs older than the ``benchmark`` field get it from ``specs.jsonl``."""
+    done = {os.path.basename(p)[:-5] for p in glob.glob(os.path.join(run_dir, "episodes", "*.json"))}
+    rows = []
+    for p in sorted(glob.glob(os.path.join(run_dir, "steps", "*.jsonl"))):
+        if done and os.path.basename(p)[:-6] not in done:
+            continue
+        with open(p) as f:
+            rows += [json.loads(line) for line in f if line.strip()]
     if not rows:
         sys.exit(f"no steps under {run_dir}")
+    bench = {}
+    sp = os.path.join(run_dir, "specs.jsonl")
+    if os.path.exists(sp):
+        with open(sp) as f:
+            for line in f:
+                if line.strip():
+                    d = json.loads(line)
+                    bench[d["run_id"]] = d.get("benchmark", "")
+    for r in rows:
+        if not r.get("benchmark"):
+            r["benchmark"] = bench.get(r.get("run_id"), "")
     fields = {f for f in StepRow.__dataclass_fields__}
     for r in rows:
         r["run_dir"] = run_dir
