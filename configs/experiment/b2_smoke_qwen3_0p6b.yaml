@@ -1,0 +1,26 @@
+# @package _global_
+# B2 smoke: R1 grammar on, JSON (Qwen3) call format. One BFCL multi-turn base task, greedy, the 4-bit file the grammar
+# repairs, with the free-text R1 grammar (calls or plain text) and, as a control, the same file without it.
+# Pass: both episodes run, and every step of the R1 episode is either schema-valid calls or text.
+experiment:
+  name: b2_smoke_qwen3_0p6b
+  model: qwen3-0.6b
+  benchmark: bfcl_multi_turn_base
+  task_sample: true
+  n_tasks: 1
+  thinking: false
+  max_steps_per_turn: 20
+  baselines:
+    - {variant: q4_0, backend: cuda}
+  baseline_seeds: [0]
+  repairs:
+    - {repair: r1, variant: q4_0, backend: cuda, constraint: free}
+  repair_seeds: [0]
+  decoding: {temperature: 0.0, top_k: 1, top_p: 1.0, min_p: 0.0, n_predict: 4096, cache_prompt: false}
+  server: {ctx: 40960}
+slurm:
+  time: "01:00:00"
+models:
+  qwen3-0.6b:
+    hf_repo: Qwen/Qwen3-0.6B
+    files: {q4_0: Qwen3-0.6B-Q4_0-pure.gguf}
