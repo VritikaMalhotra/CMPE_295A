@@ -1,6 +1,7 @@
 # Pre-registration draft (M2): quantization damage and repairs in small LLM agents
 
-**Status: DRAFT for team and advisor review. Not filed.** Filing on OSF is done by the team/advisor; the
+**Status: DRAFT for team and advisor review. Not filed.** Every decision it cites is proposed, not yet
+confirmed by the advisor (`docs/m2_decisions.md`). Filing on OSF is done by the team/advisor; the
 registration ID then goes into the Experiment entity (C11 manifest). Items marked _[pending]_ depend on
 `docs/m2_decisions.md` or on Stage 1 results and must be filled before filing. Source of every rule:
 Workbook 2 (Ch. 3 Hypotheses, Ch. 7 Statistical Analysis Plan); deviations from it are marked.
@@ -32,7 +33,8 @@ Workbook 2 (Ch. 3 Hypotheses, Ch. 7 Statistical Analysis Plan); deviations from 
 ## 3. Design
 - Models: Qwen3-0.6B, Qwen3-1.7B, Qwen3-4B, SmolLM3-3B, LFM2.5-1.2B-Instruct, LFM2.5-2.6B (BF16 GGUF references;
   conversions and KL checks in `results/m2/kl_*.json`, files and SHA-256 in `results/m2/models_manifest.json`).
-  _[pending: the testbed has a prompt handler only for Qwen3; SmolLM3/LFM2.5 handlers before their runs]_
+  SmolLM3 and LFM2.5 prompts follow each model's own chat template (`testbed/prompt_formats.py`; bfcl-eval has
+  no handler for them) _[pending: their BF16 reference runs]_.
 - Formats: Q4_0 (`--pure`), Q4_K_M, IQ4_XS (imatrix) at 4 bits; Q5_0, Q6_K, Q8_0 for R2.
 - Runtime: llama.cpp `d812350` (v0.6.0), raw `/completion` endpoint, one slot, prompt cache off, CUDA (P100) and
   CPU backends on the same GGUF files.
@@ -45,6 +47,9 @@ Workbook 2 (Ch. 3 Hypotheses, Ch. 7 Statistical Analysis Plan); deviations from 
 - Backend parity (FR-E17): greedy outputs on 200 fixed prompts per model, BF16 and Q4_0, CUDA vs CPU
   (`results/m2/parity_*.json`). Results are pooled across backends only if ≥ 99% of outputs are token-identical;
   otherwise every RQ1 ratio is reported per backend.
+  _[pending, m2_decisions 13: parity is below 99% for every model, and a full CPU arm does not fit the cluster
+  (about 11 min per 0.6B CPU episode, 2 CPUs per `defq` job); proposal: CPU agent runs on a fixed subset
+  (e.g. Qwen3-0.6B and 1.7B, BFCL base, greedy), named here before filing]_
 
 ## 4. Measured variables
 - Unit of analysis: the task. Trials are averaged within a task before paired tests; the greedy pass is
@@ -67,6 +72,13 @@ Decision 11 (Ekant 2026-11-08, advisor to confirm): the rules below apply to the
   same seed; episodes that still fail are excluded and listed (implemented: `testbed/logger.py`
   `MAX_INFRA_ATTEMPTS = 4`, listed in each report). Episodes interrupted by a Slurm walltime limit are rerun
   from the start (resumed from the last finished episode), not excluded.
+- τ² simulated user gives an empty reply (after every escalation step): the episode is **excluded at once**, not
+  retried and not scored. The fault is the simulator's, not the agent's, and the empty reply is cached, so a
+  retry would repeat it. Recorded as a `permanent` line in `retries/<run_id>.jsonl` and listed in each report
+  (Qwen3 references: 7 of 7,515 episodes).
+- τ² simulated user runs out of context (its 32,768-token slot): the episode ends and is **scored as a failure**
+  (reward 0, `error_type = tau2:user_context_overflow`); this is an outcome, not an exclusion (Qwen3 references:
+  1 episode).
 - Episodes that hit the step or error limit are outcomes, not exclusions.
 
 ## 6. Analysis plan
@@ -87,7 +99,8 @@ Decision 11 (Ekant 2026-11-08, advisor to confirm): the rules below apply to the
   precision × step type + precision × depth + (1 | task/episode); (C) episode success, binomial,
   configuration + (1 | task). A conclusion is robust when the mixed model agrees with the bootstrap in direction
   and in Holm-corrected significance; otherwise reported as not robust with both estimates. Convergence
-  fallback: bobyqa, then drop the episode intercept, then report the failure.
+  fallback: bobyqa, then drop the episode intercept, then report the failure. Planted-effect check of models A/B/C
+  recorded 2026-11-10 (`results/m2/planted_effect.json`: every planted term recovered, none flagged on null data).
 - Dispersion: every mean shown with ± 1 SD over the 4 sampled trials and the 95% bootstrap interval for every
   effect; greedy runs show 95% Wilson intervals over tasks (SD = 0).
 - Power: ~330 failure events of one type per paired comparison for 80% power at a 1.5× ratio (α = 0.05/10), times
@@ -96,6 +109,8 @@ Decision 11 (Ekant 2026-11-08, advisor to confirm): the rules below apply to the
   any failure, exec_error and tool_error_payload are detectable in every model even at the task-level D
   (3-21); unknown_tool and missing_call only if D is near the episode-level value (1-6). Rare failure types
   (invalid_args, malformed, forced_quit, truncated) are pooled or reported as exploratory.
+  _[pending, m2_decisions 12: confirmatory step-level tests on any failure, exec_error and tool_error_payload;
+  unknown_tool and missing_call exploratory unless the Stage 1 design effect is near the episode-level value]_
 - Any analysis whose code hash differs from the registered one is labelled exploratory by C10.
 
 ## 7. What is frozen with the registration
