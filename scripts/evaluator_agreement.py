@@ -5,6 +5,9 @@
   block), ``eval_runner._evaluate_single_multi_turn_entry`` (turn-count check, ``decode_execute``,
   ``multi_turn_checker``), with prompt and ground-truth entries from bfcl's own loaders
   (``load_dataset_entry(include_language_specific_hint=False)``, ``load_ground_truth_entry``), not ours.
+  SmolLM3 and LFM2.5 have no bfcl-eval handler: for them the same path runs with one change, the tool-call
+  extraction comes from the testbed's own parser for that model (``testbed.prompt_formats``), so their BFCL
+  re-scoring checks the scoring path but not the parser. The JSON records which parser each model used.
 * tau2: each saved simulation (``tau2_sims/<run_id>.json``) is re-scored by tau2's ``evaluate_simulation``
   with the task loaded by tau2's ``load_tasks``; verdict = reward 1.0. Episodes with no simulation (the
   agent's or the simulated user's context ran out, or the agent's reply was empty) were scored without the
@@ -98,14 +101,34 @@ def _clean_executor_state(tag: str) -> None:
         delattr(mu, k)
 
 
-def check_bfcl(run_dir: str, eps: pd.DataFrame, steps: pd.DataFrame, official) -> dict:
+def make_handler(QwenFCHandler, model: str):
+    """bfcl-eval's Qwen3 FC handler for Qwen3; for a model bfcl has no handler for, the same class with its
+    tool-call extraction replaced by the testbed's parser for that model's format."""
+    from testbed import prompt_formats
+    fmt = prompt_formats.for_model(model)
+    if fmt is prompt_formats.QWEN3:
+        return QwenFCHandler(model_name="Qwen/Qwen3", temperature=0.7, registry_name="fr-e2", is_fc_model=False), \
+            "bfcl-eval QwenFCHandler"
+
+    class FormatHandler(QwenFCHandler):
+        @staticmethod
+        def _extract_tool_calls(text):
+            calls, _ = fmt.extract_tool_calls(fmt.split_think(text)[1])
+            return [c for c in calls if isinstance(c, dict) and "name" in c and "arguments" in c]
+
+    return FormatHandler(model_name="Qwen/Qwen3", temperature=0.7, registry_name="fr-e2", is_fc_model=False), \
+        f"testbed prompt_formats.{fmt.name} parser (no bfcl-eval handler) + bfcl-eval scoring"
+
+
+def check_bfcl(run_dir: str, eps: pd.DataFrame, steps: pd.DataFrame, official, model: str = "qwen3") -> dict:
     er, QwenFCHandler, load_dataset_entry, load_ground_truth_entry, _ = official
-    handler = QwenFCHandler(model_name="Qwen/Qwen3", temperature=0.7, registry_name="fr-e2", is_fc_model=False)
+    handler, parser = make_handler(QwenFCHandler, model)
     eps = eps[eps.benchmark.str.startswith("bfcl_")]
     by_run = {rid: g.sort_values(["turn", "step"]) for rid, g in steps[steps.run_id.isin(set(eps.run_id))]
               .groupby("run_id")}
     prompts, answers = {}, {}
-    out = {"n": 0, "agree": 0, "disagree": [], "by_benchmark": Counter(), "agree_by_benchmark": Counter()}
+    out = {"n": 0, "agree": 0, "disagree": [], "by_benchmark": Counter(), "agree_by_benchmark": Counter(),
+           "parser": parser}
     for e in eps.itertuples():
         cat = e.benchmark[len("bfcl_"):]
         if cat not in prompts:
@@ -186,13 +209,15 @@ def main() -> None:
     for d in a.run_dirs:
         name = json.load(open(os.path.join(d, "manifest.json"))).get("experiment", d)
         eps = pd.read_parquet(os.path.join(d, "episodes.parquet"))
-        bench = {x["run_id"]: x["benchmark"] for x in map(json.loads, open(os.path.join(d, "specs.jsonl")))}
+        specs = [json.loads(line) for line in open(os.path.join(d, "specs.jsonl")) if line.strip()]
+        bench = {x["run_id"]: x["benchmark"] for x in specs}
+        model = specs[0].get("model", "qwen3") if specs else "qwen3"
         eps["benchmark"] = eps.run_id.map(bench)
         if a.limit:
             eps = pd.concat([eps[eps.benchmark.str.startswith("bfcl_")].head(a.limit),
                              eps[eps.benchmark.str.startswith("tau2_")].head(a.limit)])
         steps = pd.read_parquet(os.path.join(d, "steps.parquet"), columns=["run_id", "turn", "step", "raw_text"])
-        r = {"bfcl": check_bfcl(d, eps, steps, official)}
+        r = {"bfcl": check_bfcl(d, eps, steps, official, model)}
         if not a.skip_tau2:
             r["tau2"] = check_tau2(d, eps)
         for k, v in r.items():
