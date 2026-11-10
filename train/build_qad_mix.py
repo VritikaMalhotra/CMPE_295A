@@ -259,6 +259,53 @@ def render_plain(msgs: list[dict]) -> str:
     return "\n".join(lines)
 
 
+def truncate_tool_turns(msgs: list[dict], max_tokens: int, encode, decode) -> tuple[list[dict], int]:
+    """D-1 (R2b ranking window): every tool reply cut to its first ``max_tokens`` tokens of the planning
+    tokenizer, so the ranking window covers more conversations. Returns (messages, replies cut)."""
+    out, cut = [], 0
+    for m in msgs:
+        if m.get("role") == "tool" and isinstance(m.get("content"), str):
+            ids = encode(m["content"])
+            if len(ids) > max_tokens:
+                m = {**m, "content": decode(ids[:max_tokens])}
+                cut += 1
+        out.append(m)
+    return out, cut
+
+
+def build_rank_text(out: str, bench_path: str, tokenizer: str, max_tool_tokens: int) -> dict:
+    """rank_text_t<N>.txt from the held-out conversations: the same rendering as rank_text.txt, tool replies
+    truncated; the whole file is checked again for 13-grams shared with the benchmarks."""
+    from transformers import AutoTokenizer
+    tok = AutoTokenizer.from_pretrained(tokenizer)
+    enc = lambda t: tok(t, add_special_tokens=False)["input_ids"]          # noqa: E731
+    dec = lambda ids: tok.decode(ids)                                        # noqa: E731
+    rank_path = os.path.join(out, "rank_conversations.jsonl")
+    convs = [json.loads(line) for line in open(rank_path) if line.strip()]
+    parts, cut, replies = [], 0, 0
+    for r in convs:
+        msgs, c = truncate_tool_turns(r["messages"], max_tool_tokens, enc, dec)
+        cut += c
+        replies += sum(1 for m in r["messages"] if m.get("role") == "tool")
+        parts.append(render_plain(msgs))
+    text = "\n\n".join(parts)
+    path = os.path.join(out, f"rank_text_t{max_tool_tokens}.txt")
+    with open(path, "w") as fh:
+        fh.write(text)
+    with open(bench_path) as fh:
+        bench = ng.ngram_set(fh.read())
+    overlap = len(bench & ng.ngram_set(text))
+    rec = {"created": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "source": rank_path,
+           "source_sha256": _sha_file(rank_path), "max_tool_tokens": max_tool_tokens, "planning_tokenizer": tokenizer,
+           "conversations": len(convs), "tool_replies": replies, "tool_replies_cut": cut,
+           "text": path, "text_sha256": _sha_file(path), "text_tokens_qwen3": len(enc(text)),
+           "n_overlapping_13grams": overlap, "pass": overlap == 0}
+    with open(path[:-4] + ".json", "w") as fh:
+        json.dump(rec, fh, indent=1)
+    print(json.dumps(rec, indent=1))
+    return rec
+
+
 def record_check_text(msgs: list[dict], tools: list[dict]) -> str:
     return render_plain(msgs) + "\n" + "\n".join(ng._strings(tools))
 
@@ -454,19 +501,23 @@ def build(out: str, bench_path: str, tokenizer: str) -> dict:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for c in ("fetch", "check-toolace", "build"):
+    for c in ("fetch", "check-toolace", "build", "rank-text"):
         p = sub.add_parser(c)
         p.add_argument("--out", required=True)
         if c == "check-toolace":
             p.add_argument("--n", type=int, default=500)
-        if c == "build":
+        if c in ("build", "rank-text"):
             p.add_argument("--bench", required=True)
             p.add_argument("--tokenizer", required=True)
+        if c == "rank-text":
+            p.add_argument("--max-tool-tokens", type=int, default=256)
     a = ap.parse_args(argv)
     if a.cmd == "fetch":
         fetch(a.out)
     elif a.cmd == "check-toolace":
         check_toolace(a.out, a.n)
+    elif a.cmd == "rank-text":
+        return 0 if build_rank_text(a.out, a.bench, a.tokenizer, a.max_tool_tokens)["pass"] else 1
     else:
         return 0 if build(a.out, a.bench, a.tokenizer)["pass"] else 1
     return 0
