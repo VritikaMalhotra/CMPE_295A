@@ -159,3 +159,10 @@ def test_lfm_2p6b_raw_prefix_keeps_reasoning_out_of_the_answer():
     row = _row(g.raw_text, [], 0)
     # the reasoning's "?" must not count: the visible answer is a direct claim with no call
     assert classify_step(row) == "missing_call_direct_answer"
+
+
+def test_lfm_requests_keep_the_call_markers():
+    """llama-server drops control tokens from content unless the request lists them as preserved tokens."""
+    assert prompt_formats.QWEN3.preserve == () and prompt_formats.SMOLLM3.preserve == ()
+    for f in ("lfm2.5-1.2b", "lfm2.5-2.6b"):
+        assert {"<|tool_call_start|>", "<|tool_call_end|>"} <= set(FORMATS[f].preserve)

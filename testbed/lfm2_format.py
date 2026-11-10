@@ -30,6 +30,7 @@ import re
 
 BOS = "<|startoftext|>"
 CALL_START, CALL_END = "<|tool_call_start|>", "<|tool_call_end|>"
+PRESERVE = ("<|tool_call_start|>", "<|tool_call_end|>", "<think>", "</think>")   # kept in the server's output
 TOOL_CALL_RE = re.compile(re.escape(CALL_START) + r"(.*?)" + re.escape(CALL_END), re.DOTALL)
 VARIANTS = ("lfm2.5-1.2b", "lfm2.5-2.6b")
 

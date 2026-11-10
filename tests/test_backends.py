@@ -163,3 +163,14 @@ def test_argv_backend_flags():
     assert cuda[cuda.index("-ngl") + 1] == "99" and "-t" not in cuda
     assert cpu[cpu.index("-ngl") + 1] == "0" and cpu[cpu.index("-t") + 1] == "4"
     assert cpu[cpu.index("-np") + 1] == "1"                       # one slot: timings never shared
+
+
+def test_lfm_backend_sends_token_ids_and_preserved_tokens(fake):
+    """SmolLM3/LFM2.5: the prompt goes as the template's token ids; LFM2.5 also asks to keep its call markers."""
+    from testbed.prompt_formats import LFM25_1P2B, QWEN3
+    fs = fake()
+    Backend(_Srv(fs.base, 100), {"n_predict": 50}, fmt=LFM25_1P2B).generate(MSGS, TOOLS)
+    b = fs.bodies[-1]
+    assert isinstance(b["prompt"], list) and "<|tool_call_start|>" in b["preserved_tokens"]
+    Backend(_Srv(fs.base, 100), {"n_predict": 50}, fmt=QWEN3).generate(MSGS, TOOLS)
+    assert isinstance(fs.bodies[-1]["prompt"], str) and "preserved_tokens" not in fs.bodies[-1]
