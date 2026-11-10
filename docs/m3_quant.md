@@ -7,8 +7,9 @@ Ekant's work this sprint (H1 damage runs, R1 grammars, second labeler) or Vritik
 QoS `gpu3nodes` limits each *user* to 2 GPU nodes, so these jobs run from Yashashav's account and do not take
 nodes from Ekant's damage runs.
 
-Status 2026-11-09: scripts written and unit-tested off the cluster (`tests/test_m3_quant.py`); **not yet run on
-the cluster**. The llama.cpp behaviour they rely on was checked in the source at the pinned commit d812350
+Status 2026-11-09 (evening): steps 0–3 and 6 have run on the cluster. Results are in `docs/m3_results.md`: all
+six models have IQ4_XS, Q5_0-pure and Q6_K-pure files, and KL against BF16 on both backends. The QAD mix is
+built (`docs/qad_data.md`). Steps 4–5 (R2b) and 7 (container) are still to do. Earlier note: The llama.cpp behaviour they rely on was checked in the source at the pinned commit d812350
 (see "Why these commands" below). Run step 0 before anything large.
 
 ## Step 0 — checks (login node, ~10 min)

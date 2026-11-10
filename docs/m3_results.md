@@ -1,0 +1,91 @@
+# M3 results (Yashashav's packages: IQ4_XS + KL on both backends, R2a variants, QAD data)
+
+Runbook: `docs/m3_quant.md`. QAD data: `docs/qad_data.md`. Everything here ran from Yashashav's account on
+2026-11-09, at commits `fa32f84` → `4a021c8` of `m3-yashashav-prep`. llama.cpp d812350; the CUDA build ran on
+P100 nodes (gpuqs), the CPU build on 32-core cpuqs nodes.
+
+## Checks before the runs (runbook step 0–1)
+- Full test suite on the cluster: 183 passed, 8 skipped (before this work's new tests).
+- `--tensor-type` probe on Qwen3-0.6B (job 110335): exactly one tensor (`blk.0.attn_q.weight`) came out Q4_0, the
+  other 197 weight tensors BF16, norms F32. The R2b recipe works as written.
+- Apptainer 1.5.5 builds without root on Ubuntu images (fakeroot command + root-mapped namespace; no subuid
+  entry). Alpine images fail.
+- FR-E5 check of the imatrix text: 0 of 36,719 WikiText-2 train lines share a 13-gram with the benchmark text
+  (`results/m3/calib_ngram_check.json`). A planted BFCL turn and a planted tau2 task line were both caught.
+
+## New model files (runbook step 2; jobs 110339–110344, 2–11 min each)
+IQ4_XS (imatrix from 200 × 512 tokens of the checked text; llama.cpp's default IQ4_XS recipe), Q5_0-pure and
+Q6_K-pure for all six models, in `$TESTBED_MODELS` next to the M2 files. SHA-256 sums, byte counts, weight counts:
+`results/m3/models_manifest.json` (the M2 entries were re-checked unchanged). Whole-file bits per weight:
+
+| Model | Q4_0-pure | IQ4_XS | Q4_K_M | Q5_0-pure | Q6_K-pure | Q8_0 |
+|---|---|---|---|---|---|---|
+| Qwen3-0.6B | 4.57 | 4.79 | 5.15 | 5.57 | 6.63 | 8.57 |
+| Qwen3-1.7B | 4.53 | 4.63 | 5.05 | 5.53 | 6.59 | 8.52 |
+| LFM2.5-1.2B-Instruct | 4.52 | 4.53 | 5.00 | 5.52 | 6.58 | 8.52 |
+| Qwen3-4B | 4.51 | 4.52 | 4.97 | 5.51 | 6.58 | 8.51 |
+| SmolLM3-3B | 4.52 | 4.48 | 4.98 | 5.52 | 6.58 | 8.52 |
+| LFM2.5-2.6B | 4.53 | 4.50 | 4.97 | 5.53 | 6.59 | 8.53 |
+
+## KL against BF16 on both backends (runbook step 3)
+Same settings as M2: WikiText-2 test (SHA-256 `173c87a5…`), context 512, 50 chunks, `llama-perplexity
+--kl-divergence`. The BF16 base pass runs on the same backend as the variant.
+- **CUDA:** M2's Q4_0-pure / Q4_K_M / Q8_0 runs (`results/m2/`) plus the new files (jobs 110345, 110390–110394).
+- **CPU:** jobs 110336–110338 and 110395–110400.
+- **Merging:** `scripts/merge_kl.py` checks that the parts share model, eval text, context and chunks, and that
+  their BF16 perplexity agrees, before writing one file per model and backend: `results/m3/kl_{cuda,cpu}_<model>.json`.
+
+Mean KLD:
+
+| Model | Backend | Q4_0-pure | IQ4_XS | Q4_K_M | Q5_0-pure | Q6_K-pure | Q8_0 |
+|---|---|---|---|---|---|---|---|
+| Qwen3-0.6B | CUDA | 0.2455 | 0.1023 | 0.1083 | 0.0605 | 0.0138 | 0.0033 |
+| Qwen3-0.6B | CPU | 0.2445 | 0.1072 | 0.1143 | 0.0596 | 0.0195 | 0.0026 |
+| Qwen3-1.7B | CUDA | 0.2184 | 0.0787 | 0.1069 | 0.0592 | 0.0153 | 0.0054 |
+| Qwen3-1.7B | CPU | 0.2137 | 0.0831 | 0.1086 | 0.0572 | 0.0199 | 0.0031 |
+| LFM2.5-1.2B-Instruct | CUDA | 0.1840 | 0.0958 | 0.1020 | 0.0472 | 0.0106 | 0.0030 |
+| LFM2.5-1.2B-Instruct | CPU | 0.1839 | 0.0951 | 0.1058 | 0.0459 | 0.0121 | 0.0019 |
+| Qwen3-4B | CUDA | 0.1250 | 0.0738 | 0.0780 | 0.0448 | 0.0176 | 0.0118 |
+| Qwen3-4B | CPU | 0.1160 | 0.0677 | 0.0756 | 0.0351 | 0.0119 | 0.0017 |
+| SmolLM3-3B | CUDA | 0.2400 | 0.0484 | 0.0448 | 0.0601 | 0.0144 | 0.0060 |
+| SmolLM3-3B | CPU | 0.2368 | 0.0461 | 0.0426 | 0.0565 | 0.0122 | 0.0017 |
+| LFM2.5-2.6B | CUDA | 0.2475 | 0.1501 | 0.1648 | 0.0757 | 0.0179 | 0.0056 |
+| LFM2.5-2.6B | CPU | 0.2449 | 0.1551 | 0.1690 | 0.0730 | 0.0214 | 0.0034 |
+
+With this, the KL part of the M3 exit is met: Q4_0-pure, Q4_K_M and IQ4_XS of every model, KL-checked against
+BF16 on both backends.
+
+**Observations to discuss with the team**
+1. **SmolLM3-3B breaks the expected order.** Q5_0-pure (0.060 CUDA / 0.057 CPU) is worse than Q4_K_M (0.045 /
+   0.043) and IQ4_XS. The other five models follow Q8_0 < Q6_K < Q5_0 < IQ4_XS ≈ Q4_K_M < Q4_0-pure.
+   - Likely cause: `--pure` also puts the token embedding and output head at Q5_0, while Q4_K_M keeps the output
+     at Q6_K. SmolLM3's Q4_0-pure gap (0.240 vs 0.045 for Q4_K_M) is also the widest of the six.
+   - This affects how the R2a uniform-bits arm reads on SmolLM3 (runbook choice 1).
+2. **IQ4_XS ≤ Q4_K_M on 5 of 6 models**, at 0.3–0.5 fewer bits per weight. The imatrix text is WikiText-2 train
+   and the KL text is WikiText-2 test, so the KL check is in the same domain as the calibration. The agentic
+   damage runs are the real test.
+3. **Backend effect.** CPU KL is higher than CUDA for Q6_K-pure on 4 of 6 models (e.g. Qwen3-0.6B 0.0195 vs
+   0.0138) and higher for Q4_K_M on 4 of 6, and lower for Q8_0 everywhere. Qwen3-4B Q8_0 is 0.0118 on CUDA vs
+   0.0017 on CPU. This is consistent with `m2-phase1`'s parity result (backend stays a factor).
+
+## QAD training mix and R2b calibration conversations (package K; job 110408, 6 min)
+Built per `docs/qad_data.md`; summary in `results/m3/qad_mix_manifest.json` (`pass: true`).
+
+| Source | Candidates | Parse failed | 13-gram hit | Duplicate | Kept | Tokens (Qwen3-0.6B) |
+|---|---|---|---|---|---|---|
+| Toucan (R2b holdout) | 2,000 | 0 | 0 | 0 | 2,000 | 9.09M (incl. tool schemas) |
+| Toucan | 4,025 | 0 | 0 | 170 (holdout hits) | 3,855 | 15.00M |
+| Nemotron tool_calling | 2,713 | 0 | 73 | 16 | 2,624 | 5.00M |
+| ToolACE | 8,544 | 452 | 3 | 1 | 8,088 | 5.00M |
+| FineWeb-Edu | 19,871 | 0 | 0 | 2 | 19,869 | 20.00M |
+| Cosmopedia v2 | 7,110 | 0 | 0 | 1 | 7,109 | 5.00M |
+| **Training mix** | | | | | **41,545** | **50.00M** |
+
+`rank_text.txt` (2,000 conversations, 7.0M tokens, no tool schemas) shares no 13-gram with the benchmark text, and
+its ids are disjoint from the training set.
+
+**Open before the R2b ranking (runbook step 4):** a holdout conversation averages about 3.5k tokens (tool
+responses are long). So the default ranking window (`RANK_CHUNKS=20` × 512 tokens) would cover only about three
+conversations. Options:
+- render the ranking text with tool responses truncated, or
+- raise `RANK_CHUNKS`, which costs proportionally more GPU time per tensor.
