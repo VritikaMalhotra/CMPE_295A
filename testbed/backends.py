@@ -111,8 +111,10 @@ class Backend:
         self.ctx = server.cfg.ctx
 
     def tokenize(self, prompt: str) -> list[int]:
-        r = requests.post(self.server.base + "/tokenize", json={"content": prompt, "add_special": False},
-                          timeout=self.timeout_s)
+        body = {"content": prompt, "add_special": False}
+        if self.fmt.send_tokens:                    # these ids are what the model sees: parse the template's special
+            body["parse_special"] = True            # tokens explicitly (llama-server's default, made explicit)
+        r = requests.post(self.server.base + "/tokenize", json=body, timeout=self.timeout_s)
         r.raise_for_status()
         return list(r.json()["tokens"])
 

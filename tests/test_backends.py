@@ -25,6 +25,7 @@ class FakeServer:
         self.reply = reply or {"content": "hello", "stop_type": "eos", "tokens_evaluated": n_tokens,
                                "tokens_predicted": 3, "timings": {"prompt_ms": 5.0, "predicted_ms": 7.0}}
         self.bodies = []
+        self.tok_bodies = []
         fake = self
 
         class H(BaseHTTPRequestHandler):
@@ -34,6 +35,7 @@ class FakeServer:
             def do_POST(self):
                 body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
                 if self.path == "/tokenize":
+                    fake.tok_bodies.append(body)
                     self._send(200, {"tokens": list(range(fake.n_tokens))})
                     return
                 fake.bodies.append(body)
@@ -172,5 +174,7 @@ def test_lfm_backend_sends_token_ids_and_preserved_tokens(fake):
     Backend(_Srv(fs.base, 100), {"n_predict": 50}, fmt=LFM25_1P2B).generate(MSGS, TOOLS)
     b = fs.bodies[-1]
     assert isinstance(b["prompt"], list) and "<|tool_call_start|>" in b["preserved_tokens"]
+    assert fs.tok_bodies[-1]["parse_special"] is True and fs.tok_bodies[-1]["add_special"] is False
     Backend(_Srv(fs.base, 100), {"n_predict": 50}, fmt=QWEN3).generate(MSGS, TOOLS)
     assert isinstance(fs.bodies[-1]["prompt"], str) and "preserved_tokens" not in fs.bodies[-1]
+    assert fs.tok_bodies[-1] == {"content": fs.tok_bodies[-1]["content"], "add_special": False}   # Qwen3 unchanged
