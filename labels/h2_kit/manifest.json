@@ -1,0 +1,43 @@
+{
+ "what": "H2 label kit: blank rater sheets (labels to be filled by human raters only)",
+ "seed": 295,
+ "sources": [
+  "/scratch/cmpe295-bertin/runs/ref_qwen3_0p6b/cd314594fb",
+  "/scratch/cmpe295-bertin/runs/ref_qwen3_1p7b/c456da2aef",
+  "/scratch/cmpe295-bertin/runs/ref_qwen3_4b/1c7b26d4e7",
+  "/scratch/cmpe295-bertin/runs/damage_0p6b/61417027a6",
+  "/scratch/cmpe295-bertin/runs/damage_1p7b/3520cf30d3",
+  "/scratch/cmpe295-bertin/runs/damage_4b/f1f84f5993"
+ ],
+ "n_steps_in_sources": 106370,
+ "sheets": {
+  "rater_sample_30": {
+   "items": 30,
+   "sheet": "labels/h2_kit/rater_sample_30.csv",
+   "sheet_sha256": "f7363f0416732ddd73365be9069ed32305ef8f4858a3040916de1fc8cabe9996",
+   "key_sha256": "e026a88417e602d738baafd76ee4347edad81141cb8666d3b1601f8edecbdbee"
+  },
+  "pilot_300": {
+   "items": 300,
+   "sheet": "labels/h2_kit/pilot_300.csv",
+   "sheet_sha256": "2c594806855e0b2e5eb44c22211f13a0d3519347a050f8ab0706392abc8f1962",
+   "key_sha256": "66b54ebfaa73e494f6111f568be55b48a6eb62944d33c33c880106ed709c9db1"
+  }
+ },
+ "key_dir": "/scratch/cmpe295-bertin/labels/h2_kit_20261110",
+ "label_set": [
+  "truncated",
+  "malformed",
+  "forced_quit",
+  "unknown_tool",
+  "invalid_args",
+  "exec_error",
+  "tool_error_payload",
+  "ok_call",
+  "missing_call",
+  "missing_call_direct_answer",
+  "abstain_ok",
+  "end_turn",
+  "reply"
+ ]
+}
