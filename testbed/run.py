@@ -26,7 +26,7 @@ from . import registry as reg
 from .adapter import load_bfcl_multi_turn, sample_task_ids, skeleton_task_ids
 from . import prompt_formats
 from .backends import Backend, LlamaServer, ServerConfig
-from .grammar import task_grammar, task_grammar_free
+from .grammar import grammars_for, task_grammar, task_grammar_free
 from .logger import MAX_INFRA_ATTEMPTS, StepLogger, record_retry, retry_count, to_parquet
 from .profiler import GpuMeter
 from .runner import run_episode
@@ -232,7 +232,8 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
         scfg = ServerConfig(binary=binaries[s0.backend], model_path=model_files[s0.variant], backend=s0.backend,
                             ctx=int(s0.server.get("ctx", 40960)),
                             threads=cfg.cpu_threads if s0.backend == "cpu" else None)
-        gfn = GRAMMARS[s0.constraint]
+        fmt = prompt_formats.for_model(s0.model)          # R1 grammar in the model's call syntax
+        gfn = grammars_for(fmt.syntax, think_prefix=fmt.raw_prefix == "<think>")[s0.constraint]
         print(f"[{key}] {s0.variant}/{s0.backend} repair={s0.repair} constraint={s0.constraint}: "
               f"{len(group)} episodes", flush=True)
         try:
@@ -242,7 +243,7 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
             lock.close()
             continue
         try:
-            be = Backend(srv, s0.decoding, thinking=s0.thinking, fmt=prompt_formats.for_model(s0.model))
+            be = Backend(srv, s0.decoding, thinking=s0.thinking, fmt=fmt)
             for s in group:
                 if os.path.exists(os.path.join(r.dir, "episodes", f"{s.run_id}.json")):
                     continue
