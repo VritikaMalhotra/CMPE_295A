@@ -77,35 +77,48 @@ def seed_stats(vals_by_seed: dict[int, list[float]]) -> dict:
             "per_seed": per, "n": int(sum(len(v) for v in vals_by_seed.values()))}
 
 
+def _pooled(per_seed: dict[int, list[int]]) -> dict:
+    """per_seed: seed -> [events, steps]; rate = events / steps pooled within a seed (as the power table and
+    the damage table count), then mean and SD over the seeds."""
+    per = [100.0 * e / n for s, (e, n) in sorted(per_seed.items()) if n]
+    return {"mean": float(np.mean(per)) if per else None, "sd": float(np.std(per, ddof=1)) if len(per) > 1 else None,
+            "per_seed": per, "steps": int(sum(n for e, n in per_seed.values()))}
+
+
 def summarise(eps: dict, steps: dict, keys: set, groups: dict) -> dict:
-    """Success rate and failure rate per step, per group, mean ± SD over seeds."""
+    """Episode success (mean over the seeds of each seed's success rate) and failures per 100 steps (pooled
+    within each seed), per group, with ± SD over seeds."""
     out = {}
     for gname, gkeys in groups.items():
         ks = [k for k in keys if k in gkeys]
         if not ks:
             continue
         succ = collections.defaultdict(list)
-        anyf = collections.defaultdict(list)
+        anyf = collections.defaultdict(lambda: [0, 0])
         for k in ks:
             succ[k[2]].append(float(bool(eps[k].get("valid"))))
             labs = steps.get(k, [])
-            if labs:
-                anyf[k[2]].append(sum(l in FAILURES for l in labs) / len(labs))
-        out[gname] = {"success": seed_stats(succ), "failure_per_step": seed_stats(anyf), "episodes": len(ks)}
+            anyf[k[2]][0] += sum(l in FAILURES for l in labs)
+            anyf[k[2]][1] += len(labs)
+        f = _pooled(anyf)
+        out[gname] = {"success": seed_stats(succ),
+                      "failure_per_step": {**f, "mean": None if f["mean"] is None else f["mean"] / 100,
+                                           "sd": None if f["sd"] is None else f["sd"] / 100},
+                      "episodes": len(ks)}
     return out
 
 
 def by_class(steps: dict, keys: set) -> dict:
-    """Failures per 100 steps, by class, mean ± SD over seeds."""
+    """Failures per 100 steps by class, pooled within each seed, mean ± SD over seeds."""
     classes = sorted({l for k in keys for l in steps.get(k, []) if l in FAILURES})
     out = {}
     for c in classes:
-        v = collections.defaultdict(list)
+        v = collections.defaultdict(lambda: [0, 0])
         for k in keys:
             labs = steps.get(k, [])
-            if labs:
-                v[k[2]].append(100.0 * sum(l == c for l in labs) / len(labs))
-        out[c] = seed_stats(v)
+            v[k[2]][0] += sum(l == c for l in labs)
+            v[k[2]][1] += len(labs)
+        out[c] = _pooled(v)
     return out
 
 
