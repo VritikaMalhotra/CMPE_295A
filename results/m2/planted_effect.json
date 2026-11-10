@@ -1,0 +1,539 @@
+{
+ "what": "C10 planted-effect checks: synthetic data with known effects (development check, not study data)",
+ "commit": "2d818ad3be8ccc1c7fea75453dc033694eee1156",
+ "python": "3.12.15",
+ "R": "R version 4.4.1 (2024-06-14)",
+ "lme4": "2.1.0",
+ "seeds": [
+  0
+ ],
+ "stats": [
+  {
+   "seed": 0,
+   "planted_drop": 0.15,
+   "realized_diff": 0.15000000000000008,
+   "mcnemar_p": 1.734723475976807e-18,
+   "ci": {
+    "diff": 0.15,
+    "lo": 0.1175,
+    "hi": 0.1825625000000002,
+    "n_clusters": 200
+   },
+   "detected": true,
+   "ci_covers_realized": true,
+   "null_p": 1.0,
+   "null_false_positive": false,
+   "pass": true
+  }
+ ],
+ "mixed_effects": [
+  {
+   "seed": 0,
+   "terms": {
+    "A:configurationq4_0": {
+     "truth": 0.49395380017707685,
+     "estimate": 0.573109441262753,
+     "ci": [
+      0.454870734776635,
+      0.691348147748871
+     ],
+     "p": 2.09785447959875e-21,
+     "covered": true,
+     "significant": true
+    },
+    "B:precision4bit": {
+     "truth": 0.6,
+     "estimate": 0.777493184083969,
+     "ci": [
+      0.463434042797364,
+      1.09155232537058
+     ],
+     "p": 1.22136907522904e-06,
+     "covered": true,
+     "significant": true
+    },
+    "B:precision4bit:step_typetext": {
+     "truth": -0.4,
+     "estimate": -0.642173270171848,
+     "ci": [
+      -0.935157052114342,
+      -0.349189488229355
+     ],
+     "p": 1.73966053843472e-05,
+     "covered": true,
+     "significant": true
+    },
+    "B:precision4bit:turn_deptht4+": {
+     "truth": 0.4,
+     "estimate": 0.426713805007498,
+     "ci": [
+      0.0275891105715444,
+      0.825838499443452
+     ],
+     "p": 0.0361314874879533,
+     "covered": true,
+     "significant": true
+    },
+    "C:configurationq4_0": {
+     "truth": -0.8,
+     "estimate": -0.799887358843114,
+     "ci": [
+      -1.095154436355,
+      -0.504620281331231
+     ],
+     "p": 1.09865395523889e-07,
+     "covered": true,
+     "significant": true
+    }
+   },
+   "null_terms": {
+    "A:configurationq4_0": {
+     "truth": 0.0,
+     "estimate": 0.0435566353787574,
+     "ci": [
+      -0.0903457781442007,
+      0.177459048901715
+     ],
+     "p": 0.523766881390876,
+     "covered": true,
+     "significant": false
+    },
+    "B:precision4bit": {
+     "truth": 0.0,
+     "estimate": 0.0585557322127255,
+     "ci": [
+      -0.272239342835605,
+      0.389350807261056
+     ],
+     "p": 0.728633935797324,
+     "covered": true,
+     "significant": false
+    },
+    "B:precision4bit:step_typetext": {
+     "truth": 0.0,
+     "estimate": -0.267160501411108,
+     "ci": [
+      -0.578456632562938,
+      0.044135629740722
+     ],
+     "p": 0.0925533501041933,
+     "covered": true,
+     "significant": false
+    },
+    "B:precision4bit:turn_deptht4+": {
+     "truth": 0.0,
+     "estimate": 0.380191502034298,
+     "ci": [
+      -0.0509344319108886,
+      0.811317435979484
+     ],
+     "p": 0.0839150448922246,
+     "covered": true,
+     "significant": false
+    },
+    "C:configurationq4_0": {
+     "truth": 0.0,
+     "estimate": 0.0405043584227844,
+     "ci": [
+      -0.2384288015886,
+      0.319437518434168
+     ],
+     "p": 0.775943176937671,
+     "covered": true,
+     "significant": false
+    }
+   },
+   "status": {
+    "A": "ok",
+    "B": "ok",
+    "C": "ok"
+   },
+   "family_A": "poisson",
+   "dispersion_A": 0.796287315598103,
+   "notes": [
+    "model B: step_type level(s) end dropped (failure rate 0)"
+   ],
+   "recovered": true,
+   "null_false_positive": false,
+   "null_covered": true,
+   "result": {
+    "script": "analysis/mixed_effects.R",
+    "script_version": "1.0.0",
+    "r_version": "R version 4.4.1 (2024-06-14)",
+    "lme4_version": "2.1.0",
+    "inputs": {
+     "steps": "/tmp/tmpvbivzrxx/steps.csv",
+     "episodes": "/tmp/tmpvbivzrxx/episodes.csv",
+     "n_step_rows": 10763,
+     "n_episodes": 960,
+     "configuration": "variant",
+     "reference": "bf16",
+     "levels": [
+      "bf16",
+      "q4_0"
+     ],
+     "filters": [],
+     "depth_breaks": [
+      0,
+      1,
+      2,
+      4
+     ]
+    },
+    "ci_method": "Wald 95%",
+    "notes": [
+     "model B: step_type level(s) end dropped (failure rate 0)"
+    ],
+    "models": {
+     "A": {
+      "status": "ok",
+      "family": "poisson",
+      "scale": "rate_ratio",
+      "formula": "failures ~ configuration + offset(log(steps)) + (1 | task)",
+      "fallback_step": "default",
+      "attempts": [
+       {
+        "step": "default",
+        "formula": "failures ~ configuration + offset(log(steps)) + (1 | task)",
+        "converged": true,
+        "warnings": []
+       }
+      ],
+      "n_obs": 960,
+      "n_groups": [
+       120
+      ],
+      "singular": false,
+      "aic": 2592.76272417635,
+      "fixed": [
+       {
+        "term": "(Intercept)",
+        "estimate": -2.63633987531759,
+        "se": 0.0684611903707111,
+        "z": -38.5085310530251,
+        "p": 0,
+        "ci_low": -2.77052134278292,
+        "ci_high": -2.50215840785226,
+        "exp_estimate": 0.0716229392802432,
+        "exp_ci_low": 0.0626293448724507,
+        "exp_ci_high": 0.0819080167865194
+       },
+       {
+        "term": "configurationq4_0",
+        "estimate": 0.573109441262753,
+        "se": 0.0603269791785817,
+        "z": 9.5000520342021,
+        "p": 2.09785447959875e-21,
+        "ci_low": 0.454870734776635,
+        "ci_high": 0.691348147748871,
+        "exp_estimate": 1.77377393118961,
+        "exp_ci_low": 1.57596965179754,
+        "exp_ci_high": 1.99640516895691
+       }
+      ],
+      "random_sd": {
+       "task": 0.499992477738426
+      },
+      "poisson_dispersion": 0.796287315598103,
+      "dispersion_threshold": 1.5
+     },
+     "B": {
+      "status": "ok",
+      "family": "binomial",
+      "scale": "odds_ratio",
+      "formula": "failure ~ precision * step_type + precision * turn_depth + (1 | task/episode)",
+      "fallback_step": "bobyqa",
+      "attempts": [
+       {
+        "step": "default",
+        "formula": "failure ~ precision * step_type + precision * turn_depth + (1 | task/episode)",
+        "converged": false,
+        "warnings": [
+         "Model failed to converge with max|grad| = 0.0115983 (tol = 0.002, component 1)\n  See ?lme4::convergence and ?lme4::troubleshooting."
+        ]
+       },
+       {
+        "step": "bobyqa",
+        "formula": "failure ~ precision * step_type + precision * turn_depth + (1 | task/episode)",
+        "converged": true,
+        "warnings": []
+       }
+      ],
+      "n_obs": 9737,
+      "n_groups": [
+       120,
+       960
+      ],
+      "singular": false,
+      "aic": 6894.08782207767,
+      "fixed": [
+       {
+        "term": "(Intercept)",
+        "estimate": -2.6773973521303,
+        "se": 0.139784547419345,
+        "z": -19.1537433969599,
+        "p": 9.00731998558352e-82,
+        "ci_low": -2.95137003066745,
+        "ci_high": -2.40342467359315,
+        "exp_estimate": 0.0687418323186891,
+        "exp_ci_low": 0.0522680480441296,
+        "exp_ci_high": 0.090407805291315
+       },
+       {
+        "term": "precision4bit",
+        "estimate": 0.777493184083969,
+        "se": 0.160237200154627,
+        "z": 4.85213909962041,
+        "p": 1.22136907522904e-06,
+        "ci_low": 0.463434042797364,
+        "ci_high": 1.09155232537058,
+        "exp_estimate": 2.17601056470208,
+        "exp_ci_low": 1.58952311376888,
+        "exp_ci_high": 2.97889469909498
+       },
+       {
+        "term": "step_typetext",
+        "estimate": -0.180251167132779,
+        "se": 0.111793404744027,
+        "z": -1.61235958011566,
+        "p": 0.106883715153397,
+        "ci_low": -0.39936221414018,
+        "ci_high": 0.0388598798746225,
+        "exp_estimate": 0.835060445331451,
+        "exp_ci_low": 0.670747703044855,
+        "exp_ci_high": 1.03962480108639
+       },
+       {
+        "term": "turn_deptht1",
+        "estimate": 0.200252190420923,
+        "se": 0.165326989010647,
+        "z": 1.21124924381237,
+        "p": 0.225799894904647,
+        "ci_low": -0.123782753712395,
+        "ci_high": 0.524287134554242,
+        "exp_estimate": 1.22171082307975,
+        "exp_ci_low": 0.883571772721213,
+        "exp_ci_high": 1.68925420810283
+       },
+       {
+        "term": "turn_deptht2-3",
+        "estimate": 0.309744994963648,
+        "se": 0.148184207428541,
+        "z": 2.09026994400207,
+        "p": 0.036593557595957,
+        "ci_low": 0.0193092853260951,
+        "ci_high": 0.600180704601202,
+        "exp_estimate": 1.36307747818773,
+        "exp_ci_low": 1.01949691529712,
+        "exp_ci_high": 1.82244809539334
+       },
+       {
+        "term": "turn_deptht4+",
+        "estimate": 0.346248188039022,
+        "se": 0.160628612814816,
+        "z": 2.15558225879844,
+        "p": 0.0311162991033658,
+        "ci_low": 0.0314218920353529,
+        "ci_high": 0.661074484042691,
+        "exp_estimate": 1.41375344897574,
+        "exp_ci_low": 1.03192077121665,
+        "exp_ci_high": 1.93687235516571
+       },
+       {
+        "term": "precision4bit:step_typetext",
+        "estimate": -0.642173270171848,
+        "se": 0.149484268207738,
+        "z": -4.29592543664474,
+        "p": 1.73966053843472e-05,
+        "ci_low": -0.935157052114342,
+        "ci_high": -0.349189488229355,
+        "exp_estimate": 0.52614771947273,
+        "exp_ci_low": 0.39252421393266,
+        "exp_ci_high": 0.705259479237749
+       },
+       {
+        "term": "precision4bit:turn_deptht1",
+        "estimate": -0.146418045552446,
+        "se": 0.213160088173924,
+        "z": -0.686892404702793,
+        "p": 0.492150533567941,
+        "ci_low": -0.56420414131472,
+        "ci_high": 0.271368050209828,
+        "exp_estimate": 0.863796521400694,
+        "exp_ci_low": 0.568812661161579,
+        "exp_ci_high": 1.31175777427357
+       },
+       {
+        "term": "precision4bit:turn_deptht2-3",
+        "estimate": -0.0161877614850031,
+        "se": 0.190665764057104,
+        "z": -0.0849012488689626,
+        "p": 0.932339898920318,
+        "ci_low": -0.389885792121738,
+        "ci_high": 0.357510269151732,
+        "exp_estimate": 0.983942556194551,
+        "exp_ci_low": 0.677134204143007,
+        "exp_ci_high": 1.42976524884896
+       },
+       {
+        "term": "precision4bit:turn_deptht4+",
+        "estimate": 0.426713805007498,
+        "se": 0.203638790092164,
+        "z": 2.09544460961673,
+        "p": 0.0361314874879533,
+        "ci_low": 0.0275891105715444,
+        "ci_high": 0.825838499443452,
+        "exp_estimate": 1.53221408696893,
+        "exp_ci_low": 1.02797321430662,
+        "exp_ci_high": 2.28379492347918
+       }
+      ],
+      "random_sd": {
+       "episode:task": 0.316863086568207,
+       "task": 0.605961715899805
+      },
+      "reference": {
+       "precision": "16bit",
+       "step_type": "call",
+       "turn_depth": "t0"
+      },
+      "precision_effects": [
+       {
+        "label": "4bit vs 16bit | step_type=call, turn_depth=t0",
+        "terms": [
+         "precision4bit"
+        ],
+        "estimate": 0.777493184083969,
+        "se": 0.160237200154627,
+        "z": 4.85213909962041,
+        "p": 1.22136907522904e-06,
+        "ci_low": 0.463434042797364,
+        "ci_high": 1.09155232537058,
+        "exp_estimate": 2.17601056470208,
+        "exp_ci_low": 1.58952311376888,
+        "exp_ci_high": 2.97889469909498
+       },
+       {
+        "label": "4bit vs 16bit | step_type=text, turn_depth=t0",
+        "terms": [
+         "precision4bit",
+         "precision4bit:step_typetext"
+        ],
+        "estimate": 0.135319913912121,
+        "se": 0.192300456677926,
+        "z": 0.70369002887373,
+        "p": 0.481625831267816,
+        "ci_low": -0.241582055387218,
+        "ci_high": 0.51222188321146,
+        "exp_estimate": 1.14490299616657,
+        "exp_ci_low": 0.785384356127425,
+        "exp_ci_high": 1.66899539111587
+       },
+       {
+        "label": "4bit vs 16bit | step_type=call, turn_depth=t1",
+        "terms": [
+         "precision4bit",
+         "precision4bit:turn_deptht1"
+        ],
+        "estimate": 0.631075138531523,
+        "se": 0.15440443618377,
+        "z": 4.08715678207863,
+        "p": 4.36692023274686e-05,
+        "ci_low": 0.32844800455812,
+        "ci_high": 0.933702272504926,
+        "exp_estimate": 1.87963035632082,
+        "exp_ci_low": 1.38881102660771,
+        "exp_ci_high": 2.54391001274838
+       },
+       {
+        "label": "4bit vs 16bit | step_type=call, turn_depth=t2-3",
+        "terms": [
+         "precision4bit",
+         "precision4bit:turn_deptht2-3"
+        ],
+        "estimate": 0.761305422598966,
+        "se": 0.122234912071878,
+        "z": 6.22821589752764,
+        "p": 4.71776650944513e-10,
+        "ci_low": 0.521729397284664,
+        "ci_high": 1.00088144791327,
+        "exp_estimate": 2.14106939733931,
+        "exp_ci_low": 1.68493906051636,
+        "exp_ci_high": 2.72067890859986
+       },
+       {
+        "label": "4bit vs 16bit | step_type=call, turn_depth=t4+",
+        "terms": [
+         "precision4bit",
+         "precision4bit:turn_deptht4+"
+        ],
+        "estimate": 1.20420698909147,
+        "se": 0.141606993913324,
+        "z": 8.50386662277819,
+        "p": 1.83378211402209e-17,
+        "ci_low": 0.926662381062371,
+        "ci_high": 1.48175159712056,
+        "exp_estimate": 3.33411404062975,
+        "exp_ci_low": 2.52606405293276,
+        "exp_ci_high": 4.40064709484242
+       }
+      ]
+     },
+     "C": {
+      "status": "ok",
+      "family": "binomial",
+      "scale": "odds_ratio",
+      "formula": "success ~ configuration + (1 | task)",
+      "fallback_step": "default",
+      "attempts": [
+       {
+        "step": "default",
+        "formula": "success ~ configuration + (1 | task)",
+        "converged": true,
+        "warnings": []
+       }
+      ],
+      "n_obs": 960,
+      "n_groups": [
+       120
+      ],
+      "singular": false,
+      "aic": 1222.77925249297,
+      "fixed": [
+       {
+        "term": "(Intercept)",
+        "estimate": 0.335144001825494,
+        "se": 0.149879571200442,
+        "z": 2.23608860861557,
+        "p": 0.0253459674870541,
+        "ci_low": 0.0413854402543219,
+        "ci_high": 0.628902563396667,
+        "exp_estimate": 1.39814170568478,
+        "exp_ci_low": 1.04225375468691,
+        "exp_ci_high": 1.87555115094056
+       },
+       {
+        "term": "configurationq4_0",
+        "estimate": -0.799887358843114,
+        "se": 0.150649236333378,
+        "z": -5.3096011523949,
+        "p": 1.09865395523889e-07,
+        "ci_low": -1.095154436355,
+        "ci_high": -0.504620281331231,
+        "exp_estimate": 0.449379579902219,
+        "exp_ci_low": 0.334487945860386,
+        "exp_ci_high": 0.603734781274852
+       }
+      ],
+      "random_sd": {
+       "task": 1.16163521032319
+      }
+     }
+    }
+   },
+   "pass": true
+  }
+ ],
+ "pass": true,
+ "wall_s": 58.2
+}
