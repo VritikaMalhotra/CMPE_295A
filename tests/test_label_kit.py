@@ -24,7 +24,7 @@ def _step(i, variant, raw, calls, results=(), known=True, errs=(), stop="eos", g
             "raw_text": raw, "n_tool_call_blocks": len(calls), "decoded_calls": list(calls),
             "execution_results": list(results), "known_tools": known, "schema_errors": list(errs),
             "turn_has_ground_truth": gt, "is_last_step_of_turn": last, "forced_quit": False,
-            "benchmark": "bfcl_multi_turn_base", "failure_class": "old"}
+            "benchmark": "", "failure_class": "old"}
 
 
 @pytest.fixture
@@ -44,8 +44,14 @@ def run_dirs(tmp_path):
                 rows.append(_step(i, variant, "<tool_call>", ["cd(folder='x')"], ['{"error": "no"}']))
             else:
                 rows.append(_step(i, variant, "Which folder?", []))
-        with open(p / "s.jsonl", "w") as f:
-            f.write("\n".join(json.dumps(r) for r in rows) + "\n")
+        for r in rows:                         # one step file per episode, as the logger writes them
+            with open(p / f"{r['run_id']}.jsonl", "w") as f:
+                f.write(json.dumps(r) + "\n")
+        (tmp_path / d / "episodes").mkdir()
+        for r in rows:
+            (tmp_path / d / "episodes" / f"{r['run_id']}.json").write_text("{}")
+        with open(tmp_path / d / "specs.jsonl", "w") as f:   # old runs: benchmark only in the specs
+            f.write("\n".join(json.dumps({"run_id": r["run_id"], "benchmark": "bfcl_multi_turn_base"}) for r in rows))
         dirs.append(str(tmp_path / d))
     return dirs
 
@@ -66,6 +72,10 @@ def test_export_blank_blind_sheets_and_separate_key(run_dirs, tmp_path):
         assert [k["item"] for k in krows] == [x["item"] for x in rows]
         assert {k["precision"] for k in krows} == {"16bit", "4bit"}                       # both precisions
         assert all(k["machine_label"] in CLASSES for k in krows)
+        assert all(row["benchmark"] == "bfcl_multi_turn_base" for row in rows)            # filled from specs
+        # the classifier relabels from the logged fields: these synthetic steps give exactly these four classes
+        assert {k["machine_label"] for k in krows} <= {"ok_call", "missing_call_direct_answer",
+                                                       "tool_error_payload", "missing_call"}
     s = {x["item"] for x in csv.DictReader(open(out / "rater_sample_30.csv"))}
     p = {x["item"] for x in csv.DictReader(open(out / "pilot_300.csv"))}
     assert not s & p
