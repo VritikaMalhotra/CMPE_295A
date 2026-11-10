@@ -3,16 +3,17 @@
   "title": "Where we are against M2, M3 and Dec 4",
   "m2": [
    "BF16 references: Qwen3 0.6B / 1.7B / 4B done ({runs[ref_qwen3_0p6b][finished]:,} / {runs[ref_qwen3_1p7b][finished]:,} / {runs[ref_qwen3_4b][finished]:,} of 2,505; the rest excluded by rule)",
-   "New handlers for SmolLM3 and LFM2.5 (their chat templates); references running: SmolLM3-3B {runs[ref_smollm3_3b][finished]:,}, LFM2.5-1.2B {runs[ref_lfm2p5_1p2b][finished]:,}, LFM2.5-2.6B {runs[ref_lfm2p5_2p6b][finished]:,} of 2,505",
+   "New handlers for SmolLM3 and LFM2.5 (their chat templates); BF16 references running (Slurm arrays 111883 / 111885 / 111887): SmolLM3-3B {runs[ref_smollm3_3b][finished]:,}, LFM2.5-1.2B {runs[ref_lfm2p5_1p2b][finished]:,}, LFM2.5-2.6B {runs[ref_lfm2p5_2p6b][finished]:,} of 2,505",
    "FR-E2: {runs[_fre2][agree]:,} / {runs[_fre2][n]:,} verdicts agree (Qwen3)",
+   "S10 rerun on the merged code (array 111842): {runs[s10_requeue][finished]} of 104 episodes",
    "Statistics: planted-effect check passes for the episode tests and lme4 models A–C",
    "Pre-registration: review fixes in; decisions marked proposed until you confirm",
    "Needs the team: merge to main, human labels (blank kit ready), OSF filing"
   ],
   "m3": [
    "KL vs BF16 on CUDA and CPU: 6 models x 6 formats (the KL exit item is met)",
-   "H1 damage runs, Qwen3-0.6B: Q4_0 {runs[h1_qwen3_0p6b_q4_0][finished]:,}, Q4_K_M {runs[h1_qwen3_0p6b_q4_k_m][finished]:,}, IQ4_XS {runs[h1_qwen3_0p6b_iq4_xs][finished]:,} of 2,505 episodes",
-   "Qwen3-1.7B and LFM2.5-1.2B cells submitted",
+   "H1 damage runs, Qwen3-0.6B (arrays 111846 / 111848 / 111850, packs 111930 / 111931): Q4_0 {runs[h1_qwen3_0p6b_q4_0][finished]:,}, Q4_K_M {runs[h1_qwen3_0p6b_q4_k_m][finished]:,}, IQ4_XS {runs[h1_qwen3_0p6b_iq4_xs][finished]:,} of 2,505 episodes",
+   "Qwen3-1.7B and LFM2.5-1.2B cells submitted (arrays 111933–111943)",
    "R1 grammars: JSON and Pythonic, property-tested with llama.cpp's validator",
    "R2a variants built; R2b ranking text and timing probe done, ranking queued",
    "Label kit: 30 + 300 blank sheets, rater guide, kappa script"
