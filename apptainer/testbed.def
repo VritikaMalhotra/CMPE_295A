@@ -1,0 +1,40 @@
+# Stage B: compile llama.cpp at the pinned commit (d812350, v0.6.0) for P100, A100 and H100 (sm 60, 80, 90) and a
+# portable CPU build, on top of stage A. No network needed: the source is the shared tree $LLAMA_DIR, copied in.
+#   sbatch slurm/build_apptainer.sbatch          (runs: apptainer build --fakeroot ... apptainer/testbed.def)
+# Run the testbed with the repository bind-mounted (code changes need no rebuild):
+#   apptainer exec --nv -B $PWD -B $CMPE295_GROUP $CMPE295_GROUP/containers/testbed.sif \
+#       python -m testbed.run +experiment=smoke local=true
+Bootstrap: localimage
+From: {{ BASE_SIF }}
+
+%files
+    {{ LLAMA_SRC }} /opt/llama.cpp
+
+%post
+    set -eu
+    cd /opt/llama.cpp
+    test "$(git rev-parse HEAD 2>/dev/null || cat .pinned_commit)" = d81235049384534c167caea52b85a694f6103d14
+    rm -rf build-cuda build-cpu
+    cmake -B build-cuda -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="60;80;90" -DLLAMA_CURL=OFF \
+        -DCMAKE_BUILD_TYPE=Release
+    cmake --build build-cuda -j "${BUILD_JOBS:-16}" --target llama-server llama-quantize llama-perplexity llama-imatrix llama-bench
+    cmake -B build-cpu -DGGML_CUDA=OFF -DGGML_NATIVE=OFF -DGGML_AVX=ON -DGGML_AVX2=ON -DGGML_FMA=ON -DGGML_F16C=ON \
+        -DLLAMA_CURL=OFF -DCMAKE_BUILD_TYPE=Release
+    cmake --build build-cpu -j "${BUILD_JOBS:-16}" --target llama-server llama-quantize llama-perplexity llama-imatrix llama-bench
+
+%environment
+    export PATH=/opt/venv/bin:$PATH
+    export LITELLM_LOCAL_MODEL_COST_MAP=True
+    export LLAMA_DIR=/opt/llama.cpp
+    export LLAMA_CUDA_BIN=/opt/llama.cpp/build-cuda/bin/llama-server
+    export LLAMA_CPU_BIN=/opt/llama.cpp/build-cpu/bin/llama-server
+    export LLAMA_QUANTIZE=/opt/llama.cpp/build-cuda/bin/llama-quantize
+    export LLAMA_PERPLEXITY=/opt/llama.cpp/build-cuda/bin/llama-perplexity
+
+%test
+    /opt/llama.cpp/build-cpu/bin/llama-server --version
+    /opt/venv/bin/python -c "import bfcl_eval, tau2, hydra; print('testbed.sif ok')"
+
+%labels
+    org.cmpe295.stage testbed
+    org.cmpe295.llama_cpp d81235049384534c167caea52b85a694f6103d14

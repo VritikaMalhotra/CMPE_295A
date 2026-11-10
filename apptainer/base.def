@@ -1,0 +1,37 @@
+# Stage A of the testbed container (Workbook 2 Table 37a: "Singularity image"; M4: recipe tagged with v0.1).
+# Network-bound, CPU-light: OS packages, Python 3.12, the testbed's Python dependencies, bfcl-eval and tau2 at
+# the pinned versions. Build on the CoE HPC login node (it has network; nothing is compiled here):
+#   apptainer build --fakeroot $CMPE295_GROUP/containers/testbed-base.sif apptainer/base.def
+# Stage B (apptainer/testbed.def) compiles llama.cpp offline inside a job.
+# Pins: scripts/setup_env.sh (bfcl-eval 2026.3.23, tau2-bench-verified 864350a, Python 3.12), pyproject.toml.
+Bootstrap: docker
+From: nvidia/cuda:12.6.3-devel-ubuntu24.04
+
+%files
+    pyproject.toml /opt/testbed-src/pyproject.toml
+
+%post
+    set -eu
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update
+    apt-get install -y --no-install-recommends python3.12 python3.12-venv python3-pip git cmake build-essential \
+        ca-certificates curl
+    rm -rf /var/lib/apt/lists/*
+    python3.12 -m venv /opt/venv
+    /opt/venv/bin/pip install --no-cache-dir uv
+    # the testbed's own dependencies (dev extras for the tests); the testbed code is bind-mounted at run time
+    /opt/venv/bin/uv pip install --python /opt/venv/bin/python -r /opt/testbed-src/pyproject.toml --extra dev
+    /opt/venv/bin/uv pip install --python /opt/venv/bin/python --no-deps "bfcl-eval==2026.3.23"
+    git clone --filter=blob:none https://github.com/amazon-agi/tau2-bench-verified /opt/tau2-bench-verified
+    git -C /opt/tau2-bench-verified checkout -q 864350a8971a8f8ee9e7b8472e2edc380a806b0c
+    /opt/venv/bin/uv pip install --python /opt/venv/bin/python -e /opt/tau2-bench-verified mcp
+    /opt/venv/bin/python -c "import bfcl_eval, hydra; print('base ok')"
+
+%environment
+    export PATH=/opt/venv/bin:$PATH
+    export LITELLM_LOCAL_MODEL_COST_MAP=True
+
+%labels
+    org.cmpe295.stage base
+    org.cmpe295.cuda 12.6.3
+    org.cmpe295.python 3.12
