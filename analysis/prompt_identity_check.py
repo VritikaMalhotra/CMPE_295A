@@ -52,11 +52,28 @@ def main() -> None:
         tok_mis = [k for k in both if ref[k][1] != cell[k][1]]
         commits = sorted({json.load(open(m)).get("testbed_git", {}).get("commit", "")[:7]
                           for m in glob.glob(os.path.join(c, "manifests", "*.json"))})
+        by_b = {}
+        for k in both:
+            b = by_b.setdefault(k[0], [0, 0])
+            b[0] += 1
+            b[1] += ref[k][0] != cell[k][0]
+        # tau2: the first prompt holds the simulated user's opening message; is the reference itself consistent
+        # across seeds of a task (same opening every time)?
+        ref_tasks = {}
+        for k, v in ref.items():
+            if k[0].startswith("tau2"):
+                ref_tasks.setdefault(k[:2], set()).add(v[0])
+        res.setdefault("reference_tau2_tasks_with_one_opening", [sum(len(v) == 1 for v in ref_tasks.values()),
+                                                                  len(ref_tasks)])
         res["cells"][c] = {"compared": len(both), "text_mismatch": len(text_mis), "token_mismatch": len(tok_mis),
+                           "by_benchmark": {b: {"compared": v[0], "mismatch": v[1]} for b, v in sorted(by_b.items())},
                            "examples": [list(k) for k in (text_mis or tok_mis)[:5]], "manifest_commits": commits,
                            "pass": not text_mis and not tok_mis and len(both) > 0}
         print(f"{c}: {len(both)} first prompts compared, {len(text_mis)} text / {len(tok_mis)} token mismatches; "
               f"commits {commits}")
+    # BFCL first prompts depend only on the task and the prompt format: they must all match
+    res["pass_bfcl"] = all(all(v["mismatch"] == 0 for b, v in c["by_benchmark"].items() if b.startswith("bfcl"))
+                           for c in res["cells"].values())
     res["pass"] = all(v["pass"] for v in res["cells"].values())
     with open(a.out, "w") as f:
         json.dump(res, f, indent=1)
