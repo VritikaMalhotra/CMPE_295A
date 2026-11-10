@@ -15,7 +15,7 @@
    "H1 damage runs, Qwen3-0.6B (arrays 111846 / 111848 / 111850, packs 111930 / 111931): Q4_0 {runs[h1_qwen3_0p6b_q4_0][finished]:,}, Q4_K_M {runs[h1_qwen3_0p6b_q4_k_m][finished]:,}, IQ4_XS {runs[h1_qwen3_0p6b_iq4_xs][finished]:,} of 2,505 episodes",
    "Qwen3-1.7B and LFM2.5-1.2B cells submitted (arrays 111933–111943)",
    "R1 grammars: JSON and Pythonic, property-tested with llama.cpp's validator",
-   "R2a variants built; R2b ranking text and timing probe done, ranking queued",
+   "R2a variants built; R2b ranking window set by probe (1,000 chunks of tool-truncated conversations); ranking chains submitted for 0.6B, 1.7B, LFM2.5-1.2B (jobs 112000–112014)",
    "Label kit: 30 + 300 blank sheets, rater guide, kappa script"
   ],
   "dec4": [
