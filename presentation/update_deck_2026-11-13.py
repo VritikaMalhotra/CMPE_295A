@@ -25,6 +25,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 A = "http://schemas.openxmlformats.org/drawingml/2006/main"
 
 
+FACTS = {}            # filled in main() from code, configs and JSON: nothing below types a number in
+
+
 def J(path):
     with open(os.path.join(ROOT, path)) as f:
         return json.load(f)
@@ -171,6 +174,10 @@ def clear_body(slide):
         sh._element.getparent().remove(sh._element)
 
 
+def set_notes(slide, text_):
+    slide.notes_slide.notes_text_frame.text = text_
+
+
 def set_title(slide, title):
     for ph in slide.placeholders:
         if ph.placeholder_format.type == 1:
@@ -218,8 +225,8 @@ def slide_agent_loop(prs):
               "0.6B–4B models that fit a laptop or phone at 4 bits.")
     card(s, 6.3, 4.95, 6.4, 1.35, "Step card")
     head_body(s, 6.55, 5.1, 5.9, 1.1, "Step text", "One step = one generation",
-              "Chat template with tools → llama-server → parse calls → execute → log; ≤ 20 steps per turn, ctx 40,960, "
-              "≤ 4,096 new tokens.")
+              f"Chat template with tools → llama-server → parse calls → execute → log; ≤ {FACTS['max_steps']} steps per "
+              f"turn, ctx {FACTS['ctx']:,}, ≤ {FACTS['n_predict']:,} new tokens.")
     source(s, "docs/agents_and_data.md §1; testbed/runner.py (C2), testbed/backends.py (C3), testbed/prompt_formats.py.")
     return s
 
@@ -249,7 +256,7 @@ def slide_agent_parts(prs):
 
 def slide_architecture(prs, man, parity, thr):
     s = new_slide(prs, "Architecture: what each layer is for, with our numbers")
-    layers = [("Workload", "C1 benchmark adapter · C4 simulated user", "Same 501 tasks for every cell"),
+    layers = [("Workload", "C1 benchmark adapter · C4 simulated user", f"Same {FACTS['tasks']} tasks for every cell"),
               ("Execution", "C2 runner · C3 backend · C7 repairs · C8 QAD", "Real llama.cpp 4-bit kernels"),
               ("Measurement", "C5 step logger · C6 classifier · C9 cost", "Every step logged and labelled"),
               ("Analysis + control", "C10 stats · C11 config, registry, Slurm", "Resumable; run id = hash")]
@@ -298,13 +305,14 @@ def slide_data(prs, api_rows, tau_rows):
     table(s, 7.45, 1.35, 5.25, rows2, [1.35, 0.8, 1.45, 1.65], "Tau table", 11)
     card(s, 7.45, 3.0, 5.25, 3.3, "Data note card")
     text(s, 7.65, 3.15, 4.9, 3.05, "Data note text", [
-        [("501 tasks × (4 sampled + 1 greedy) = 2,505 episodes per cell", {"b": True})],
-        [("BFCL: a fixed-seed 100 of 200 tasks per category. miss_func withholds a function; miss_param leaves out a "
-          "value (asking is right).", {"color": "tx2", "size": 12})],
+        [(f"{FACTS['tasks']} tasks × (4 sampled + 1 greedy) = {FACTS['tasks'] * 5:,} episodes per cell", {"b": True})],
+        [(f"BFCL: a fixed-seed {FACTS['bfcl_per_cat']} of {FACTS['bfcl_full']} tasks per category. miss_func "
+          "withholds a function; miss_param leaves out a value (asking is right).", {"color": "tx2", "size": 12})],
         [("τ²: only tasks whose gold actions write to the database (an agent that does nothing would pass the rest).",
           {"color": "tx2", "size": 12})],
-        [("Other data: WikiText-2 test (KL), WikiText-2 train minus 13-gram overlaps (imatrix), a 50M-token QAD mix "
-          "(5 Hugging Face sources), all filtered against the benchmark text.", {"color": "tx2", "size": 12})],
+        [(f"Other data: WikiText-2 test (KL), WikiText-2 train minus 13-gram overlaps (imatrix), a "
+          f"{FACTS['qad_tokens'] / 1e6:.1f}M-token QAD mix ({FACTS['qad_sources']} Hugging Face sources), all filtered "
+          f"against the benchmark text.", {"color": "tx2", "size": 12})],
     ], 12)
     source(s, "docs/agents_and_data.md §2–4 (counts from bfcl-eval 2026.3.23 and tau2-bench-verified 864350a data).")
     return s
@@ -313,7 +321,7 @@ def slide_data(prs, api_rows, tau_rows):
 def slide_classes(prs, wtf):
     s = new_slide(prs, "What measures the agent: verdicts and step classes")
     ref = wtf["configs"][wtf["reference"]["label"]]["failure_classes"]
-    allr = wtf.get("reference_all", {}).get("failure_classes", ref)
+    allr = wtf.get("reference_all", {}).get("failure_classes", ref)          # BF16 on all its sampled episodes
     rows = [["Failure class (codebook v0)", "Qwen3-0.6B BF16, per 100 steps"]]
     for c in sorted(allr, key=lambda c: -(allr[c]["mean"] or 0)):
         v = allr[c]
@@ -322,11 +330,12 @@ def slide_classes(prs, wtf):
     card(s, 6.45, 1.35, 6.25, 2.3, "Episode card")
     head_body(s, 6.7, 1.5, 5.75, 2.0, "Episode text", "Episode verdict: the official checkers",
               ["bfcl-eval multi-turn checker (state + response) and τ²'s database evaluator.",
-               "FR-E2: our re-scoring agrees on 7,506 of 7,506 Qwen3 reference episodes."])
+               f"FR-E2: our re-scoring agrees on {FACTS['fre2_agree']:,} of {FACTS['fre2_n']:,} Qwen3 reference "
+               "episodes."])
     card(s, 6.45, 3.8, 6.25, 2.5, "Step card")
     head_body(s, 6.7, 3.95, 5.75, 2.25, "Step text", "Step class: what went wrong, and where",
-              ["13 classes, first matching rule wins (format before content). Primary outcome: failures per step "
-               "(decision 2).", "Not covered in v0: wrong tool, wrong value, policy violation (need the reference "
+              [f"{FACTS['n_classes']} classes, first matching rule wins (format before content). Primary outcome: "
+               "failures per step (decision 2).", "Not covered in v0: wrong tool, wrong value, policy violation (need the reference "
                "trajectory); raters note them for v1."])
     source(s, "docs/codebook_v0.md; results/m3/which_tasks_fail_qwen3-0.6b.json (sampled seeds, mean ± SD over seeds); "
               "results/m2/evaluator_agreement.json.")
@@ -467,6 +476,7 @@ def main():
     runs = _Runs(J(a.status)["runs"])
     fre2 = J("results/m2/evaluator_agreement.json")
     runs["_fre2"] = {"agree": fre2["agree"], "n": fre2["n"]}
+    fill = lambda t: t.format(runs=runs)       # noqa: E731
     man = J("results/m3/models_manifest.json")
     thr = J("results/m2/throughput.json")
     parity = []
@@ -475,6 +485,20 @@ def main():
         parity.append((f"Qwen3-{m.upper()}", (100 * p["variants"]["bf16"]["output_identical"],
                                                    100 * p["variants"]["q4_0"]["output_identical"])))
     dom = J("results/m3/benchmark_domains.json")
+    import sys
+    import yaml
+    sys.path.insert(0, ROOT)
+    from testbed.classifier import CLASSES
+    cfgy = yaml.safe_load(open(os.path.join(ROOT, "configs", "experiment", "ref_qwen3_0p6b.yaml")))["experiment"]
+    qad = J("results/m3/qad_mix_manifest.json")
+    FACTS.update({
+        "max_steps": cfgy["max_steps_per_turn"], "ctx": cfgy["server"]["ctx"], "n_predict": cfgy["decoding"]["n_predict"],
+        "tasks": sum(c["tasks_sampled"] for c in dom["bfcl"]["categories"].values())
+                 + sum(v["write_tasks"] for v in dom["tau2"].values()),
+        "bfcl_per_cat": dom["bfcl"]["per_category"],
+        "bfcl_full": next(iter(dom["bfcl"]["categories"].values()))["tasks_in_bfcl"],
+        "qad_tokens": qad["train"]["tokens_qwen3"], "qad_sources": len(qad["sources"]),
+        "n_classes": len(CLASSES), "fre2_agree": runs["_fre2"]["agree"], "fre2_n": runs["_fre2"]["n"]})
     api_rows = [[f"{c}", str(v["functions"]), " / ".join(str(v["tasks"][k]) for k in
                  ("multi_turn_base", "multi_turn_miss_func", "multi_turn_miss_param"))]
                 for c, v in dom["bfcl"]["api_classes"].items()]
@@ -486,14 +510,29 @@ def main():
     slides = list(prs.slides)
     slide_status(slides[1], content["status"], runs)
     slide_questions(slides[11], content["questions"])
+    set_notes(slides[1], fill(content["notes"]["status"]))
+    set_notes(slides[11], fill(content["notes"]["questions"]))
+    for sh in slides[9].shapes:                # plan slide: the open item it named is done
+        if sh.name == "Open text":
+            p0 = sh.text_frame.paragraphs[0]
+            p0.runs[0].text = fill(content["plan_open"][0])
+            for r in p0.runs[1:]:
+                r.text = ""
+            if len(p0.runs) > 1:
+                p0.runs[1].text = fill(content["plan_open"][1])
     new = [slide_agent_loop(prs), slide_agent_parts(prs), slide_architecture(prs, man, parity, thr),
            slide_data(prs, api_rows, tau_rows), slide_classes(prs, wtf)]
+    for sl, key in zip(new, ("agent_loop", "agent_parts", "architecture", "data", "classes")):
+        set_notes(sl, fill(content["notes"][key]))
     for i, s in enumerate(new):            # after the status slide
         move(prs, s, 2 + i)
     tail = [slide_which_fail(prs, os.path.join(a.figs, "which_tasks_fail_qwen3-0.6b.png"), wtf), slide_damage(prs, dmg)]
+    set_notes(tail[0], fill(content["notes"]["which_fail"]))
+    set_notes(tail[1], fill(content["notes"]["damage"]))
     for e in content.get("examples", []):
         if e["domain"] in ex["domains"]:
             tail.append(slide_example(prs, ex, e["domain"], e["title"]))
+            set_notes(tail[-1], fill(content["notes"]["example"]))
     order = list(prs.slides)
     pos = order.index(slides[7]) + 1       # after the power slide, before the decisions slide
     for i, s in enumerate(tail):

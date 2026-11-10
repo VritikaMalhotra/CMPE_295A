@@ -37,7 +37,29 @@
   "Canvas still lists our title as \"KV Cache Behavior...\": how do we get it changed?"
  ],
  "examples": [
-  {"domain": "bfcl_multi_turn_base", "title": "Example from our logs: same BFCL task and seed, BF16 vs Q4_0"},
-  {"domain": "tau2_verified_retail", "title": "Example from our logs: a τ² retail episode, BF16 vs Q4_0"}
- ]
+  {
+   "domain": "bfcl_multi_turn_base",
+   "title": "Example from our logs: same BFCL task and seed, BF16 vs Q4_0"
+  },
+  {
+   "domain": "tau2_verified_retail",
+   "title": "Example from our logs: a τ² retail episode, BF16 vs Q4_0"
+  }
+ ],
+ "plan_open": [
+  "Since Nov 9: ",
+  "the SmolLM3 and LFM2.5 prompt handlers are done (their chat templates); their BF16 references and the 1.7B / LFM2.5-1.2B damage cells are submitted. Open: owners from next week (team meeting)."
+ ],
+ "notes": {
+  "status": "YASHASHAV (about 1 min 30 s)\nThree columns: M2, M3, and the Dec 4 Canvas items. The numbers come from the run directories at the time the deck was built. This week every package ran from my account, on branches named for each package's Workbook 2 owner; the team decides on Friday's points and on merging.\nM2: the three Qwen3 references are complete; the three new models now have prompt handlers and their references are running. M3: the KL exit item is met; the first damage cell is the one in the preview later on.",
+  "agent_loop": "YASHASHAV (about 1 min)\nThis answers what kind of agent we test. One small model is the agent. Each step it reads the conversation and the tools, then calls tools or answers in text; the result goes back in, and it continues. It is the ReAct loop from Workbook 2, chapter 1.",
+  "agent_parts": "YASHASHAV (about 1 min)\nWhat sits around the agent. The tools are deterministic code. The user is scripted in BFCL and simulated by a second LLM in tau2. The judges are the official checkers. Only the agent changes between configurations, so we call it a single-agent setup, not a multi-agent system.",
+  "architecture": "YASHASHAV (about 1 min 30 s)\nThe layers of the testbed and why each matters, with numbers we measured: GPU throughput, the two-node limit, the CUDA versus CPU agreement, and the memory per format.",
+  "data": "YASHASHAV (about 1 min)\nThe data precisely: the eight BFCL API domains with the tasks we sample, and the three tau2 customer-service domains with the write tasks we keep. All counts are read from the benchmark data.",
+  "classes": "YASHASHAV (about 1 min)\nTwo kinds of measurement. Per episode, the official verdict. Per step, one class from codebook v0; the table shows how often each failure class occurs for Qwen3-0.6B at BF16.",
+  "which_fail": "YASHASHAV (about 1 min 30 s)\nWhich tasks fail, by benchmark and domain and by failure class, BF16 against 4-bit on the same tasks and seeds. Bars are means over the four sampled seeds with one standard deviation. Development data.",
+  "damage": "YASHASHAV (about 1 min 30 s)\nThe first damage numbers: for each failure class, the 4-bit rate per 100 steps, and the ratio to BF16 with a 95% interval from a task-cluster bootstrap. A preview on the episodes finished so far, not the registered test.",
+  "example": "YASHASHAV (about 1 min)\nA real episode from our logs, copied, not written by hand: the same task and seed under BF16 and under 4-bit, step by step, with each step's class.",
+  "questions": "YASHASHAV (about 1 min, then questions)\nNine things we would like from you: the decisions, the confirmatory classes, the CPU scope, the node limit, the OSF filing, the Dec 4 demo and draft, what 'examples for all modalities' meant, the next meeting date, and the Canvas title."
+ }
 }
