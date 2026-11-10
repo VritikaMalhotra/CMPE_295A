@@ -1,16 +1,18 @@
 # M2 decisions: open items before the analysis plan is frozen
 
-Status 2026-11-08. These were asked at the 2026-10-30 advisor review (Workbook 2, "Decisions requested from the
-advisor"); the repository has no notes from that review. Ekant decided all eleven on 2026-11-08 (column
-"Decision"); each still needs the **advisor's confirmation** before the pre-registration
-(`docs/preregistration_m2.md`) is frozen and filed. If the advisor decided differently on Oct 30, that wins.
+Status 2026-11-10: **all proposed, none decided.** These were asked at the 2026-10-30 advisor review (Workbook 2,
+"Decisions requested from the advisor"); the repository has no notes from that review. Ekant proposed an answer to
+all eleven on 2026-11-08 (column "Proposed answer"). Each becomes a decision only when the **advisor confirms**
+it (planned: Fri 2026-11-13), and only then is the pre-registration (`docs/preregistration_m2.md`, still DRAFT)
+frozen and filed. If the advisor decided differently on Oct 30, that wins. Two Oct 30 asks (slide 16 #1 and #4)
+and three questions from the `m2-phase1` review are added below as pending.
 
-| # | Question | Proposal | What depends on it | Decision |
+| # | Question | Proposal | What depends on it | Proposed answer (not yet decided) |
 |---|---|---|---|---|
 | 1 | Context budget: bfcl parity (ctx 40,960, cap 4,096 new tokens per step) or the Workbook's FR-E3 (16,384 / 1,024)? | Keep 40,960 / 4,096: matches bfcl-eval's local handler, so our verdicts compare with the official evaluator (FR-E2); every run so far used it. Update FR-E3 instead. | All reference and main-grid configs (`server.ctx`, `decoding.n_predict`); P100 memory for Qwen3-4B BF16 | **40,960 / 4,096** (Ekant, 2026-11-08; advisor to confirm) |
 | 2 | Primary M2 outcome: step-level failures (C6 classes per step) instead of episode accuracy? | Yes: episode accuracy is 0% at 0.6B and ≤10% at 4B on these tasks (Workbook 2, Table 36b) | H1 test unit; power analysis; inclusion rule wording | **Step-level primary**, episode success secondary (Ekant, 2026-11-08; advisor to confirm) |
-| 3a | Add the class "missing call with a direct answer" to codebook v0? | Yes (58 hand-labelled Q4_0 outputs: 49 answer directly instead of calling) | `docs/codebook_v0.md`, `testbed/classifier.py` | **Added** to codebook v0, on by default (Ekant, 2026-11-08; advisor to confirm) |
-| 3b | Does a tool that returns an error payload without raising (e.g. "No such file") get its own class? | Yes, separate from `exec_error` (the executor's own error); found by the Oct 27 rater check | same | **Own class** `tool_error_payload`, on by default (Ekant, 2026-11-08; advisor to confirm) |
+| 3a | Add the class "missing call with a direct answer" to codebook v0? | Yes (58 hand-labelled Q4_0 outputs: 49 answer directly instead of calling) | `docs/codebook_v0.md`, `testbed/classifier.py` | **Add** to codebook v0 (implemented, on by default; Ekant, 2026-11-08; advisor to confirm) |
+| 3b | Does a tool that returns an error payload without raising (e.g. "No such file") get its own class? | Yes, separate from `exec_error` (the executor's own error); found by the Oct 27 rater check | same | **Own class** `tool_error_payload` (implemented, on by default; Ekant, 2026-11-08; advisor to confirm) |
 | 4 | τ² simulated-user host | An A100/H100 job on the cluster (compute nodes cannot reach an outside VM; no cost); the GCP L4 VM is the fallback, and its quota request can be dropped | C4, S5, the τ² configs; GCP item in Table 37a | **Cluster A100/H100 job**; drop the GCP L4 quota request (Ekant, 2026-11-08; advisor to confirm). Built 2026-11-08: `slurm/simuser.sbatch` + `scripts/tau2_submit.sh`, endpoint file hand-off (`testbed/simuser_service.py`); not yet run end to end on the cluster |
 | 5 | Reference decoding | 4 sampled trials (Qwen3 card: T 0.7, top_p 0.8, top_k 20) + 1 greedy pass per task and configuration (Workbook Ch. 3) | `ref_*` configs, run volume | **4 sampled + 1 greedy** (Ekant, 2026-11-08; advisor to confirm) |
 | 6 | Keep only τ² tasks whose gold actions write to the database | Yes (an agent that does nothing passes the others) | C1 task list for τ² | **Write tasks only** (201 of 278) (Ekant, 2026-11-08; advisor to confirm) |
@@ -19,6 +21,16 @@ advisor"); the repository has no notes from that review. Ekant decided all eleve
 | 9 | M4 date: 2026-12-18 or 2026-12-11 | Either (37 days of float on that path) | Schedule only | **Keep 2026-12-18** (Ekant, 2026-11-08; advisor to confirm) |
 | 10 | Vision-language extension (FR-O6) as optional 295B scope, go/no-go at M6 | Yes | 295B scope | **Optional 295B scope, go/no-go at M6** (Ekant, 2026-11-08; advisor to confirm) |
 | 11 | **Inclusion rule vs a step-level outcome.** The registered rule drops tasks the 16-bit reference never solves and moves a model with < 120 included multi-turn tasks to single-turn-only analysis. On the Oct 28 runs (2 sampled BF16 trials, 200 BFCL base tasks) Qwen3-0.6B solves 11 tasks and Qwen3-4B 27 (`python -m testbed.inclusion`), so every model would leave the multi-turn analysis. | If decision 2 makes step-level failures primary: keep all tasks for the step-level tests (failures per step are defined whether or not the episode succeeds), apply the success-based inclusion only to the secondary episode-success analysis, and drop the 120-task switch for the primary outcome. Report the solved-task counts. | Pre-registration §5, power analysis, Stage 1 → main-grid task lists | **Episode-success analysis only**; all tasks for step-level tests; no 120-task switch for the primary outcome (Ekant, 2026-11-08; advisor to confirm) |
+
+### Pending, added 2026-11-10
+
+| # | Question | Proposal | What depends on it | Status |
+|---|---|---|---|---|
+| S16-1 | Oct 30 slide 16 #1: accept M1 as reached under `local=true` on Colab (cluster jobs were blocked until 2026-10-26), with the cluster criteria (two members' cluster accounts, S10) moved to M2 | Yes; the cluster criteria were then met for M2: S10 104/104 (2026-11-03), Ekant's clean-clone check on his own account (2026-11-08) | M1 record in Workbook 2 / the report | **pending** (advisor) |
+| S16-4 | Oct 30 slide 16 #4: the dispersion convention (± 1 SD over the 4 sampled trials on every bar, 95% intervals for every effect, SD = 0 stated for greedy runs) and the mixed-effects analysis as a registered secondary analysis (lme4 in R, robustness rule in Workbook 2 Ch. 7) | Yes, as written in pre-registration §6; the planted-effect check of the R models passes (`results/m2/planted_effect.json`, 2026-11-10) | Pre-registration §6; every figure | **pending** (advisor) |
+| 12 | Which step-level failure classes are confirmatory | Any failure, `exec_error` and `tool_error_payload` (powered at 2,000 episodes in every model, `results/m2/power_table.json`); `unknown_tool` and `missing_call` exploratory unless the Stage 1 design effect is near the episode-level value; the rest pooled or exploratory | Pre-registration §6, the Holm family | **pending** (advisor) |
+| 13 | CPU-backend scope: parity is below 99% for every model, so every RQ1 ratio is reported per backend, but one Qwen3-0.6B CPU episode takes about 11 minutes on 4 cores and `defq` gives 2 CPUs per job, so a full CPU arm (2,000 sampled episodes per configuration) does not fit | CPU agent runs on a fixed subset stated before filing (e.g. Qwen3-0.6B and 1.7B, BFCL base, greedy pass) | Pre-registration §3, the run plan | **pending** (advisor) |
+| 14 | NFR-5 is not met under QoS `gpu3nodes` (2 GPU nodes per user) | Each member submits a share of the main grid from their own account (`shard=i/n`), or the advisor asks the administrator for a higher limit | Run plan for M3/M4 | **pending** (advisor) |
 
 ## Facts measured for these decisions (2026-11-08)
 
@@ -29,3 +41,18 @@ advisor"); the repository has no notes from that review. Ekant decided all eleve
   (`defq` allows 2 CPUs per job).
 - **CPU-backend speed.** One Qwen3-0.6B Q4_0 BFCL episode (8 steps, 3–8k-token prompts, prompt cache off) took
   11 minutes on 4 CPU cores. CPU-backend correctness runs need many cores per job or few episodes.
+
+## Review of `m2-phase1` (4cbfb49): where each follow-up stands (2026-11-10)
+
+| # | Follow-up | Status |
+|---|---|---|
+| 1 | Rerun S10 on the merged branch (array template now quotes `only_config`) | Running on `week-2026-11-13`: array 111842 (same experiment hash `4375dbd0be` as 2026-11-03), output `results/m2/s10_check_rerun.json` |
+| 2 | "proposed" until the advisor confirms; pre-registration stays DRAFT | Done (this file; pre-registration status line) |
+| 3 | Notes of the 2026-10-30 advisor review | Left: only the members who attended can write them |
+| 4 | Confirmatory failure classes | Added as pending item 12 and in pre-registration §6 |
+| 5 | NFR-5 under the 2-node QoS | Added as pending item 14 |
+| 6 | The two 2026-11-09 simulated-user rules in pre-registration §5 | Done (pre-registration §5) |
+| 7 | Slide 16 #1 and #4 | Added as pending items S16-1 and S16-4 |
+| 8 | CPU-backend scope | Added as pending item 13 and in pre-registration §3 |
+| 9 | A recorded run of the R script | Planted-effect check recorded (`results/m2/planted_effect.json`, job 111860, pass); one real-data run follows the first finished 4-bit cell (`results/m2/mixed_effects_<model>.json`) |
+| 10 | Prompt handlers for SmolLM3 and LFM2.5 | Written from each model's chat template (`testbed/prompt_formats.py`, branch `wk11-ekant`); their BF16 references follow |
