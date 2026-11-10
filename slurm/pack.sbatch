@@ -7,7 +7,9 @@
 # and the experiment's own array tasks, can share one list safely; finished episodes are never rerun.
 #   sbatch --gres=gpu:a100:1 --export=ALL,PACK_LIST=<file>,PACK_K=4,REPO=<checkout>,TESTBED_SIMUSER_ENDPOINT=<file> \
 #          slurm/pack.sbatch
-# PACK_LIST: one item per line, "<experiment> <config_key> [<i>/<n>]", worked through in order.
+# PACK_LIST: one item per line, "<experiment> <config_key> [<i>/<n>]", worked through in order, PACK_PASSES times
+# (default 2): a later pass picks up episodes an earlier one left pending (e.g. after a simulated-user error, which
+# stops tau2 scheduling in that worker). Keep one shard split per configuration: 0/2 and 0/4 hold different locks.
 #SBATCH -J tb-pack
 #SBATCH -A coe
 #SBATCH -p gpuqs
@@ -32,9 +34,12 @@ run_one() {
   [ -n "${3:-}" ] && shard="shard=$3"
   echo "start $1 $2 $shard $(date -Iseconds)"
   python -m testbed.run +experiment="$1" local=true only_config="'$2'" $shard simuser_endpoint="$TESTBED_SIMUSER_ENDPOINT" \
-    > "$CMPE295_GROUP/logs/pack_${SLURM_JOB_ID}_$1_$2${3:+_${3/\//of}}.log" 2>&1 || echo "FAILED $1 $2 $shard"
+    >> "$CMPE295_GROUP/logs/pack_${SLURM_JOB_ID}_$1_$2${3:+_${3/\//of}}.log" 2>&1 || echo "FAILED $1 $2 $shard"
   echo "end $1 $2 $shard $(date -Iseconds)"
 }
 export -f run_one
-grep -v '^\s*#' "$PACK_LIST" | grep -v '^\s*$' | xargs -d '\n' -P "${PACK_K:-4}" -I{} bash -c 'run_one "$@"' _ {}
+for pass in $(seq 1 "${PACK_PASSES:-2}"); do
+  echo "pass $pass $(date -Iseconds)"
+  grep -v '^\s*#' "$PACK_LIST" | grep -v '^\s*$' | xargs -d '\n' -P "${PACK_K:-4}" -I{} bash -c 'run_one "$@"' _ {}
+done
 echo "pack done $(date -Iseconds)"
