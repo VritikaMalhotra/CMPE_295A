@@ -110,3 +110,28 @@ def test_tensor_type_lines_match_exactly_one_name():
 def test_parse_kld_reads_llama_perplexity_output():
     log = "...\n====== KL divergence statistics ======\nMean    KLD:   0.108329 ±   0.000958\nMaximum KLD:  12.5\n"
     assert rk.parse_kld(log) == (0.108329, 0.000958)
+
+
+mk = _load("merge_kl")
+
+
+def _kl(variants, base=20.0, **kw):
+    d = {"model": "M", "eval_text_sha256": "abc", "ctx": 512, "chunks": 50, "complete": True,
+         "variants": {v: {"kld_mean": 0.1, "ppl_base": base} for v in variants}}
+    d.update(kw)
+    return d
+
+
+def test_merge_kl_joins_variants_from_comparable_runs():
+    m = mk.merge([_kl(["Q4_0-pure", "Q4_K_M"]), _kl(["IQ4_XS"], base=20.00001)], ["a.json", "b.json"])
+    assert list(m["variants"]) == ["Q4_0-pure", "Q4_K_M", "IQ4_XS"] and len(m["merged_from"]) == 2
+
+
+def test_merge_kl_refuses_mismatched_settings_duplicates_and_base_drift():
+    import pytest
+    with pytest.raises(ValueError):
+        mk.merge([_kl(["A"]), _kl(["B"], ctx=1024)], ["a", "b"])
+    with pytest.raises(ValueError):
+        mk.merge([_kl(["A"]), _kl(["A"])], ["a", "b"])
+    with pytest.raises(ValueError):
+        mk.merge([_kl(["A"]), _kl(["B"], base=21.0)], ["a", "b"])
