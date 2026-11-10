@@ -143,6 +143,8 @@ class Backend:
             "cache_prompt": bool(self.decoding.get("cache_prompt", False)),
             "stream": False,
         }
+        if self.fmt.preserve:          # control tokens the parser needs (LFM2.5 call markers): keep them in content
+            body["preserved_tokens"] = list(self.fmt.preserve)
         if constraint:
             body["grammar"] = constraint
         t0 = time.time()
