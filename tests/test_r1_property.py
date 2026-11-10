@@ -156,3 +156,56 @@ def test_free_branch(text):
     starts_ok = text[0] not in "<\n\t "
     assert valid(FREE, text) == starts_ok, text
     assert not valid(STRICT, text)
+
+
+# ---- Pythonic format (LFM2.5): the same properties, calls written as the chat template writes them ----------
+from testbed.grammar import pythonic_task_grammar, pythonic_task_grammar_free  # noqa: E402
+from testbed.lfm2_format import extract_tool_calls, render_tool_calls  # noqa: E402
+
+PY_STRICT, PY_FREE = pythonic_task_grammar(TOOLS), pythonic_task_grammar_free(TOOLS)
+PY_THINK = pythonic_task_grammar_free(TOOLS, think_prefix=True)
+
+
+@SETTINGS
+@given(st.lists(calls(), min_size=1, max_size=3))
+def test_r1_pythonic_accepts_valid_calls(cs):
+    text = render_tool_calls(cs)
+    assert valid(PY_STRICT, text), text
+    assert valid(PY_FREE, text), text
+    assert valid(PY_THINK, "I should list the files first.</think>" + text), text
+    assert extract_tool_calls(text)[0] == cs          # and what the grammar allows parses back unchanged
+
+
+@SETTINGS
+@given(calls(), st.text(alphabet="abcdefghijklmnopqrstuvwxyz_", min_size=1, max_size=12))
+def test_r1_pythonic_rejects_unknown_name(c, name):
+    if name in BY_NAME:
+        return
+    assert not valid(PY_STRICT, render_tool_calls([{**c, "name": name}]))
+
+
+@SETTINGS
+@given(calls(), st.data())
+def test_r1_pythonic_rejects_missing_required_key(c, data):
+    req = BY_NAME[c["name"]]["parameters"].get("required", [])
+    if not req:
+        return
+    drop = data.draw(st.sampled_from(req))
+    args = {k: v for k, v in c["arguments"].items() if k != drop}
+    assert not valid(PY_STRICT, render_tool_calls([{**c, "arguments": args}]))
+
+
+@SETTINGS
+@given(calls(), st.text(alphabet="abcdefghijklmnopqrstuvwxyz_", min_size=1, max_size=12))
+def test_r1_pythonic_rejects_extra_key(c, key):
+    if key in BY_NAME[c["name"]]["parameters"]["properties"]:
+        return
+    assert not valid(PY_STRICT, render_tool_calls([{**c, "arguments": {**c["arguments"], key: 1}}]))
+
+
+@SETTINGS
+@given(st.text(st.characters(blacklist_categories=("Cs", "Cc")), min_size=1, max_size=60))
+def test_pythonic_free_branch(text):
+    starts_ok = text[0] not in "<\n\t "
+    assert valid(PY_FREE, text) == starts_ok, text
+    assert not valid(PY_STRICT, text)
