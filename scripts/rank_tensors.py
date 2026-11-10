@@ -58,6 +58,24 @@ def ppl_args() -> list[str]:
             "-ngl", os.environ.get("RANK_NGL", "99"), "-t", os.environ.get("TESTBED_CPU_THREADS", "4")]
 
 
+SETTING_KEYS = ("ctx", "chunks", "text_sha256")
+
+
+def _sha256(path: str) -> str:
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for b in iter(lambda: f.read(1 << 20), b""):
+            h.update(b)
+    return h.hexdigest()
+
+
+def current_settings(p: dict) -> dict:
+    """The ranking window every score must share (D-1): context, chunk count and the ranking text's SHA-256."""
+    return {"ctx": int(os.environ.get("RANK_CTX", "512")), "chunks": int(os.environ.get("RANK_CHUNKS", "20")),
+            "text": p["text"], "text_sha256": _sha256(p["text"])}
+
+
 # ---------------------------------------------------------------- pure logic (unit-tested) ------------
 def is_candidate(name: str, shape: list[int]) -> bool:
     """Linear weights: 2-D tensors inside the blocks. Token embedding and output head stay at the base type
@@ -86,6 +104,17 @@ def select(tensors: list[dict], scores: dict[str, float], target_bpw: float = 5.
     return {"target_bpw": target_bpw, "predicted_bpw": bits / total_n, "n_chosen": len(chosen),
             "share_of_linear_weights": chosen_n / lin_n if lin_n else 0.0, "chosen": chosen,
             "ranking": [{"name": t["name"], "kld": scores[t["name"]], "n": t["n"]} for t in order]}
+
+
+def settings_mismatch(records: dict[str, dict], current: dict) -> dict[str, dict]:
+    """Records (name -> stored settings) whose ctx, chunks or text SHA-256 differ from ``current``; a record
+    without stored settings counts as different (it cannot be shown to match)."""
+    bad = {}
+    for name, rec in records.items():
+        diff = {k: (rec.get(k), current[k]) for k in SETTING_KEYS if rec.get(k) != current[k]}
+        if diff:
+            bad[name] = diff
+    return bad
 
 
 def tensor_type_lines(chosen: list[str], qtype: str = "q8_0") -> list[str]:
@@ -125,18 +154,38 @@ def cmd_base(a) -> None:
     p = paths(a.model)
     os.makedirs(p["out"], exist_ok=True)
     cmd = [p["perplexity"], "-m", p["bf16"], "-f", p["text"], *ppl_args(), "--kl-divergence-base", p["base"]]
+    st = current_settings(p)
     with open(os.path.join(p["out"], "BF16.log"), "w") as log:
         subprocess.run(cmd, check=True, stdout=log, stderr=subprocess.STDOUT)
-    print("base logits ->", p["base"])
+    with open(p["base"] + ".settings.json", "w") as f:
+        json.dump(st, f, indent=1)
+    print("base logits ->", p["base"], st)
 
 
 def cmd_run(a) -> None:
     p = paths(a.model)
     if not os.path.exists(p["base"]):
         sys.exit(f"no base logits at {p['base']}: run `rank_tensors.py base` first")
+    st = current_settings(p)
+    base_st = json.load(open(p["base"] + ".settings.json")) if os.path.exists(p["base"] + ".settings.json") else {}
+    bad = settings_mismatch({"BF16.kld": base_st}, st)
+    if bad:
+        sys.exit(f"refusing: base logits were made with other settings {bad['BF16.kld']}; rerun `base`")
     with open(p["tensors"]) as f:
         cands = [t for t in json.load(f)["tensors"] if t["candidate"]]
     mine = [t for i, t in enumerate(cands) if i % a.ntasks == a.task]
+    if getattr(a, "limit", None):
+        mine = mine[:a.limit]
+    os.makedirs(p["scores"], exist_ok=True)
+    old_scores = {}
+    for t in mine:
+        fn = os.path.join(p["scores"], t["name"] + ".json")
+        if os.path.exists(fn):
+            old_scores[t["name"]] = json.load(open(fn))
+    bad = settings_mismatch(old_scores, st)
+    if bad:
+        sys.exit(f"refusing: {len(bad)} score files were made with other settings, e.g. "
+                 f"{next(iter(bad.items()))}; move them away or use a new RANK_OUT")
     os.makedirs(p["scores"], exist_ok=True)
     scratch = os.environ.get("RANK_SCRATCH") or os.path.join(p["out"], "tmp")
     os.makedirs(scratch, exist_ok=True)
@@ -157,8 +206,7 @@ def cmd_run(a) -> None:
             sys.exit(f"llama-perplexity failed for {t['name']}:\n{r.stdout[-2000:]}{r.stderr[-2000:]}")
         kld, unc = parse_kld(r.stdout + r.stderr)
         rec = {"name": t["name"], "n": t["n"], "kld_mean": kld, "kld_unc": unc, "seconds": round(time.time() - t0, 1),
-               "ctx": int(os.environ.get("RANK_CTX", "512")), "chunks": int(os.environ.get("RANK_CHUNKS", "20")),
-               "text": p["text"]}
+               **st, "host": os.uname().nodename, "job": os.environ.get("SLURM_JOB_ID", "")}
         with open(dst + ".tmp", "w") as f:
             json.dump(rec, f)
         os.replace(dst + ".tmp", dst)
@@ -169,13 +217,20 @@ def cmd_select(a) -> None:
     p = paths(a.model)
     with open(p["tensors"]) as f:
         tensors = json.load(f)["tensors"]
-    scores = {}
+    scores, recs = {}, {}
     for fn in glob.glob(os.path.join(p["scores"], "*.json")):
         with open(fn) as f:
             r = json.load(f)
         scores[r["name"]] = r["kld_mean"]
+        recs[r["name"]] = r
+    st = current_settings(p)
+    bad = settings_mismatch(recs, st)
+    if bad:
+        sys.exit(f"refusing: {len(bad)} score files differ from the current settings, e.g. {next(iter(bad.items()))}")
     sel = select(tensors, scores, a.bpw)
     sel["model"] = a.model
+    sel["settings"] = st
+    sel["n_scores"] = len(scores)
     with open(os.path.join(p["out"], "selection.json"), "w") as f:
         json.dump(sel, f, indent=1)
     with open(os.path.join(p["out"], "tensor_types.txt"), "w") as f:
@@ -193,6 +248,7 @@ def main(argv=None) -> None:
         if name == "run":
             s.add_argument("--task", type=int, default=int(os.environ.get("SLURM_ARRAY_TASK_ID", "0")))
             s.add_argument("--ntasks", type=int, default=int(os.environ.get("SLURM_ARRAY_TASK_COUNT", "1")))
+            s.add_argument("--limit", type=int, default=0, help="score at most this many tensors (timing probe)")
         if name == "select":
             s.add_argument("--bpw", type=float, default=5.5)
     a = ap.parse_args(argv)
