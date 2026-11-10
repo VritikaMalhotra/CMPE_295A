@@ -161,9 +161,8 @@ def render(fmt: str, tmpl: str, bos: str, case: dict) -> str:
     if fmt == "smollm3":
         kwargs["enable_thinking"] = False
     text = _env().from_string(tmpl).render(**kwargs)
-    if fmt.startswith("lfm"):           # llama-server adds BOS itself (add_bos_token); the testbed string has none
+    if fmt.startswith("lfm"):
         assert text.startswith(bos), "LFM2.5 template no longer starts with the BOS token"
-        text = text[len(bos):]
     return text
 
 
@@ -181,8 +180,6 @@ def check_transformers(fmt: str, path: str, case: dict, expected: str, bos: str)
     finally:
         if orig:
             ctu.strftime_now = orig
-    if fmt.startswith("lfm"):
-        got = got[len(bos):]
     if fmt == "smollm3" and not orig:
         print("note: transformers has no strftime_now hook; SmolLM3 date line not pinned in this check")
         return
