@@ -164,6 +164,16 @@ simulator stop 109572. Inclusion sets afterwards with `python -m testbed.inclusi
   (array 101658) ran only those 3. **104/104 episodes, no missing, no duplicate episodes or step rows.**
   `results/m2/s10_check.json` (first submission: `s10_check_first_submission.json`). PASS after one resubmission.
   For the main runs, size `slurm.time` from the slowest configuration, or raise `max_requeue`.
+- **S10 rerun on the integration branch** (2026-11-10, `week-2026-11-13` at `5bcf8d2`, after the array template
+  started quoting `only_config`; review follow-up 1): same experiment hash `4375dbd0be`, fresh output root
+  `runs/s10_rerun_20261110/`.
+  - Array 111842, 5-minute walltime, one task at a time. Every one of the 8 tasks was cut and resumed.
+  - The slowest configuration (R1 forced on Q4_0) used its 5 requeues with 10 episodes left, as on 11-03.
+  - A 5-minute resubmission (112015) made no progress: what is left of a cycle after server start-up is too short
+    for one of its episodes.
+  - The last 10 ran with `slurm.time=00:20:00` (112024).
+  - **104/104 episodes, no missing, unplanned or duplicate episodes or step rows.**
+    `results/m2/s10_check_rerun.json`. PASS.
 - **Bad node: cs001** (A100). On 2026-11-03 GPUs 1, 2 and 3 failed CUDA initialisation ("No CUDA GPUs are
   available") in three jobs; GPU 0 works. Until fixed, A100 jobs use `--exclude=cs001,cs002`.
 
