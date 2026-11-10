@@ -133,7 +133,7 @@ class Backend:
         if budget <= 0:
             raise ContextOverflow(f"prompt {n_prompt} tokens, context {self.ctx}")
         body = {
-            "prompt": prompt,
+            "prompt": token_ids if self.fmt.send_tokens else prompt,
             "n_predict": budget,
             "temperature": float(self.decoding.get("temperature", 0.0)),
             "top_p": float(self.decoding.get("top_p", 1.0)),
@@ -161,7 +161,7 @@ class Backend:
 def parse_completion(j: dict, n_prompt: int, budget: int, constraint: Optional[str],
                      latency_ms: float, fmt: PromptFormat = QWEN3) -> GenerateResult:
     """llama-server's /completion JSON -> GenerateResult (also used by replay tests with recorded text)."""
-    raw = j.get("content", "")
+    raw = fmt.raw_prefix + j.get("content", "")
     _, cleaned = fmt.split_think(raw)
     calls, n_blocks = fmt.extract_tool_calls(cleaned)
     good = [c for c in calls if isinstance(c, dict) and "name" in c and "arguments" in c]

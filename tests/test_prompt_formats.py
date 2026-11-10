@@ -138,3 +138,24 @@ def test_classifier_lfm_marker():
     assert classify_step(_row("<|tool_call_start|>[ls(]", [], 1)) == "malformed"
     assert classify_step(_row("<|tool_call_start|>", [], 0)) == "malformed"     # marker, nothing parsed
     assert classify_step(_row("<tool_call>", [], 0)) == "malformed"             # Qwen rule unchanged
+
+
+# --- transport: BOS and the 2.6B think prefix ------------------------------------------------------------
+
+def test_transport_settings():
+    """New formats send token ids (exact template tokens, no server-side BOS rule); Qwen3 still sends text."""
+    assert not prompt_formats.QWEN3.send_tokens and prompt_formats.QWEN3.raw_prefix == ""
+    assert all(f.send_tokens for f in FORMATS.values())
+    for f in ("lfm2.5-1.2b", "lfm2.5-2.6b"):
+        assert FORMATS[f].format_prompt([{"role": "user", "content": "hi"}], []).startswith(lfm2_format.BOS)
+    assert prompt_formats.SMOLLM3.format_prompt([{"role": "user", "content": "hi"}], []).startswith(
+        "<|im_start|>system")                                  # SmolLM3's template has no BOS
+
+
+def test_lfm_2p6b_raw_prefix_keeps_reasoning_out_of_the_answer():
+    j = {"content": "Which folder? Probably temp.</think>Done, moved.", "tokens_predicted": 12, "stop_type": "eos"}
+    g = parse_completion(j, n_prompt=5, budget=50, constraint=None, latency_ms=1.0, fmt=prompt_formats.LFM25_2P6B)
+    assert g.raw_text.startswith("<think>Which folder?") and g.text == "Done, moved."
+    row = _row(g.raw_text, [], 0)
+    # the reasoning's "?" must not count: the visible answer is a direct claim with no call
+    assert classify_step(row) == "missing_call_direct_answer"

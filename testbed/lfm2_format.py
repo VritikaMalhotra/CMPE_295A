@@ -18,8 +18,9 @@ The two sizes differ in thinking:
   with ``<think>``: the template has no non-thinking mode, so ``thinking: false`` cannot switch it off. The
   testbed follows the template (open point for the advisor, docs/m2_decisions.md).
 
-The BOS token (``<|startoftext|>``) is not part of the string: llama-server adds it when it tokenizes the prompt
-(``add_bos_token`` is true in these GGUF files), as ``apply_chat_template(tokenize=True)`` would.
+The string starts with the BOS token ``<|startoftext|>``, as the template writes it. The two GGUF files disagree
+on adding a BOS themselves (``tokenizer.ggml.add_bos_token`` true for 1.2B, false for 2.6B), so the backend
+sends the token ids of this string (``PromptFormat.send_tokens``) and the server adds nothing.
 """
 from __future__ import annotations
 
@@ -27,6 +28,7 @@ import ast
 import json
 import re
 
+BOS = "<|startoftext|>"
 CALL_START, CALL_END = "<|tool_call_start|>", "<|tool_call_end|>"
 TOOL_CALL_RE = re.compile(re.escape(CALL_START) + r"(.*?)" + re.escape(CALL_END), re.DOTALL)
 VARIANTS = ("lfm2.5-1.2b", "lfm2.5-2.6b")
@@ -91,7 +93,7 @@ def format_prompt(messages: list[dict], tools: list[dict], thinking: bool = Fals
     if tools:
         system += ("\n" if system else "") + "List of tools: [" + ", ".join(
             t if isinstance(t, str) else _tojson(t) for t in tools) + "]"
-    out = f"<|im_start|>system\n{system}<|im_end|>\n" if system else ""
+    out = BOS + (f"<|im_start|>system\n{system}<|im_end|>\n" if system else "")
     last_assistant = max((i for i, m in enumerate(messages) if m["role"] == "assistant"), default=-1)
     last_user = max((i for i, m in enumerate(messages) if m["role"] == "user"), default=-1)
     for i, m in enumerate(messages):
