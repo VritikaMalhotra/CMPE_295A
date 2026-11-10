@@ -132,17 +132,22 @@ def main() -> None:
     res = {"model": a.model, "what": "Episode success and step failures by benchmark/domain, BFCL API class and "
            "failure class; sampled seeds 1-4, mean ± SD over seeds; development data, preview",
            "reference": {"label": ref_label, "dir": ref_dir}, "configs": {}}
-    res["configs"][ref_label] = {"dir": ref_dir, "vs": None, "groups": summarise(ref_eps, ref_steps, set(ref_eps), groups),
-                                 "failure_classes": by_class(ref_steps, set(ref_eps))}
+    cells = []
     for c in a.cell:
         lab, d = c.split("=", 1)
-        eps, st = load(d)
-        both = set(eps) & set(ref_eps)
-        res["configs"][lab] = {"dir": d, "pairs_with_reference": len(both),
-                               "groups": summarise(eps, st, both, groups),
-                               "failure_classes": by_class(st, both),
-                               "reference_on_same_pairs": {"groups": summarise(ref_eps, ref_steps, both, groups),
-                                                           "failure_classes": by_class(ref_steps, both)}}
+        cells.append((lab, d) + load(d))
+    # the paired view: every configuration on the (task, seed) pairs that all of them finished
+    common = set(ref_eps)
+    for _, _, eps, _ in cells:
+        common &= set(eps)
+    res["common_pairs"] = len(common)
+    res["reference_all"] = {"episodes": len(ref_eps), "groups": summarise(ref_eps, ref_steps, set(ref_eps), groups),
+                            "failure_classes": by_class(ref_steps, set(ref_eps))}
+    res["configs"][ref_label] = {"dir": ref_dir, "groups": summarise(ref_eps, ref_steps, common, groups),
+                                 "failure_classes": by_class(ref_steps, common)}
+    for lab, d, eps, st in cells:
+        res["configs"][lab] = {"dir": d, "finished_pairs": len(set(eps) & set(ref_eps)),
+                               "groups": summarise(eps, st, common, groups), "failure_classes": by_class(st, common)}
     os.makedirs(os.path.dirname(os.path.abspath(a.json)), exist_ok=True)
     with open(a.json, "w") as f:
         json.dump(res, f, indent=1)
@@ -183,10 +188,11 @@ def write_md(res: dict, path: str) -> None:
     classes = sorted({c for l in labs for c in res["configs"][l]["failure_classes"]})
     for c in classes:
         rows.append(f"| `{c}` | " + " | ".join(_fmt(res["configs"][l]["failure_classes"].get(c), pct=False) for l in labs) + " |")
-    pairs = {l: res["configs"][l].get("pairs_with_reference") for l in labs[1:]}
-    note = (f"\nSampled trials (seeds 1–4); mean ± 1 SD over seeds; n = episodes. {res['reference']['label']} is shown "
-            f"on all its episodes; each 4-bit cell only on (task, seed) pairs it shares with it {pairs} (the JSON also "
-            f"has {res['reference']['label']} restricted to each cell's pairs). Development data, preview.\n")
+    fin = {l: res["configs"][l].get("finished_pairs") for l in labs[1:]}
+    note = (f"\nSampled trials (seeds 1–4); mean ± 1 SD over seeds; n = episodes. Every column uses the same "
+            f"{res['common_pairs']} (task, seed) pairs, the ones all configurations have finished (finished pairs per "
+            f"cell: {fin}); the JSON also has {res['reference']['label']} on all {res['reference_all']['episodes']} of "
+            f"its sampled episodes. Development data, preview.\n")
     with open(path, "w") as f:
         f.write(f"# Which tasks fail: {res['model']}\n\n" + "\n".join(rows) + "\n" + note)
 
@@ -232,7 +238,7 @@ def write_fig(res: dict, path: str) -> None:
             ax.spines[s].set_color(grid)
     axes[0].legend(frameon=False, fontsize=9, loc="upper right")
     fig.text(0.01, 0.01, f"{res['model']}: sampled trials (seeds 1-4), bars = mean over seeds, whiskers = ± 1 SD. "
-             "4-bit cells on the (task, seed) pairs they share with BF16. Development data, preview.",
+             f"All bars on the same {res['common_pairs']} (task, seed) pairs. Development data, preview.",
              fontsize=8, color=ink2)
     fig.tight_layout(rect=(0, 0.04, 1, 1))
     os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
