@@ -1,0 +1,174 @@
+{
+ "created": "2026-11-10T00:54:32Z",
+ "seed": 295,
+ "planning_tokenizer": "/scratch/cmpe295-bertin/models/hf/Qwen3-0.6B",
+ "bench_text": "/scratch/cmpe295-bertin/data/calib/benchmark_text.txt",
+ "bench_text_sha256": "7da519004d110e8b52e8a35d3ca8ee4f6e3e0d61fa6104a8eb97580e7af2a75a",
+ "sources": {
+  "toucan": {
+   "repo": "Agent-Ark/Toucan-1.5M",
+   "rev": "0df3cf37f2abefb380370cfb02eabea2a35ae782",
+   "files": [
+    "SFT/train-00000-of-00003.parquet",
+    "SFT/train-00001-of-00003.parquet",
+    "SFT/train-00002-of-00003.parquet"
+   ],
+   "license": "Apache-2.0",
+   "kind": "chat",
+   "budget": 15000000,
+   "subsets": [
+    "multi-turn",
+    "single-turn-diversify"
+   ],
+   "raw_sha256": {
+    "SFT/train-00000-of-00003.parquet": "5657480020d6a16566363e74782f788ca0412c9c30d8858d33c84c3fee1a8dd4",
+    "SFT/train-00001-of-00003.parquet": "78dda82573f96804925ade4bcbcab5374c57c93c04a45bb73da63a63305964e8",
+    "SFT/train-00002-of-00003.parquet": "0742c36240fe31cc2d4638ebef7bc163645e5e344f08f62242614fab55aa777d"
+   }
+  },
+  "nemotron_tool_calling": {
+   "repo": "nvidia/Nemotron-Agentic-v1",
+   "rev": "650d590978ca35c8f1ecea2faf136e5fac421b62",
+   "files": [
+    "data/tool_calling.jsonl"
+   ],
+   "license": "CC-BY-4.0",
+   "kind": "chat",
+   "budget": 5000000,
+   "raw_sha256": {
+    "data/tool_calling.jsonl": "f537a901d38a999627b8fe59e77a1007af0d79d71a892ad9a4a3d80456e5601b"
+   }
+  },
+  "toolace": {
+   "repo": "Team-ACE/ToolACE",
+   "rev": "6bda777c88d21e5a204703c1ee45597a8fa4f734",
+   "files": [
+    "data.json"
+   ],
+   "license": "Apache-2.0",
+   "kind": "chat",
+   "budget": 5000000,
+   "raw_sha256": {
+    "data.json": "ba12c083fca7e8da48c67ad5b895e495447da7c66e39a2e19742c082e6cb537e"
+   }
+  },
+  "fineweb_edu": {
+   "repo": "HuggingFaceFW/fineweb-edu",
+   "rev": "87f09149ef4734204d70ed1d046ddc9ca3f2b8f9",
+   "files": [
+    "sample/10BT/000_00000.parquet"
+   ],
+   "license": "ODC-By-1.0",
+   "kind": "text",
+   "budget": 20000000,
+   "raw_sha256": {
+    "sample/10BT/000_00000.parquet": "b1ba7b2ce4cb5ea6ef42dca40263eabb85f37700d01693a68e9b30a31d78e871"
+   }
+  },
+  "cosmopedia_v2": {
+   "repo": "HuggingFaceTB/smollm-corpus",
+   "rev": "3ba9d605774198c5868892d7a8deda78031a781f",
+   "files": [
+    "cosmopedia-v2/train-00000-of-00104.parquet"
+   ],
+   "license": "ODC-By-1.0",
+   "kind": "text",
+   "budget": 5000000,
+   "raw_sha256": {
+    "cosmopedia-v2/train-00000-of-00104.parquet": "5a25721146377d6e7f288c244e991df93e672b8cc3e535fd4aac5da4cdb1491d"
+   }
+  }
+ },
+ "filter": {
+  "toucan_rank_holdout": {
+   "candidates": 2000,
+   "parse_failed": 0,
+   "empty": 0,
+   "benchmark_13gram": 0,
+   "duplicate": 0,
+   "kept": 2000,
+   "tokens": 9090207,
+   "subsets": {
+    "multi-turn": 2000
+   }
+  },
+  "toucan": {
+   "candidates": 4025,
+   "parse_failed": 0,
+   "empty": 0,
+   "benchmark_13gram": 0,
+   "duplicate": 170,
+   "kept": 3855,
+   "tokens": 15000413,
+   "subsets": {
+    "multi-turn": 2653,
+    "single-turn-diversify": 1202
+   }
+  },
+  "nemotron_tool_calling": {
+   "candidates": 2713,
+   "parse_failed": 0,
+   "empty": 0,
+   "benchmark_13gram": 73,
+   "duplicate": 16,
+   "kept": 2624,
+   "tokens": 5000498,
+   "subsets": {
+    "tool_calling": 2624
+   }
+  },
+  "toolace": {
+   "candidates": 8544,
+   "parse_failed": 452,
+   "empty": 0,
+   "benchmark_13gram": 3,
+   "duplicate": 1,
+   "kept": 8088,
+   "tokens": 5000875,
+   "subsets": {
+    "-": 8088
+   }
+  },
+  "fineweb_edu": {
+   "candidates": 19871,
+   "parse_failed": 0,
+   "empty": 0,
+   "benchmark_13gram": 0,
+   "duplicate": 2,
+   "kept": 19869,
+   "tokens": 20000366,
+   "subsets": {
+    "-": 19869
+   }
+  },
+  "cosmopedia_v2": {
+   "candidates": 7110,
+   "parse_failed": 0,
+   "empty": 0,
+   "benchmark_13gram": 0,
+   "duplicate": 1,
+   "kept": 7109,
+   "tokens": 5000176,
+   "subsets": {
+    "-": 7109
+   }
+  }
+ },
+ "train": {
+  "path": "/scratch/cmpe295-bertin/data/qad_mix/train.jsonl",
+  "sha256": "06ae324631cc67e9925e99ae6207da4d52323fe7241a37b4c03126ecd8d92acb",
+  "records": 41545,
+  "tokens_qwen3": 50002328
+ },
+ "rank": {
+  "path": "/scratch/cmpe295-bertin/data/qad_mix/rank_conversations.jsonl",
+  "sha256": "43dce72fcd8bf209390790b57fbfbd6bb52a4d16f376e3ab04171a8fbad54be8",
+  "records": 2000,
+  "text": "/scratch/cmpe295-bertin/data/qad_mix/rank_text.txt",
+  "text_sha256": "5d16008cbbe906831b9cf6f4072ecafacd0f9a730fcc62397185408ed16357b1",
+  "text_tokens_qwen3": 7010506,
+  "n_overlapping_13grams": 0,
+  "disjoint_from_train": true
+ },
+ "pass": true
+}
