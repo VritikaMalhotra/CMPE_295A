@@ -135,3 +135,35 @@ def test_merge_kl_refuses_mismatched_settings_duplicates_and_base_drift():
         mk.merge([_kl(["A"]), _kl(["A"])], ["a", "b"])
     with pytest.raises(ValueError):
         mk.merge([_kl(["A"]), _kl(["B"], base=21.0)], ["a", "b"])
+
+
+def test_rank_settings_mismatch_flags_window_and_text_changes():
+    cur = {"ctx": 512, "chunks": 120, "text": "/x/rank_text_t256.txt", "text_sha256": "aa"}
+    recs = {"same": {**cur}, "chunks": {**cur, "chunks": 20}, "text": {**cur, "text_sha256": "bb"},
+            "old": {"name": "old", "kld_mean": 0.1, "ctx": 512, "chunks": 120}}       # no stored text hash
+    bad = rk.settings_mismatch(recs, cur)
+    assert set(bad) == {"chunks", "text", "old"}
+    assert bad["chunks"] == {"chunks": (20, 120)} and "text_sha256" in bad["old"]
+
+
+def test_rank_run_refuses_scores_from_another_window(tmp_path, monkeypatch):
+    text = tmp_path / "rank.txt"
+    text.write_text("user: hi\nassistant: hello\n")
+    out = tmp_path / "rank"
+    (out / "scores").mkdir(parents=True)
+    (out / "BF16.kld").write_text("x")
+    st = {"ctx": 512, "chunks": 20, "text": str(text), "text_sha256": rk._sha256(str(text))}
+    (out / "BF16.kld.settings.json").write_text(__import__("json").dumps(st))
+    (out / "tensors.json").write_text(__import__("json").dumps({"tensors": [
+        {"name": "blk.0.attn_q.weight", "n": 4, "candidate": True, "base_bits": 4.5}]}))
+    (out / "scores" / "blk.0.attn_q.weight.json").write_text(__import__("json").dumps(
+        {"name": "blk.0.attn_q.weight", "kld_mean": 0.1, **st, "chunks": 10}))
+    for k, v in {"RANK_OUT": str(out), "RANK_TEXT": str(text), "TESTBED_OUT": str(tmp_path), "TESTBED_MODELS": str(tmp_path),
+                 "LLAMA_DIR": str(tmp_path), "CMPE295_GROUP": str(tmp_path), "RANK_CHUNKS": "20"}.items():
+        monkeypatch.setenv(k, v)
+    import pytest
+    with pytest.raises(SystemExit, match="other settings"):
+        rk.main(["run", "--model", "M", "--task", "0", "--ntasks", "1"])
+    monkeypatch.setenv("RANK_CHUNKS", "40")                      # base made with 20 chunks
+    with pytest.raises(SystemExit, match="base logits were made with other settings"):
+        rk.main(["run", "--model", "M", "--task", "0", "--ntasks", "1"])
