@@ -3,28 +3,26 @@
  "seed": 295,
  "sources": [
   "/scratch/cmpe295-bertin/runs/ref_qwen3_0p6b/cd314594fb",
-  "/scratch/cmpe295-bertin/runs/ref_qwen3_1p7b/c456da2aef",
-  "/scratch/cmpe295-bertin/runs/ref_qwen3_4b/1c7b26d4e7",
-  "/scratch/cmpe295-bertin/runs/damage_0p6b/61417027a6",
-  "/scratch/cmpe295-bertin/runs/damage_1p7b/3520cf30d3",
-  "/scratch/cmpe295-bertin/runs/damage_4b/f1f84f5993"
+  "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_q4_0/c200505b35",
+  "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_q4_k_m/b85b3044db",
+  "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_iq4_xs/b7e629273d"
  ],
- "n_steps_in_sources": 106370,
+ "n_steps_in_sources": 86648,
  "sheets": {
   "rater_sample_30": {
    "items": 30,
    "sheet": "labels/h2_kit/rater_sample_30.csv",
-   "sheet_sha256": "f7363f0416732ddd73365be9069ed32305ef8f4858a3040916de1fc8cabe9996",
-   "key_sha256": "e026a88417e602d738baafd76ee4347edad81141cb8666d3b1601f8edecbdbee"
+   "sheet_sha256": "829fe3f7b49264321742143ce90de6cc6bac6e3c5d0369c8aae0289c27e1a58b",
+   "key_sha256": "480b4cf0e6b7d2fd689ef991c28f087eaafb4528ac3f5716861cec7b4a879131"
   },
   "pilot_300": {
    "items": 300,
    "sheet": "labels/h2_kit/pilot_300.csv",
-   "sheet_sha256": "2c594806855e0b2e5eb44c22211f13a0d3519347a050f8ab0706392abc8f1962",
-   "key_sha256": "66b54ebfaa73e494f6111f568be55b48a6eb62944d33c33c880106ed709c9db1"
+   "sheet_sha256": "0771f2fd6b7e3dd59ae4833b9f718104abd8b7a61e59c8e6cf1ad6474f444e5e",
+   "key_sha256": "33c65a7813bd52e4b6ad43ddbfd876d0d4cdf6fe6ea7c188fb35ec60400ff846"
   }
  },
- "key_dir": "/scratch/cmpe295-bertin/labels/h2_kit_20261110",
+ "key_dir": "/scratch/cmpe295-bertin/labels/h2_kit_20261110_v2",
  "label_set": [
   "truncated",
   "malformed",
