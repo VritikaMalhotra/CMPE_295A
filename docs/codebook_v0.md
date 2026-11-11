@@ -21,7 +21,7 @@ v1 is frozen at M3 with the κ report (Workbook FR-E8, Table 23).
 | # | Class | Failure? | Decision rule (first match wins) | Table 23 |
 |---|---|---|---|---|
 | 1 | `truncated` | yes | `stop_reason == "limit"`: generation hit `n_predict` | part of F2 |
-| 2 | `malformed` | yes | more `<tool_call>` blocks than parsed calls, or `<tool_call>` in the text and no call parsed | F2 |
+| 2 | `malformed` | yes | more tool-call blocks than parsed calls, or a call marker in the text and no call parsed (marker: `<tool_call>` for Qwen3 and SmolLM3, `<|tool_call_start|>` for LFM2.5) | F2 |
 | 3 | `forced_quit` | yes | `forced_quit`: the step that exceeds bfcl's 20-step turn limit (`MAXIMUM_STEP_LIMIT`) | F7 (limit form) |
 | 4 | `unknown_tool` | yes | at least one parsed call and `known_tools` is false (a name outside the task's tool list) | F1 |
 | 5 | `invalid_args` | yes | `schema_errors` not empty: missing required argument, unknown argument, wrong JSON type, value outside an enum | F3 |
@@ -98,6 +98,10 @@ None is implemented in `classifier.py` v0. Until they are, `ok_call` can hide F4
 The κ check (Workbook Ch. 7: two raters, 300 stratified steps, κ ≥ 0.80) applies to the classes above.
 
 ## Change log
+- v0 (2026-11-10): the `malformed` rule also recognises LFM2.5's Pythonic call marker `<|tool_call_start|>`
+  (prompt handlers for SmolLM3 and LFM2.5, `testbed/prompt_formats.py`). A Qwen3 step never contains that
+  marker, so no Qwen3 label changes. A block "parses" when it is one `{"name", "arguments"}` JSON object
+  (Qwen3, SmolLM3) or a list of keyword-only calls with literal values (LFM2.5).
 - v0 (2026-11-08): written from `testbed/classifier.py` as implemented (11 classes); two proposed classes added
   behind `proposed=True`.
 - v0 (2026-11-08, later): decisions 3a/3b add `tool_error_payload` and `missing_call_direct_answer` to v0, on

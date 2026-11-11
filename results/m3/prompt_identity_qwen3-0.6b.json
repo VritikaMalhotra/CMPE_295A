@@ -1,0 +1,200 @@
+{
+ "reference": "/scratch/cmpe295-bertin/runs/ref_qwen3_0p6b/cd314594fb",
+ "cells": {
+  "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_q4_0/c200505b35": {
+   "compared": 2498,
+   "text_mismatch": 713,
+   "token_mismatch": 713,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": {
+     "compared": 500,
+     "mismatch": 0
+    },
+    "bfcl_multi_turn_miss_func": {
+     "compared": 500,
+     "mismatch": 0
+    },
+    "bfcl_multi_turn_miss_param": {
+     "compared": 500,
+     "mismatch": 0
+    },
+    "tau2_verified_airline": {
+     "compared": 127,
+     "mismatch": 81
+    },
+    "tau2_verified_retail": {
+     "compared": 516,
+     "mismatch": 382
+    },
+    "tau2_verified_telecom": {
+     "compared": 355,
+     "mismatch": 250
+    }
+   },
+   "examples": [
+    [
+     "tau2_verified_airline",
+     "11",
+     1
+    ],
+    [
+     "tau2_verified_airline",
+     "12",
+     0
+    ],
+    [
+     "tau2_verified_airline",
+     "12",
+     1
+    ],
+    [
+     "tau2_verified_airline",
+     "12",
+     2
+    ],
+    [
+     "tau2_verified_airline",
+     "12",
+     3
+    ]
+   ],
+   "manifest_commits": [
+    "71071df",
+    "ef37df0"
+   ],
+   "pass": false
+  },
+  "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_q4_k_m/b85b3044db": {
+   "compared": 2501,
+   "text_mismatch": 728,
+   "token_mismatch": 728,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": {
+     "compared": 500,
+     "mismatch": 0
+    },
+    "bfcl_multi_turn_miss_func": {
+     "compared": 500,
+     "mismatch": 0
+    },
+    "bfcl_multi_turn_miss_param": {
+     "compared": 500,
+     "mismatch": 0
+    },
+    "tau2_verified_airline": {
+     "compared": 127,
+     "mismatch": 94
+    },
+    "tau2_verified_retail": {
+     "compared": 519,
+     "mismatch": 372
+    },
+    "tau2_verified_telecom": {
+     "compared": 355,
+     "mismatch": 262
+    }
+   },
+   "examples": [
+    [
+     "tau2_verified_airline",
+     "11",
+     0
+    ],
+    [
+     "tau2_verified_airline",
+     "11",
+     1
+    ],
+    [
+     "tau2_verified_airline",
+     "11",
+     2
+    ],
+    [
+     "tau2_verified_airline",
+     "12",
+     0
+    ],
+    [
+     "tau2_verified_airline",
+     "12",
+     1
+    ]
+   ],
+   "manifest_commits": [
+    "71071df",
+    "ef37df0"
+   ],
+   "pass": false
+  },
+  "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_iq4_xs/b7e629273d": {
+   "compared": 2495,
+   "text_mismatch": 723,
+   "token_mismatch": 723,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": {
+     "compared": 500,
+     "mismatch": 0
+    },
+    "bfcl_multi_turn_miss_func": {
+     "compared": 500,
+     "mismatch": 0
+    },
+    "bfcl_multi_turn_miss_param": {
+     "compared": 500,
+     "mismatch": 0
+    },
+    "tau2_verified_airline": {
+     "compared": 123,
+     "mismatch": 93
+    },
+    "tau2_verified_retail": {
+     "compared": 517,
+     "mismatch": 367
+    },
+    "tau2_verified_telecom": {
+     "compared": 355,
+     "mismatch": 263
+    }
+   },
+   "examples": [
+    [
+     "tau2_verified_airline",
+     "11",
+     0
+    ],
+    [
+     "tau2_verified_airline",
+     "11",
+     1
+    ],
+    [
+     "tau2_verified_airline",
+     "11",
+     3
+    ],
+    [
+     "tau2_verified_airline",
+     "12",
+     0
+    ],
+    [
+     "tau2_verified_airline",
+     "12",
+     1
+    ]
+   ],
+   "manifest_commits": [
+    "71071df",
+    "ef37df0"
+   ],
+   "pass": false
+  }
+ },
+ "reference_tau2_tasks_with_one_opening": [
+  24,
+  201
+ ],
+ "pass_bfcl": true,
+ "pass": false
+}

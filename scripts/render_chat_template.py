@@ -180,10 +180,11 @@ def check_transformers(fmt: str, path: str, case: dict, expected: str, bos: str)
     finally:
         if orig:
             ctu.strftime_now = orig
-    if fmt == "smollm3" and not orig:
-        print("note: transformers has no strftime_now hook; SmolLM3 date line not pinned in this check")
-        return
+    if fmt == "smollm3":                       # transformers prints today's date: compare with the line normalised
+        import re
+        got = re.sub(r"Today Date: [^\n]*\n", f"Today Date: {TODAY}\n", got, count=1)
     assert got == expected, f"{fmt}: transformers rendering differs from the sandbox rendering"
+    print(f"transformers check ok: {fmt}")
 
 
 def main() -> None:

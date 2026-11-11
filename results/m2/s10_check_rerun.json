@@ -1,0 +1,144 @@
+{
+ "run_dir": "/scratch/cmpe295-bertin/runs/s10_rerun_20261110/s10_requeue/4375dbd0be",
+ "planned": 104,
+ "configs": 8,
+ "episodes_per_config": {
+  "4e1d5fa26e99": 13,
+  "a4299c06b255": 13,
+  "5e2b5317625b": 13,
+  "f178123a4116": 13,
+  "62d40036f4df": 13,
+  "4bffd5ef157d": 13,
+  "8446635aacca": 13,
+  "6cfaaa74b6db": 13
+ },
+ "done": 104,
+ "missing": [],
+ "unplanned": [],
+ "duplicate_planned_run_ids": [],
+ "bad_episode_files": [],
+ "duplicate_step_rows": {},
+ "leftover_part_files": [],
+ "array_tasks": {
+  "111842_0": {
+   "starts": 2,
+   "max_restart": 1,
+   "walltime_signals": 1,
+   "hosts": [
+    "g2.hpc.coe"
+   ],
+   "config": "4e1d5fa26e99"
+  },
+  "111842_1": {
+   "starts": 2,
+   "max_restart": 1,
+   "walltime_signals": 1,
+   "hosts": [
+    "g2.hpc.coe"
+   ],
+   "config": "a4299c06b255"
+  },
+  "111842_2": {
+   "starts": 2,
+   "max_restart": 1,
+   "walltime_signals": 1,
+   "hosts": [
+    "g2.hpc.coe"
+   ],
+   "config": "5e2b5317625b"
+  },
+  "111842_3": {
+   "starts": 2,
+   "max_restart": 1,
+   "walltime_signals": 1,
+   "hosts": [
+    "g2.hpc.coe"
+   ],
+   "config": "f178123a4116"
+  },
+  "111842_4": {
+   "starts": 2,
+   "max_restart": 1,
+   "walltime_signals": 1,
+   "hosts": [
+    "g2.hpc.coe"
+   ],
+   "config": "62d40036f4df"
+  },
+  "111842_5": {
+   "starts": 6,
+   "max_restart": 5,
+   "walltime_signals": 6,
+   "hosts": [
+    "g2.hpc.coe"
+   ],
+   "config": "4bffd5ef157d"
+  },
+  "111842_6": {
+   "starts": 2,
+   "max_restart": 1,
+   "walltime_signals": 1,
+   "hosts": [
+    "g2.hpc.coe"
+   ],
+   "config": "8446635aacca"
+  },
+  "111842_7": {
+   "starts": 2,
+   "max_restart": 1,
+   "walltime_signals": 1,
+   "hosts": [
+    "g2.hpc.coe"
+   ],
+   "config": "6cfaaa74b6db"
+  },
+  "112015_0": {
+   "starts": 5,
+   "max_restart": 4,
+   "walltime_signals": 4,
+   "hosts": [
+    "g2.hpc.coe"
+   ],
+   "config": "4bffd5ef157d"
+  },
+  "112024_0": {
+   "starts": 1,
+   "max_restart": 0,
+   "walltime_signals": 0,
+   "hosts": [
+    "g2.hpc.coe"
+   ],
+   "config": "4bffd5ef157d"
+  },
+  "report_111843": {
+   "starts": 0,
+   "max_restart": 0,
+   "walltime_signals": 0,
+   "hosts": []
+  },
+  "report_112016": {
+   "starts": 0,
+   "max_restart": 0,
+   "walltime_signals": 0,
+   "hosts": []
+  },
+  "report_112025": {
+   "starts": 0,
+   "max_restart": 0,
+   "walltime_signals": 0,
+   "hosts": []
+  }
+ },
+ "tasks_requeued_by_walltime": [
+  "111842_0",
+  "111842_1",
+  "111842_2",
+  "111842_3",
+  "111842_4",
+  "111842_5",
+  "111842_6",
+  "111842_7",
+  "112015_0"
+ ],
+ "pass": true
+}
