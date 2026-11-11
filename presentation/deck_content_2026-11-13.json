@@ -6,13 +6,13 @@
    "New handlers for SmolLM3 and LFM2.5 (their chat templates); BF16 references running (Slurm arrays 111883 / 111885 / 111887): SmolLM3-3B {runs[ref_smollm3_3b][finished]:,}, LFM2.5-1.2B {runs[ref_lfm2p5_1p2b][finished]:,}, LFM2.5-2.6B {runs[ref_lfm2p5_2p6b][finished]:,} of 2,505",
    "FR-E2: {runs[_fre2][agree]:,} / {runs[_fre2][n]:,} verdicts agree (Qwen3)",
    "S10 rerun on the merged code (array 111842): {runs[s10_requeue][finished]} of 104 episodes",
-   "Statistics: planted-effect check passes for the episode tests and lme4 models A–C",
+   "Statistics: planted-effect check passes; {runs[_a3][text]}",
    "Pre-registration: review fixes in; decisions marked proposed until you confirm",
    "Needs the team: merge to main, human labels (blank kit ready), OSF filing"
   ],
   "m3": [
    "KL vs BF16 on CUDA and CPU: 6 models x 6 formats (the KL exit item is met)",
-   "H1 damage runs, Qwen3-0.6B (arrays 111846 / 111848 / 111850, packs 111930 / 111931): Q4_0 {runs[h1_qwen3_0p6b_q4_0][finished]:,}, Q4_K_M {runs[h1_qwen3_0p6b_q4_k_m][finished]:,}, IQ4_XS {runs[h1_qwen3_0p6b_iq4_xs][finished]:,} of 2,505 episodes",
+   "H1 damage runs, Qwen3-0.6B (array 111846, packs 111930 / 111931 / 112021 / 112078 / 112163): Q4_0 {runs[h1_qwen3_0p6b_q4_0][finished]:,} + {runs[h1_qwen3_0p6b_q4_0][excluded]} excluded, Q4_K_M {runs[h1_qwen3_0p6b_q4_k_m][finished]:,} + {runs[h1_qwen3_0p6b_q4_k_m][excluded]}, IQ4_XS {runs[h1_qwen3_0p6b_iq4_xs][finished]:,} + {runs[h1_qwen3_0p6b_iq4_xs][excluded]} of 2,505 episodes",
    "Qwen3-1.7B and LFM2.5-1.2B cells submitted (arrays 111933–111943)",
    "R1 grammars: JSON and Pythonic, property-tested with llama.cpp's validator",
    "R2a variants built; R2b ranking window set by probe (1,000 chunks of tool-truncated conversations); ranking chains submitted for 0.6B, 1.7B, LFM2.5-1.2B (jobs 112000–112014)",
@@ -59,7 +59,7 @@
   "data": "YASHASHAV (about 1 min)\nThe data precisely: the eight BFCL API domains with the tasks we sample, and the three tau2 customer-service domains with the write tasks we keep. All counts are read from the benchmark data.",
   "classes": "YASHASHAV (about 1 min)\nTwo kinds of measurement. Per episode, the official verdict. Per step, one class from codebook v0; the table shows how often each failure class occurs for Qwen3-0.6B at BF16.",
   "which_fail": "YASHASHAV (about 1 min 30 s)\nWhich tasks fail, by benchmark and domain and by failure class, BF16 against 4-bit on the same tasks and seeds. Bars are means over the four sampled seeds with one standard deviation. Development data.",
-  "damage": "YASHASHAV (about 1 min 30 s)\nThe first damage numbers: for each failure class, the 4-bit rate per 100 steps, and the ratio to BF16 with a 95% interval from a task-cluster bootstrap. A preview on the episodes finished so far, not the registered test.",
+  "damage": "YASHASHAV (about 1 min 30 s)\nThe first damage numbers: for each failure class, the 4-bit rate per 100 steps, and the ratio to BF16 with a 95% interval from a task-cluster bootstrap. A preview on development data from the three complete cells, not the registered test.",
   "example": "YASHASHAV (about 1 min)\nA real episode from our logs, copied, not written by hand: the same task and seed under BF16 and under 4-bit, step by step, with each step's class.",
   "questions": "YASHASHAV (about 1 min, then questions)\nNine things we would like from you: the decisions, the confirmatory classes, the CPU scope, the node limit, the OSF filing, the Dec 4 demo and draft, what 'examples for all modalities' meant, the next meeting date, and the Canvas title."
  }
