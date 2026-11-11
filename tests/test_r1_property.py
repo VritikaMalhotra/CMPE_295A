@@ -13,7 +13,7 @@ import tempfile
 import pytest
 
 hypothesis = pytest.importorskip("hypothesis")
-from hypothesis import HealthCheck, given, settings  # noqa: E402
+from hypothesis import HealthCheck, example, given, settings  # noqa: E402
 from hypothesis import strategies as st  # noqa: E402
 
 from testbed.grammar import task_grammar, task_grammar_free  # noqa: E402
@@ -168,6 +168,7 @@ PY_THINK = pythonic_task_grammar_free(TOOLS, think_prefix=True)
 
 @SETTINGS
 @given(st.lists(calls(), min_size=1, max_size=3))
+@example([{"name": "cd", "arguments": {"folder": "\x00"}}])   # found by hypothesis (suite job 112511)
 def test_r1_pythonic_accepts_valid_calls(cs):
     text = render_tool_calls(cs)
     assert valid(PY_STRICT, text), text
