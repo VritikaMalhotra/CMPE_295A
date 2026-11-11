@@ -160,10 +160,17 @@ def _call_name(f) -> str:
     raise ValueError("call target is not a name")
 
 
+_NUL_RE = re.compile(r"(?<!\\)((?:\\\\)*)\x00")    # a NUL after an even number of backslashes
+
+
 def parse_calls(block: str) -> list[dict]:
     """``[f(a='x'), g()]`` (or a single ``f(a='x')``) -> [{"name", "arguments"}]. Keyword arguments only:
-    a positional argument cannot be mapped to a parameter name, so the block does not parse."""
-    tree = ast.parse(block.strip(), mode="eval").body
+    a positional argument cannot be mapped to a parameter name, so the block does not parse.
+
+    Python's parser rejects a NUL byte anywhere in the source, even inside a string literal, where the R1 grammar
+    (and free decoding) allow it as an ordinary character. A NUL that no backslash escapes is therefore written as
+    the escape ``\\x00`` first, which reads back as the same character; outside a string it still fails to parse."""
+    tree = ast.parse(_NUL_RE.sub(lambda m: m.group(1) + "\\x00", block.strip()), mode="eval").body
     nodes = tree.elts if isinstance(tree, (ast.List, ast.Tuple)) else [tree]
     calls = []
     for n in nodes:
