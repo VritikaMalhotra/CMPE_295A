@@ -1,0 +1,629 @@
+{
+ "collected": "2026-11-10T21:27-08:00",
+ "runs": {
+  "ref_qwen3_0p6b": {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_qwen3_0p6b/cd314594fb",
+   "experiment": "ref_qwen3_0p6b",
+   "model": "qwen3-0.6b",
+   "variants": [
+    "bf16"
+   ],
+   "specs": 2505,
+   "finished": 2502,
+   "excluded": 3,
+   "finished_share": 0.9988,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     128,
+     130
+    ],
+    "tau2_verified_retail": [
+     519,
+     520
+    ],
+    "tau2_verified_telecom": [
+     355,
+     355
+    ]
+   }
+  },
+  "ref_qwen3_1p7b": {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_qwen3_1p7b/c456da2aef",
+   "experiment": "ref_qwen3_1p7b",
+   "model": "qwen3-1.7b",
+   "variants": [
+    "bf16"
+   ],
+   "specs": 2505,
+   "finished": 2502,
+   "excluded": 3,
+   "finished_share": 0.9988,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     128,
+     130
+    ],
+    "tau2_verified_retail": [
+     519,
+     520
+    ],
+    "tau2_verified_telecom": [
+     355,
+     355
+    ]
+   }
+  },
+  "ref_qwen3_4b": {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_qwen3_4b/1c7b26d4e7",
+   "experiment": "ref_qwen3_4b",
+   "model": "qwen3-4b",
+   "variants": [
+    "bf16"
+   ],
+   "specs": 2505,
+   "finished": 2504,
+   "excluded": 1,
+   "finished_share": 0.9996,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     130,
+     130
+    ],
+    "tau2_verified_retail": [
+     519,
+     520
+    ],
+    "tau2_verified_telecom": [
+     355,
+     355
+    ]
+   }
+  },
+  "ref_smollm3_3b": {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_smollm3_3b/5053915afb",
+   "experiment": "ref_smollm3_3b",
+   "model": "smollm3-3b",
+   "variants": [
+    "bf16"
+   ],
+   "specs": 2505,
+   "finished": 65,
+   "excluded": 0,
+   "finished_share": 0.0259,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     65,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     0,
+     500
+    ],
+    "tau2_verified_airline": [
+     0,
+     130
+    ],
+    "tau2_verified_retail": [
+     0,
+     520
+    ],
+    "tau2_verified_telecom": [
+     0,
+     355
+    ]
+   }
+  },
+  "ref_lfm2p5_1p2b": {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_lfm2p5_1p2b/3018b3dc15",
+   "experiment": "ref_lfm2p5_1p2b",
+   "model": "lfm2.5-1.2b-instruct",
+   "variants": [
+    "bf16"
+   ],
+   "specs": 2505,
+   "finished": 0,
+   "excluded": 0,
+   "finished_share": 0.0,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     0,
+     500
+    ],
+    "tau2_verified_airline": [
+     0,
+     130
+    ],
+    "tau2_verified_retail": [
+     0,
+     520
+    ],
+    "tau2_verified_telecom": [
+     0,
+     355
+    ]
+   }
+  },
+  "ref_lfm2p5_2p6b": {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_lfm2p5_2p6b/86ef1012fd",
+   "experiment": "ref_lfm2p5_2p6b",
+   "model": "lfm2.5-2.6b",
+   "variants": [
+    "bf16"
+   ],
+   "specs": 2505,
+   "finished": 0,
+   "excluded": 0,
+   "finished_share": 0.0,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     0,
+     500
+    ],
+    "tau2_verified_airline": [
+     0,
+     130
+    ],
+    "tau2_verified_retail": [
+     0,
+     520
+    ],
+    "tau2_verified_telecom": [
+     0,
+     355
+    ]
+   }
+  },
+  "h1_qwen3_0p6b_q4_0": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_q4_0/c200505b35",
+   "experiment": "h1_qwen3_0p6b_q4_0",
+   "model": "qwen3-0.6b",
+   "variants": [
+    "q4_0"
+   ],
+   "specs": 2505,
+   "finished": 2501,
+   "excluded": 4,
+   "finished_share": 0.9984,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     129,
+     130
+    ],
+    "tau2_verified_retail": [
+     517,
+     520
+    ],
+    "tau2_verified_telecom": [
+     355,
+     355
+    ]
+   }
+  },
+  "h1_qwen3_0p6b_q4_k_m": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_q4_k_m/b85b3044db",
+   "experiment": "h1_qwen3_0p6b_q4_k_m",
+   "model": "qwen3-0.6b",
+   "variants": [
+    "q4_k_m"
+   ],
+   "specs": 2505,
+   "finished": 2504,
+   "excluded": 1,
+   "finished_share": 0.9996,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     129,
+     130
+    ],
+    "tau2_verified_retail": [
+     520,
+     520
+    ],
+    "tau2_verified_telecom": [
+     355,
+     355
+    ]
+   }
+  },
+  "h1_qwen3_0p6b_iq4_xs": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_iq4_xs/b7e629273d",
+   "experiment": "h1_qwen3_0p6b_iq4_xs",
+   "model": "qwen3-0.6b",
+   "variants": [
+    "iq4_xs"
+   ],
+   "specs": 2505,
+   "finished": 2498,
+   "excluded": 7,
+   "finished_share": 0.9972,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     125,
+     130
+    ],
+    "tau2_verified_retail": [
+     518,
+     520
+    ],
+    "tau2_verified_telecom": [
+     355,
+     355
+    ]
+   }
+  },
+  "h1_qwen3_1p7b_q4_0": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_1p7b_q4_0/81058311fd",
+   "experiment": "h1_qwen3_1p7b_q4_0",
+   "model": "qwen3-1.7b",
+   "variants": [
+    "q4_0"
+   ],
+   "specs": 2505,
+   "finished": 0,
+   "excluded": 0,
+   "finished_share": 0.0,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     0,
+     500
+    ],
+    "tau2_verified_airline": [
+     0,
+     130
+    ],
+    "tau2_verified_retail": [
+     0,
+     520
+    ],
+    "tau2_verified_telecom": [
+     0,
+     355
+    ]
+   }
+  },
+  "h1_qwen3_1p7b_q4_k_m": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_1p7b_q4_k_m/f1bd825c41",
+   "experiment": "h1_qwen3_1p7b_q4_k_m",
+   "model": "qwen3-1.7b",
+   "variants": [
+    "q4_k_m"
+   ],
+   "specs": 2505,
+   "finished": 0,
+   "excluded": 0,
+   "finished_share": 0.0,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     0,
+     500
+    ],
+    "tau2_verified_airline": [
+     0,
+     130
+    ],
+    "tau2_verified_retail": [
+     0,
+     520
+    ],
+    "tau2_verified_telecom": [
+     0,
+     355
+    ]
+   }
+  },
+  "h1_qwen3_1p7b_iq4_xs": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_1p7b_iq4_xs/bb695f9151",
+   "experiment": "h1_qwen3_1p7b_iq4_xs",
+   "model": "qwen3-1.7b",
+   "variants": [
+    "iq4_xs"
+   ],
+   "specs": 2505,
+   "finished": 0,
+   "excluded": 0,
+   "finished_share": 0.0,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     0,
+     500
+    ],
+    "tau2_verified_airline": [
+     0,
+     130
+    ],
+    "tau2_verified_retail": [
+     0,
+     520
+    ],
+    "tau2_verified_telecom": [
+     0,
+     355
+    ]
+   }
+  },
+  "h1_lfm2p5_1p2b_q4_0": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_q4_0/55a6367d24",
+   "experiment": "h1_lfm2p5_1p2b_q4_0",
+   "model": "lfm2.5-1.2b-instruct",
+   "variants": [
+    "q4_0"
+   ],
+   "specs": 2505,
+   "finished": 0,
+   "excluded": 0,
+   "finished_share": 0.0,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     0,
+     500
+    ],
+    "tau2_verified_airline": [
+     0,
+     130
+    ],
+    "tau2_verified_retail": [
+     0,
+     520
+    ],
+    "tau2_verified_telecom": [
+     0,
+     355
+    ]
+   }
+  },
+  "h1_lfm2p5_1p2b_q4_k_m": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_q4_k_m/dac01ff9a0",
+   "experiment": "h1_lfm2p5_1p2b_q4_k_m",
+   "model": "lfm2.5-1.2b-instruct",
+   "variants": [
+    "q4_k_m"
+   ],
+   "specs": 2505,
+   "finished": 0,
+   "excluded": 0,
+   "finished_share": 0.0,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     0,
+     500
+    ],
+    "tau2_verified_airline": [
+     0,
+     130
+    ],
+    "tau2_verified_retail": [
+     0,
+     520
+    ],
+    "tau2_verified_telecom": [
+     0,
+     355
+    ]
+   }
+  },
+  "h1_lfm2p5_1p2b_iq4_xs": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_iq4_xs/52af219f58",
+   "experiment": "h1_lfm2p5_1p2b_iq4_xs",
+   "model": "lfm2.5-1.2b-instruct",
+   "variants": [
+    "iq4_xs"
+   ],
+   "specs": 2505,
+   "finished": 0,
+   "excluded": 0,
+   "finished_share": 0.0,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     0,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     0,
+     500
+    ],
+    "tau2_verified_airline": [
+     0,
+     130
+    ],
+    "tau2_verified_retail": [
+     0,
+     520
+    ],
+    "tau2_verified_telecom": [
+     0,
+     355
+    ]
+   }
+  },
+  "s10_requeue": {
+   "dir": "/scratch/cmpe295-bertin/runs/s10_rerun_20261110/s10_requeue/4375dbd0be",
+   "experiment": "s10_requeue",
+   "model": "qwen3-0.6b",
+   "variants": [
+    "bf16",
+    "q4_0",
+    "q4_k_m",
+    "q8_0"
+   ],
+   "specs": 104,
+   "finished": 104,
+   "excluded": 0,
+   "finished_share": 1.0,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     104,
+     104
+    ]
+   }
+  }
+ },
+ "submissions": [
+  "tau2_smoke sim=109543 array=109544 report=109545 stop=109546 2026-11-08T19:03:26-08:00",
+  "ref_qwen3_0p6b sim=109565 array=109566 report=109567 2026-11-08T19:32:07-08:00",
+  "ref_qwen3_1p7b sim=109565 array=109568 report=109569 2026-11-08T19:32:07-08:00",
+  "ref_qwen3_4b sim=109565 array=109570 report=109571 2026-11-08T19:32:08-08:00",
+  "ref_qwen3_0p6b rerun sim=109565 array=109651 report=109652 2026-11-08T21:39:52-08:00",
+  "ref_qwen3_1p7b rerun sim=109565 array=109657 report=109658 2026-11-08T22:10:13-08:00",
+  "ref_qwen3_4b sim=110093 array=110094 report=110095 2026-11-09T08:09:14-08:00",
+  "h1_qwen3_0p6b_q4_0 sim=111845 array=111846 report=111847 2026-11-10T10:21:18-08:00",
+  "h1_qwen3_0p6b_q4_k_m sim=111845 array=111848 report=111849 2026-11-10T10:21:18-08:00",
+  "h1_qwen3_0p6b_iq4_xs sim=111845 array=111850 report=111851 2026-11-10T10:21:18-08:00",
+  "ref_smollm3_3b sim=111845 array=111883 report=111884 attached 2026-11-10T11:05:54-08:00",
+  "ref_lfm2p5_1p2b sim=111845 array=111885 report=111886 attached 2026-11-10T11:06:01-08:00",
+  "ref_lfm2p5_2p6b sim=111845 array=111887 report=111888 attached 2026-11-10T11:06:07-08:00",
+  "stop job 111852 replaced by 111889 (waits for 111846 111848 111850 111883 111885 111887) 2026-11-10T11:06:17-08:00",
+  "b1 0.6B packs 111929 (a100 K=4) 111930 (p100 K=2); arrays 111846/111848/111850 held 2026-11-10T11:13:45-08:00",
+  "pack 111929 cancelled (mem), resubmitted as 111931 (a100 K=3 10G) 2026-11-10T11:14:35-08:00",
+  "h1_qwen3_1p7b_q4_0 sim=111845 array=111933 report=111934 attached 2026-11-10T11:16:49-08:00",
+  "h1_qwen3_1p7b_q4_k_m sim=111845 array=111935 report=111936 attached 2026-11-10T11:16:55-08:00",
+  "h1_qwen3_1p7b_iq4_xs sim=111845 array=111937 report=111938 attached 2026-11-10T11:17:01-08:00",
+  "h1_lfm2p5_1p2b_q4_0 sim=111845 array=111939 report=111940 attached 2026-11-10T11:17:07-08:00",
+  "h1_lfm2p5_1p2b_q4_k_m sim=111845 array=111941 report=111942 attached 2026-11-10T11:17:13-08:00",
+  "h1_lfm2p5_1p2b_iq4_xs sim=111845 array=111943 report=111944 attached 2026-11-10T11:17:19-08:00",
+  "stop job 111889 replaced by 111945 (waits for B1 0.6B/1.7B/LFM arrays, A2 arrays, packs 111930 111931) 2026-11-10T11:17:30-08:00",
+  "successor simulator 111955 queued after 111845 (same endpoint /scratch/cmpe295-bertin/runs/simuser/h1_qwen3_0p6b_q4_0+h1_qwen3_0p6b_q4_k_m+h1_qwen3_0p6b_iq4_xs.endpoint.json) 2026-11-10T11:32:32-08:00",
+  "pack2 111930 cancelled so S10 112015 runs first; resubmitted as 112018; stop job 111945 -> 112019 2026-11-10T12:01:55-08:00",
+  "pack2 112018 cancelled; resubmitted as 112021 after S10 112015; stop -> 112022 2026-11-10T12:02:27-08:00",
+  "pack2 112021 -> 112078 (list b1_0p6b_v2: Q4_0 leftovers first, 2 passes); stop -> 112079 2026-11-10T13:10:18-08:00",
+  "pack 112078 cancelled (Q4_0 telecom shard 7e3001ec5578 1/2 stopped at 36/129 after a simulator error, waiting for pass 2); replaced by 112163 (p100 K=2, list b1_0p6b_v3.txt: both Q4_0 telecom shards first); stop job 112079 also waits for 112163 2026-11-10T15:17:48-08:00",
+  "holds on 111883 111885 111887 112000 (set so 112163 got the freed slot) released 2026-11-10T15:17:57-08:00",
+  "B1 0.6B cells complete (q4_0 2501+4, q4_k_m 2504+1, iq4_xs 2498+7); held arrays 111846/111848/111850 cancelled so reports 111847/111849/111851 run 2026-11-10T21:25:29-08:00",
+  "A3 real-data R run 112507: BF16 ref_qwen3_0p6b/cd314594fb vs first finished 4-bit cell h1_qwen3_0p6b_q4_k_m/b85b3044db (last episode 17:28; q4_0 18:13, iq4_xs 20:24), after report 111849, code 976136f 2026-11-10T21:25:57-08:00"
+ ]
+}
