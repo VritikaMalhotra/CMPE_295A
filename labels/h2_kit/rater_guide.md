@@ -9,8 +9,8 @@ Sheets in this folder (labels empty):
 - `rater_sample_30.csv`: 30 steps, the codebook v0 check (M2 plan item 14).
 - `pilot_300.csv`: 300 steps for the κ study (M3 exit: two independent raters, κ ≥ 0.80).
 
-Steps come from development runs (Qwen3 0.6B/1.7B/4B; BF16 and 4-bit). The sheet hides which model, format and run
-each step came from, so judge only what is in the row. The rules are those of `docs/codebook_v0.md`. If this
+Steps come from development runs of Qwen3-0.6B on the same 501 tasks, in BF16 and three 4-bit formats. The sheet
+hides which format and run each step came from, so judge only what is in the row. The rules are those of `docs/codebook_v0.md`. If this
 guide and the codebook disagree, the codebook wins; write the case in `note`.
 
 ## What one row is

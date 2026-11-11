@@ -1,0 +1,400 @@
+{
+ "what": "Registered mixed-effects models A/B/C on real logs (development data, preview; the pre-registration is not filed)",
+ "reference_dir": "/scratch/cmpe295-bertin/runs/ref_qwen3_0p6b/cd314594fb",
+ "cell_dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_q4_k_m/b85b3044db",
+ "reference_experiment": "cd314594fb",
+ "cell_experiment": "b85b3044db",
+ "seeds": [
+  1,
+  2,
+  3,
+  4
+ ],
+ "depth": "episode_step bins ((0, 'd0-1'), (2, 'd2-3'), (4, 'd4-6'), (7, 'd7+'))",
+ "R": "R version 4.4.1 (2024-06-14)",
+ "lme4": "2.1.0",
+ "variants": [
+  "bf16",
+  "q4_k_m"
+ ],
+ "n_episodes": 4000,
+ "n_steps": 34929,
+ "n_pairs": 2000,
+ "n_tasks": 501,
+ "episodes_by_variant": {
+  "bf16": 2000,
+  "q4_k_m": 2000
+ },
+ "steps_by_variant": {
+  "bf16": 18173,
+  "q4_k_m": 16756
+ },
+ "wall_s": 82.5,
+ "result": {
+  "script": "analysis/mixed_effects.R",
+  "script_version": "1.0.0",
+  "r_version": "R version 4.4.1 (2024-06-14)",
+  "lme4_version": "2.1.0",
+  "inputs": {
+   "steps": "/tmp/tmpz9b0zvx1/steps.csv",
+   "episodes": "/tmp/tmpz9b0zvx1/episodes.csv",
+   "n_step_rows": 34929,
+   "n_episodes": 4000,
+   "configuration": "variant",
+   "reference": "bf16",
+   "levels": [
+    "bf16",
+    "q4_k_m"
+   ],
+   "filters": [],
+   "depth_breaks": [
+    0,
+    1,
+    2,
+    4
+   ]
+  },
+  "ci_method": "Wald 95%",
+  "notes": [
+   "model B: step_type level(s) end dropped (failure rate 0)"
+  ],
+  "models": {
+   "A": {
+    "status": "ok",
+    "family": "poisson",
+    "scale": "rate_ratio",
+    "formula": "failures ~ configuration + offset(log(steps)) + (1 | task)",
+    "fallback_step": "default",
+    "attempts": [
+     {
+      "step": "default",
+      "formula": "failures ~ configuration + offset(log(steps)) + (1 | task)",
+      "converged": true,
+      "warnings": []
+     }
+    ],
+    "n_obs": 4000,
+    "n_groups": [
+     501
+    ],
+    "singular": false,
+    "aic": 13789.7244558015,
+    "fixed": [
+     {
+      "term": "(Intercept)",
+      "estimate": -1.3532347466566,
+      "se": 0.0308670062759933,
+      "z": -43.8408161308818,
+      "p": 0,
+      "ci_low": -1.41373296726811,
+      "ci_high": -1.29273652604508,
+      "exp_estimate": 0.258403038909646,
+      "exp_ci_low": 0.243233603227758,
+      "exp_ci_high": 0.274518527175773
+     },
+     {
+      "term": "configurationq4_k_m",
+      "estimate": -0.0554578759394689,
+      "se": 0.01989778782263,
+      "z": -2.78713776796816,
+      "p": 0.00531758668288723,
+      "ci_low": -0.0944568234438433,
+      "ci_high": -0.0164589284350945,
+      "exp_estimate": 0.946051874377514,
+      "exp_ci_low": 0.909867018702376,
+      "exp_ci_high": 0.983675779664646
+     }
+    ],
+    "random_sd": {
+     "task": 0.592711024293102
+    },
+    "poisson_dispersion": 0.664494953381747,
+    "dispersion_threshold": 1.5
+   },
+   "B": {
+    "status": "ok",
+    "family": "binomial",
+    "scale": "odds_ratio",
+    "formula": "failure ~ precision * step_type + precision * turn_depth + (1 | task/episode)",
+    "fallback_step": "default",
+    "attempts": [
+     {
+      "step": "default",
+      "formula": "failure ~ precision * step_type + precision * turn_depth + (1 | task/episode)",
+      "converged": true,
+      "warnings": []
+     }
+    ],
+    "n_obs": 28025,
+    "n_groups": [
+     501,
+     4000
+    ],
+    "singular": false,
+    "aic": 25149.0703668324,
+    "fixed": [
+     {
+      "term": "(Intercept)",
+      "estimate": 0.76192582130426,
+      "se": 0.0812649262287285,
+      "z": 9.37582616096569,
+      "p": 6.86361135291055e-21,
+      "ci_low": 0.602649492689648,
+      "ci_high": 0.921202149918873,
+      "exp_estimate": 2.14239812614957,
+      "exp_ci_low": 1.82695289194907,
+      "exp_ci_high": 2.51230874707038
+     },
+     {
+      "term": "precision4bit",
+      "estimate": -0.0495709678862387,
+      "se": 0.0730918733777062,
+      "z": -0.678200812148815,
+      "p": 0.497644377691097,
+      "ci_low": -0.192828407269105,
+      "ci_high": 0.0936864714966274,
+      "exp_estimate": 0.951637620029613,
+      "exp_ci_low": 0.824623461391369,
+      "exp_ci_high": 1.09821537011281
+     },
+     {
+      "term": "step_typetext",
+      "estimate": -3.15356453219221,
+      "se": 0.0559992887958948,
+      "z": -56.3143675571713,
+      "p": 0,
+      "ci_low": -3.26332112139202,
+      "ci_high": -3.04380794299239,
+      "exp_estimate": 0.0426996509953399,
+      "exp_ci_low": 0.0382611169625988,
+      "exp_ci_high": 0.0476530833353901
+     },
+     {
+      "term": "turn_depthd2-3",
+      "estimate": -0.172392049715886,
+      "se": 0.0664853607479247,
+      "z": -2.59293245575519,
+      "p": 0.00951614578042665,
+      "ci_low": -0.302700962280971,
+      "ci_high": -0.0420831371508006,
+      "exp_estimate": 0.841649140171776,
+      "exp_ci_low": 0.738819998386909,
+      "exp_ci_high": 0.958790066184598
+     },
+     {
+      "term": "turn_depthd4-6",
+      "estimate": -0.208018505010159,
+      "se": 0.0639737284146708,
+      "z": -3.25162391133131,
+      "p": 0.00114747745887909,
+      "ci_low": -0.33340470865966,
+      "ci_high": -0.0826323013606573,
+      "exp_estimate": 0.812192006951537,
+      "exp_ci_low": 0.716480169742792,
+      "exp_ci_high": 0.920689621309092
+     },
+     {
+      "term": "turn_depthd7+",
+      "estimate": -0.433315542794731,
+      "se": 0.065982100699813,
+      "z": -6.56716803798213,
+      "p": 5.12811670923579e-11,
+      "ci_low": -0.562638083790659,
+      "ci_high": -0.303993001798802,
+      "exp_estimate": 0.648355875499138,
+      "exp_ci_low": 0.569704152390444,
+      "exp_ci_high": 0.737866030167459
+     },
+     {
+      "term": "precision4bit:step_typetext",
+      "estimate": 0.194551922563341,
+      "se": 0.0729746229715963,
+      "z": 2.66602162013315,
+      "p": 0.00767547566850433,
+      "ci_low": 0.0515242897536228,
+      "ci_high": 0.337579555373059,
+      "exp_estimate": 1.21476655504099,
+      "exp_ci_low": 1.05287476005006,
+      "exp_ci_high": 1.40155110487785
+     },
+     {
+      "term": "precision4bit:turn_depthd2-3",
+      "estimate": 0.312735074511725,
+      "se": 0.0955796130852755,
+      "z": 3.27198514847204,
+      "p": 0.00106795185853694,
+      "ci_low": 0.125402475208312,
+      "ci_high": 0.500067673815138,
+      "exp_estimate": 1.36715928770413,
+      "exp_ci_low": 1.1336046090161,
+      "exp_ci_high": 1.64883284973406
+     },
+     {
+      "term": "precision4bit:turn_depthd4-6",
+      "estimate": 0.148710987264615,
+      "se": 0.0925080412384199,
+      "z": 1.60754660107162,
+      "p": 0.10793451532614,
+      "ci_low": -0.0326014418430338,
+      "ci_high": 0.330023416372264,
+      "exp_estimate": 1.16033758840347,
+      "exp_ci_low": 0.967924256830421,
+      "exp_ci_high": 1.39100070027264
+     },
+     {
+      "term": "precision4bit:turn_depthd7+",
+      "estimate": 0.32099863976911,
+      "se": 0.0929937017067319,
+      "z": 3.4518320475232,
+      "p": 0.000556794191962434,
+      "ci_low": 0.138734333634855,
+      "ci_high": 0.503262945903365,
+      "exp_estimate": 1.37850370580916,
+      "exp_ci_low": 1.14881885692906,
+      "exp_ci_high": 1.65410974538601
+     }
+    ],
+    "random_sd": {
+     "episode:task": 0.247877931250432,
+     "task": 1.44615567374713
+    },
+    "reference": {
+     "precision": "16bit",
+     "step_type": "call",
+     "turn_depth": "d0-1"
+    },
+    "precision_effects": [
+     {
+      "label": "4bit vs 16bit | step_type=call, turn_depth=d0-1",
+      "terms": [
+       "precision4bit"
+      ],
+      "estimate": -0.0495709678862387,
+      "se": 0.0730918733777062,
+      "z": -0.678200812148815,
+      "p": 0.497644377691097,
+      "ci_low": -0.192828407269105,
+      "ci_high": 0.0936864714966274,
+      "exp_estimate": 0.951637620029613,
+      "exp_ci_low": 0.824623461391369,
+      "exp_ci_high": 1.09821537011281
+     },
+     {
+      "label": "4bit vs 16bit | step_type=text, turn_depth=d0-1",
+      "terms": [
+       "precision4bit",
+       "precision4bit:step_typetext"
+      ],
+      "estimate": 0.144980954677102,
+      "se": 0.0798803766923737,
+      "z": 1.81497585114598,
+      "p": 0.0695276206852714,
+      "ci_low": -0.011581706711443,
+      "ci_high": 0.301543616065647,
+      "exp_estimate": 1.15601755333078,
+      "exp_ci_low": 0.988485103081183,
+      "exp_ci_high": 1.35194408033394
+     },
+     {
+      "label": "4bit vs 16bit | step_type=call, turn_depth=d2-3",
+      "terms": [
+       "precision4bit",
+       "precision4bit:turn_depthd2-3"
+      ],
+      "estimate": 0.263164106625486,
+      "se": 0.0742810091503306,
+      "z": 3.54281813932943,
+      "p": 0.000395875601571536,
+      "ci_low": 0.117576003955548,
+      "ci_high": 0.408752209295424,
+      "exp_estimate": 1.30104021075214,
+      "exp_ci_low": 1.12476711344484,
+      "exp_ci_high": 1.50493876444316
+     },
+     {
+      "label": "4bit vs 16bit | step_type=call, turn_depth=d4-6",
+      "terms": [
+       "precision4bit",
+       "precision4bit:turn_depthd4-6"
+      ],
+      "estimate": 0.0991400193783766,
+      "se": 0.0676901207805318,
+      "z": 1.46461578492101,
+      "p": 0.143025772925067,
+      "ci_low": -0.0335301794606321,
+      "ci_high": 0.231810218217385,
+      "exp_estimate": 1.10422090105918,
+      "exp_ci_low": 0.967025726476173,
+      "exp_ci_high": 1.26088041398762
+     },
+     {
+      "label": "4bit vs 16bit | step_type=call, turn_depth=d7+",
+      "terms": [
+       "precision4bit",
+       "precision4bit:turn_depthd7+"
+      ],
+      "estimate": 0.271427671882871,
+      "se": 0.071276587659098,
+      "z": 3.80809015691179,
+      "p": 0.000140044217756836,
+      "ci_low": 0.131728127130127,
+      "ci_high": 0.411127216635615,
+      "exp_estimate": 1.31183598579823,
+      "exp_ci_low": 1.14079812504225,
+      "exp_ci_high": 1.50851725284127
+     }
+    ]
+   },
+   "C": {
+    "status": "ok",
+    "family": "binomial",
+    "scale": "odds_ratio",
+    "formula": "success ~ configuration + (1 | task)",
+    "fallback_step": "default",
+    "attempts": [
+     {
+      "step": "default",
+      "formula": "success ~ configuration + (1 | task)",
+      "converged": true,
+      "warnings": []
+     }
+    ],
+    "n_obs": 4000,
+    "n_groups": [
+     501
+    ],
+    "singular": false,
+    "aic": 274.223255975144,
+    "fixed": [
+     {
+      "term": "(Intercept)",
+      "estimate": -11.8828339724646,
+      "se": 1.06791436214706,
+      "z": -11.1271412705546,
+      "p": 9.25563808539103e-29,
+      "ci_low": -13.9759076608459,
+      "ci_high": -9.78976028408326,
+      "exp_estimate": 6.90797530543126e-06,
+      "exp_ci_low": 8.51805467390761e-07,
+      "exp_ci_high": 5.60223251050779e-05
+     },
+     {
+      "term": "configurationq4_k_m",
+      "estimate": -0.177852760884318,
+      "se": 0.422183562602681,
+      "z": -0.421268795468704,
+      "p": 0.673558813619779,
+      "ci_low": -1.00531733845038,
+      "ci_high": 0.649611816681749,
+      "exp_estimate": 0.837065663223712,
+      "exp_ci_low": 0.365928493195909,
+      "exp_ci_high": 1.91479739232284
+     }
+    ],
+    "random_sd": {
+     "task": 12.1721856053541
+    }
+   }
+  }
+ }
+}
