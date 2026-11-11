@@ -386,7 +386,7 @@ def slide_damage(prs, dmg):
     text(s, 0.85, 4.88, 11.6, 1.35, "Damage summary text", [
         [("95% CI above 1: ", {"b": True, "size": 13}), ("; ".join(up) or "none", {"color": "tx2", "size": 13})],
         [("95% CI below 1: ", {"b": True, "size": 13}), ("; ".join(down) or "none", {"color": "tx2", "size": 13})],
-        [("Development data on the episodes finished so far; not the registered test. Fewer exec_error and "
+        [("Development data from the three complete cells; not the registered test. Fewer exec_error and "
           "tool_error_payload steps under 4-bit can mean fewer calls made at all.", {"color": "accent5", "size": 11})]], 13)
     pairs = ", ".join(f"{c}: {dmg['cells'][c]['pairs']:,} pairs" for c in cells)
     source(s, f"analysis/damage_table.py; results/m3/damage_preview_qwen3-0.6b.json. Ratio = 4-bit rate / BF16 rate per "
@@ -476,6 +476,16 @@ def main():
     runs = _Runs(J(a.status)["runs"])
     fre2 = J("results/m2/evaluator_agreement.json")
     runs["_fre2"] = {"agree": fre2["agree"], "n": fre2["n"]}
+    a3 = "results/m2/mixed_effects_qwen3-0.6b.json"    # A3 real-data run (wk11-vritika; present on the integration branch)
+    runs["_a3"] = {"text": "real-data run waits for the first finished 4-bit cell"}
+    if os.path.exists(os.path.join(ROOT, a3)):
+        me = J(a3)
+        mods = me["result"]["models"]
+        rr = next(t for t in mods["A"]["fixed"] if t["term"].startswith("configuration"))
+        fit = "models A–C fit" if all(m["status"] == "ok" for m in mods.values()) else "not all of models A–C fit"
+        runs["_a3"] = {"text": f"real data (BF16 vs {me['variants'][1].upper()}, {me['n_pairs']:,} pairs): {fit}, "
+                               f"A's rate ratio {rr['exp_estimate']:.2f} [{rr['exp_ci_low']:.2f}, "
+                               f"{rr['exp_ci_high']:.2f}]"}
     fill = lambda t: t.format(runs=runs)       # noqa: E731
     man = J("results/m3/models_manifest.json")
     thr = J("results/m2/throughput.json")
