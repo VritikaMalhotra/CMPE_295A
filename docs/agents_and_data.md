@@ -3,7 +3,8 @@
 This page answers two questions from the 2026-11-09 feedback (Gao; Bertin on the data): what kind of agent we
 test and what it is for, and exactly which domains and data the study uses. Counts come from the bfcl-eval
 2026.3.23 and tau2-bench-verified (864350a) data in the testbed environment, read on 2026-11-10, and from the
-experiment configs (`configs/experiment/ref_*.yaml`).
+experiment configs (`configs/experiment/ref_*.yaml`). The counts are in
+`results/m3/benchmark_domains.json` (`scripts/benchmark_domains.py`, CPU job 111946).
 
 ## 1. The agent
 

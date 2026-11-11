@@ -1,0 +1,130 @@
+{
+ "bfcl": {
+  "sample_seed": 295,
+  "per_category": 100,
+  "categories": {
+   "multi_turn_base": {
+    "tasks_in_bfcl": 200,
+    "tasks_sampled": 100,
+    "turns_mean": 3.72,
+    "turns_min": 1,
+    "turns_max": 7
+   },
+   "multi_turn_miss_func": {
+    "tasks_in_bfcl": 200,
+    "tasks_sampled": 100,
+    "turns_mean": 4.66,
+    "turns_min": 2,
+    "turns_max": 8
+   },
+   "multi_turn_miss_param": {
+    "tasks_in_bfcl": 200,
+    "tasks_sampled": 100,
+    "turns_mean": 4.67,
+    "turns_min": 2,
+    "turns_max": 8
+   }
+  },
+  "api_classes": {
+   "VehicleControlAPI": {
+    "functions": 22,
+    "tasks": {
+     "multi_turn_base": 26,
+     "multi_turn_miss_func": 26,
+     "multi_turn_miss_param": 27
+    },
+    "tasks_total": 79
+   },
+   "GorillaFileSystem": {
+    "functions": 18,
+    "tasks": {
+     "multi_turn_base": 20,
+     "multi_turn_miss_func": 28,
+     "multi_turn_miss_param": 27
+    },
+    "tasks_total": 75
+   },
+   "TravelAPI": {
+    "functions": 18,
+    "tasks": {
+     "multi_turn_base": 25,
+     "multi_turn_miss_func": 28,
+     "multi_turn_miss_param": 21
+    },
+    "tasks_total": 74
+   },
+   "TradingBot": {
+    "functions": 20,
+    "tasks": {
+     "multi_turn_base": 29,
+     "multi_turn_miss_func": 18,
+     "multi_turn_miss_param": 25
+    },
+    "tasks_total": 72
+   },
+   "TwitterAPI": {
+    "functions": 14,
+    "tasks": {
+     "multi_turn_base": 19,
+     "multi_turn_miss_func": 21,
+     "multi_turn_miss_param": 19
+    },
+    "tasks_total": 59
+   },
+   "MessageAPI": {
+    "functions": 10,
+    "tasks": {
+     "multi_turn_base": 16,
+     "multi_turn_miss_func": 21,
+     "multi_turn_miss_param": 20
+    },
+    "tasks_total": 57
+   },
+   "TicketAPI": {
+    "functions": 9,
+    "tasks": {
+     "multi_turn_base": 16,
+     "multi_turn_miss_func": 16,
+     "multi_turn_miss_param": 14
+    },
+    "tasks_total": 46
+   },
+   "MathAPI": {
+    "functions": 17,
+    "tasks": {
+     "multi_turn_base": 12,
+     "multi_turn_miss_func": 14,
+     "multi_turn_miss_param": 15
+    },
+    "tasks_total": 41
+   }
+  },
+  "tasks_by_number_of_classes": {
+   "1": 97,
+   "2": 203
+  }
+ },
+ "tau2": {
+  "airline": {
+   "base_tasks": 50,
+   "write_tasks": 26,
+   "agent_tools": 14,
+   "user_tools": 0,
+   "write_tools": 6
+  },
+  "retail": {
+   "base_tasks": 114,
+   "write_tasks": 104,
+   "agent_tools": 16,
+   "user_tools": 0,
+   "write_tools": 7
+  },
+  "telecom": {
+   "base_tasks": 114,
+   "write_tasks": 71,
+   "agent_tools": 13,
+   "user_tools": 30,
+   "write_tools": 6
+  }
+ }
+}
