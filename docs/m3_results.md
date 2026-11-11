@@ -58,8 +58,8 @@ BF16 on both backends.
 **Observations to discuss with the team**
 1. **SmolLM3-3B breaks the expected order.** Q5_0-pure (0.060 CUDA / 0.057 CPU) is worse than Q4_K_M (0.045 /
    0.043) and IQ4_XS. The other five models follow Q8_0 < Q6_K < Q5_0 < IQ4_XS ≈ Q4_K_M < Q4_0-pure.
-   - Likely cause: `--pure` also puts the token embedding and output head at Q5_0, while Q4_K_M keeps the output
-     at Q6_K. SmolLM3's Q4_0-pure gap (0.240 vs 0.045 for Q4_K_M) is also the widest of the six.
+   - Cause, confirmed 2026-11-10: the precision of SmolLM3's tied output head. See "SmolLM3-3B: the tied output
+     head (B4)" below.
    - This affects how the R2a uniform-bits arm reads on SmolLM3 (runbook choice 1).
 2. **IQ4_XS ≤ Q4_K_M on 5 of 6 models**, at 0.3–0.5 fewer bits per weight. The imatrix text is WikiText-2 train
    and the KL text is WikiText-2 test, so the KL check is in the same domain as the calibration. The agentic
@@ -67,6 +67,48 @@ BF16 on both backends.
 3. **Backend effect.** CPU KL is higher than CUDA for Q6_K-pure on 4 of 6 models (e.g. Qwen3-0.6B 0.0195 vs
    0.0138) and higher for Q4_K_M on 4 of 6, and lower for Q8_0 everywhere. Qwen3-4B Q8_0 is 0.0118 on CUDA vs
    0.0017 on CPU. This is consistent with `m2-phase1`'s parity result (backend stays a factor).
+
+## SmolLM3-3B: the tied output head (B4, 2026-11-10)
+
+**Tensor types.** Job 111868 read every model's files with llama.cpp's `gguf` reader
+(`results/m3/tensor_types.jsonl`). SmolLM3-3B has **no `output.weight`**: the output head is tied to
+`token_embd.weight`, so that one tensor (8.5% of the weights) is both the embedding and the head. The three
+recipes treat it differently:
+
+| SmolLM3 file | `token_embd` (= head) | Other 2-D tensors |
+|---|---|---|
+| Q4_K_M | Q6_K | 216 Q4_K, plus 36 at Q6_K (18 `attn_v`, 18 `ffn_down`) |
+| IQ4_XS | Q6_K | 216 IQ4_XS, plus 36 at Q5_K |
+| Q5_0-pure | **Q5_0** | 252 Q5_0 |
+
+**Test** (job 111872, CPU). We built three diagnostic files in `models/diag_b4`, kept apart from the study
+files. Each changes one thing. KL against BF16 used the step 3 settings (WikiText-2 test, ctx 512, 50 chunks).
+Results: `results/m3/kl_cpu_diag_b4_SmolLM3-3B.json`. The first three rows are the step 3 CPU results.
+
+| File | Head | Rest | Bits per weight | Mean KLD (CPU) | Same top token |
+|---|---|---|---|---|---|
+| Q5_0-pure | Q5_0 | Q5_0 | 5.52 | 0.0565 | 86.8% |
+| Q4_K_M | Q6_K | Q4_K + 36 Q6_K | 4.98 | 0.0426 | 89.2% |
+| IQ4_XS | Q6_K | IQ4_XS + 36 Q5_K | 4.48 | 0.0461 | 88.9% |
+| Q5_0-pure-embdQ6K | **Q6_K** | Q5_0 | 5.61 | **0.0284** | 91.0% |
+| Q5_0-pure-kmQ6K | Q6_K | Q5_0 + the same 36 at Q6_K | 5.76 | 0.0219 | 91.7% |
+| Q4_K_M-embdQ5_0 | **Q5_0** | Q4_K + 36 Q6_K | 4.89 | **0.0698** | 85.9% |
+
+**Cause: the head's precision.**
+- Raising only the tied head from Q5_0 to Q6_K halves Q5_0-pure's KLD (0.0565 → 0.0284). That puts it below
+  Q4_K_M, at +0.09 bits per weight.
+- Lowering only the head in Q4_K_M from Q6_K to Q5_0 raises its KLD from 0.0426 to 0.0698. That is worse than
+  Q5_0-pure.
+- The 36 `attn_v`/`ffn_down` tensors that Q4_K_M keeps at Q6_K explain a further, smaller part (0.0284 → 0.0219).
+- Qwen3-4B, LFM2.5-1.2B and LFM2.5-2.6B also tie the head, and `--pure` also puts it at Q5_0, but they keep the
+  expected order. So SmolLM3 is unusually sensitive to the precision of its head. This also fits SmolLM3 having
+  the widest Q4_0-pure gap of the six (0.237 against 0.043 for Q4_K_M on CPU).
+
+**Consequence for R2a (team call, not made here).** On SmolLM3, the "uniform 5.5 bits" arm (Q5_0-pure) mostly
+measures the head at 5.5 bits, not 5.5 bits everywhere. Options:
+- report the head type next to every SmolLM3 R2 result; or
+- add a Q5_0 variant with the head at Q6_K (5.61 bits per weight) as a sensitivity check.
+R2b's selection is not affected: it keeps the embedding/head at the base type and ranks only block weights.
 
 ## QAD training mix and R2b calibration conversations (package K; job 110408, 6 min)
 Built per `docs/qad_data.md`; summary in `results/m3/qad_mix_manifest.json` (`pass: true`).
@@ -84,8 +126,36 @@ Built per `docs/qad_data.md`; summary in `results/m3/qad_mix_manifest.json` (`pa
 `rank_text.txt` (2,000 conversations, 7.0M tokens, no tool schemas) shares no 13-gram with the benchmark text, and
 its ids are disjoint from the training set.
 
-**Open before the R2b ranking (runbook step 4):** a holdout conversation averages about 3.5k tokens (tool
-responses are long). So the default ranking window (`RANK_CHUNKS=20` × 512 tokens) would cover only about three
-conversations. Options:
-- render the ranking text with tool responses truncated, or
-- raise `RANK_CHUNKS`, which costs proportionally more GPU time per tensor.
+**R2b ranking window (default D-1, decided 11-09; set 2026-11-10).**
+- **Ranking text.** `rank_text_t256.txt` is the same 2,000 held-out conversations with every tool reply cut to 256
+  Qwen3-0.6B tokens (`train/build_qad_mix.py rank-text`, job 111874):
+  - 1,690 of 6,806 tool replies cut;
+  - 4,632,056 tokens;
+  - SHA-256 `dc06ce1f93061baccb8088fc96e4673472bacc3884029febea038a9253cfa438`;
+  - shares no 13-gram with the benchmarks (`rank_text_t256.json` next to it).
+- **Timing probe on Qwen3-0.6B** (ctx 512; `slurm/rank_probe.sbatch`):
+
+  | Chunks | GPU | Base pass | Per tensor | Base-logits file | Job |
+  |---|---|---|---|---|---|
+  | 20 | A100 | 11 s | about 5 s | 1.5 GB | 111875 |
+  | 200 | A100 | 32 s | about 15.6 s | 15.5 GB | 111875 |
+  | 1,000 | P100 | 242 s | 200.6–205.9 s | 77.5 GB | 111927 |
+
+  The base-logits file grows by 77.5 MB per chunk (Qwen3's 151k vocabulary). Past a few tens of GB it no longer
+  fits the job's page cache, so every tensor rereads it from NFS. That is why the 1,000-chunk point was measured
+  rather than extrapolated from 200.
+- **RANK_CHUNKS = 1,000.** At 1,000 chunks, one model's ranking takes 196 tensors × about 204 s ÷ 2 GPUs ≈
+  5.6 h, within the 6 h budget. The fitted limit is about 1,080 chunks, so we used the largest measured value
+  under it. The window is 512,000 tokens, about 11% of the ranking text, or about 220 conversations (20 chunks
+  covered about 4).
+  - Assumption: the two array tasks reading the same base file at once may run slower than the single-task probe.
+- **Recorded.** Every score file records ctx, chunks and the text's SHA-256. `rank_tensors.py run` refuses base
+  or score files made with other settings, and `select` refuses a mix.
+- **Submitted 2026-11-10** (`scripts/rank_submit.sh`; base → ranking array of 2 tasks → select + build + FR-E10
+  check → KL on CUDA and CPU):
+
+  | Model | Base | Ranking array | Select + build | KL CUDA | KL CPU |
+  |---|---|---|---|---|---|
+  | Qwen3-0.6B | 112000 | 112001 | 112002 | 112003 | 112004 |
+  | Qwen3-1.7B | 112005 | 112006 | 112007 | 112008 | 112009 |
+  | LFM2.5-1.2B-Instruct | 112010 | 112011 | 112012 | 112013 | 112014 |

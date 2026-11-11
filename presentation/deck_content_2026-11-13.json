@@ -1,0 +1,66 @@
+{
+ "status": {
+  "title": "Where we are against M2, M3 and Dec 4",
+  "m2": [
+   "BF16 references: Qwen3 0.6B / 1.7B / 4B done ({runs[ref_qwen3_0p6b][finished]:,} / {runs[ref_qwen3_1p7b][finished]:,} / {runs[ref_qwen3_4b][finished]:,} of 2,505; the rest excluded by rule)",
+   "New handlers for SmolLM3 and LFM2.5 (their chat templates); BF16 references running (Slurm arrays 111883 / 111885 / 111887): SmolLM3-3B {runs[ref_smollm3_3b][finished]:,}, LFM2.5-1.2B {runs[ref_lfm2p5_1p2b][finished]:,}, LFM2.5-2.6B {runs[ref_lfm2p5_2p6b][finished]:,} of 2,505",
+   "FR-E2: {runs[_fre2][agree]:,} / {runs[_fre2][n]:,} verdicts agree (Qwen3)",
+   "S10 rerun on the merged code (array 111842): {runs[s10_requeue][finished]} of 104 episodes",
+   "Statistics: planted-effect check passes for the episode tests and lme4 models A–C",
+   "Pre-registration: review fixes in; decisions marked proposed until you confirm",
+   "Needs the team: merge to main, human labels (blank kit ready), OSF filing"
+  ],
+  "m3": [
+   "KL vs BF16 on CUDA and CPU: 6 models x 6 formats (the KL exit item is met)",
+   "H1 damage runs, Qwen3-0.6B (arrays 111846 / 111848 / 111850, packs 111930 / 111931): Q4_0 {runs[h1_qwen3_0p6b_q4_0][finished]:,}, Q4_K_M {runs[h1_qwen3_0p6b_q4_k_m][finished]:,}, IQ4_XS {runs[h1_qwen3_0p6b_iq4_xs][finished]:,} of 2,505 episodes",
+   "Qwen3-1.7B and LFM2.5-1.2B cells submitted (arrays 111933–111943)",
+   "R1 grammars: JSON and Pythonic, property-tested with llama.cpp's validator",
+   "R2a variants built; R2b ranking window set by probe (1,000 chunks of tool-truncated conversations); ranking chains submitted for 0.6B, 1.7B, LFM2.5-1.2B (jobs 112000–112014)",
+   "Label kit: 30 + 300 blank sheets, rater guide, kappa script"
+  ],
+  "dec4": [
+   "Report, chapters 1-2: outline in the Canvas template; draft to you Tue Nov 24",
+   "Prototype demo: storyboard ready; format is question 6",
+   "Project contribution: CONTRIBUTORS.md records who ran what this week",
+   "Meeting log 2: Oct 30 and this week's notes by the attendees"
+  ],
+  "source": "Episode counts: scripts/run_status.py -> results/m3/run_status.json (development data). Week status: progress/drafts/2026-11-09_week_plan_Nov9-13.md section 0."
+ },
+ "questions": [
+  "Confirm the proposed decisions (docs/m2_decisions.md), above all 2 and 11, plus Oct 30 asks #1 and #4",
+  "Which failure classes are confirmatory? Proposal: any failure, exec_error, tool_error_payload",
+  "CPU backend: a full CPU arm does not fit the cluster. Which subset?",
+  "2 GPU nodes per user: may we each run a share of the grid, or can you ask for more?",
+  "OSF filing: who files, under whose account, and may we list you?",
+  "Dec 4: live demo or recording, and when do you want the chapter draft?",
+  "\"Use examples for all modalities\": one per benchmark, domain and failure class, or a second modality?",
+  "Next meeting: Nov 27 is the day after Thanksgiving. Which slot instead?",
+  "Canvas still lists our title as \"KV Cache Behavior...\": how do we get it changed?"
+ ],
+ "examples": [
+  {
+   "domain": "bfcl_multi_turn_base",
+   "title": "Example from our logs: same BFCL task and seed, BF16 vs Q4_0"
+  },
+  {
+   "domain": "tau2_verified_retail",
+   "title": "Example from our logs: a τ² retail episode, BF16 vs Q4_0"
+  }
+ ],
+ "plan_open": [
+  "Since Nov 9: ",
+  "the SmolLM3 and LFM2.5 prompt handlers are done (their chat templates); their BF16 references and the 1.7B / LFM2.5-1.2B damage cells are submitted. Open: owners from next week (team meeting)."
+ ],
+ "notes": {
+  "status": "YASHASHAV (about 1 min 30 s)\nThree columns: M2, M3, and the Dec 4 Canvas items. The numbers come from the run directories at the time the deck was built. This week every package ran from my account, on branches named for each package's Workbook 2 owner; the team decides on Friday's points and on merging.\nM2: the three Qwen3 references are complete; the three new models now have prompt handlers and their references are running. M3: the KL exit item is met; the first damage cell is the one in the preview later on.",
+  "agent_loop": "YASHASHAV (about 1 min)\nThis answers what kind of agent we test. One small model is the agent. Each step it reads the conversation and the tools, then calls tools or answers in text; the result goes back in, and it continues. It is the ReAct loop from Workbook 2, chapter 1.",
+  "agent_parts": "YASHASHAV (about 1 min)\nWhat sits around the agent. The tools are deterministic code. The user is scripted in BFCL and simulated by a second LLM in tau2. The judges are the official checkers. Only the agent changes between configurations, so we call it a single-agent setup, not a multi-agent system.",
+  "architecture": "YASHASHAV (about 1 min 30 s)\nThe layers of the testbed and why each matters, with numbers we measured: GPU throughput, the two-node limit, the CUDA versus CPU agreement, and the memory per format.",
+  "data": "YASHASHAV (about 1 min)\nThe data precisely: the eight BFCL API domains with the tasks we sample, and the three tau2 customer-service domains with the write tasks we keep. All counts are read from the benchmark data.",
+  "classes": "YASHASHAV (about 1 min)\nTwo kinds of measurement. Per episode, the official verdict. Per step, one class from codebook v0; the table shows how often each failure class occurs for Qwen3-0.6B at BF16.",
+  "which_fail": "YASHASHAV (about 1 min 30 s)\nWhich tasks fail, by benchmark and domain and by failure class, BF16 against 4-bit on the same tasks and seeds. Bars are means over the four sampled seeds with one standard deviation. Development data.",
+  "damage": "YASHASHAV (about 1 min 30 s)\nThe first damage numbers: for each failure class, the 4-bit rate per 100 steps, and the ratio to BF16 with a 95% interval from a task-cluster bootstrap. A preview on the episodes finished so far, not the registered test.",
+  "example": "YASHASHAV (about 1 min)\nA real episode from our logs, copied, not written by hand: the same task and seed under BF16 and under 4-bit, step by step, with each step's class.",
+  "questions": "YASHASHAV (about 1 min, then questions)\nNine things we would like from you: the decisions, the confirmatory classes, the CPU scope, the node limit, the OSF filing, the Dec 4 demo and draft, what 'examples for all modalities' meant, the next meeting date, and the Canvas title."
+ }
+}
