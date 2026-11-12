@@ -399,7 +399,9 @@ and what the logs showed.
       advisor: 34 of the 46 empty replies end with gpt-oss's 32,768-token slot full (`finish_reason = length`,
       `total_tokens` = 32,768 in every one), and §5 scores "simulated user runs out of context (its 32,768-token
       slot)" as a failure, not an exclusion. Read that way, SmolLM3 would have 12 exclusions and could reach
-      2,493 / 2,505 = 99.5%. Because that reading turns a fail into a pass, it is not applied here. Slot-full /
+      2,493 / 2,505 = 99.5%. Because that reading turns a fail into a pass, it is not applied here. (Final,
+      2026-11-12: the finished reference also has 1 telecom exclusion after 4 simulator HTTP 500s, so under that
+      reading it would have 13 exclusions and 2,492 / 2,505 = 99.5%.) Slot-full /
       stopped-empty split of the exclusions in the other references: LFM2.5-1.2B 7 / 3, Qwen3-0.6B 1 / 2,
       Qwen3-1.7B 1 / 2, Qwen3-4B 1 / 0 (`empty_split.out`).
     - **Exclusions under quantization (Qwen3-0.6B, the only finished 4-bit cells with τ²; `run_status.py`):**
