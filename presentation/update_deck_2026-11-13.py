@@ -494,6 +494,10 @@ def main():
     if os.path.exists(os.path.join(ROOT, fre2_smol)):
         f2 = J(fre2_smol)
         runs["_fre2_smol"] = {"agree": f2["agree"], "n": f2["n"]}
+    fre2_26b = "results/m2/evaluator_agreement_lfm2.5-2.6b.json"    # A2 (wk11-ekant f92d3ef; PASS)
+    if os.path.exists(os.path.join(ROOT, fre2_26b)):
+        f2 = J(fre2_26b)
+        runs["_fre2_lfm26b"] = {"agree": f2["agree"], "n": f2["n"]}
     a3 = "results/m2/mixed_effects_qwen3-0.6b.json"    # A3 real-data run (wk11-vritika; present on the integration branch)
     runs["_a3"] = {"text": "real-data run waits for the first finished 4-bit cell"}
     if os.path.exists(os.path.join(ROOT, a3)):
