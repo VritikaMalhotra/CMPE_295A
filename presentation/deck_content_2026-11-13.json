@@ -3,7 +3,7 @@
   "title": "Where we are against M2, M3 and Dec 4",
   "m2": [
    "BF16 references: Qwen3 0.6B / 1.7B / 4B done ({runs[ref_qwen3_0p6b][finished]:,} / {runs[ref_qwen3_1p7b][finished]:,} / {runs[ref_qwen3_4b][finished]:,} of 2,505; the rest excluded by rule)",
-   "New models' BF16 references: LFM2.5-1.2B done ({runs[ref_lfm2p5_1p2b][finished]:,} of 2,505, {runs[ref_lfm2p5_1p2b][finished_share]:.1%} finished; FR-E2 {runs[_fre2_lfm12b][agree]:,} / {runs[_fre2_lfm12b][n]:,}); SmolLM3-3B done ({runs[ref_smollm3_3b][finished]:,} + {runs[ref_smollm3_3b][excluded]} excluded, {runs[ref_smollm3_3b][finished_share]:.1%} finished, below our 99% bar: question 10; FR-E2 {runs[_fre2_smol][agree]:,} / {runs[_fre2_smol][n]:,}, one disagreement: question 11); LFM2.5-2.6B running ({runs[ref_lfm2p5_2p6b][finished]:,})",
+   "New models' BF16 references: LFM2.5-1.2B done ({runs[ref_lfm2p5_1p2b][finished]:,}, {runs[ref_lfm2p5_1p2b][finished_share]:.1%}; FR-E2 {runs[_fre2_lfm12b][agree]:,} / {runs[_fre2_lfm12b][n]:,}); SmolLM3-3B done ({runs[ref_smollm3_3b][finished]:,} + {runs[ref_smollm3_3b][excluded]} excluded, {runs[ref_smollm3_3b][finished_share]:.1%}: question 10; FR-E2 {runs[_fre2_smol][agree]:,} / {runs[_fre2_smol][n]:,}: question 11); LFM2.5-2.6B running ({runs[ref_lfm2p5_2p6b][finished]:,})",
    "FR-E2: {runs[_fre2][agree]:,} / {runs[_fre2][n]:,} verdicts agree (Qwen3)",
    "S10 rerun on the merged code (array 111842): {runs[s10_requeue][finished]} of 104 episodes",
    "Statistics: planted-effect check passes; {runs[_a3][text]}",
@@ -13,9 +13,9 @@
   "m3": [
    "KL vs BF16 on CUDA and CPU: 6 models x 6 formats (the KL exit item is met)",
    "H1 damage runs, Qwen3-0.6B (arrays 111846 / 111848 / 111850, packs 111931 / 112078 / 112163): Q4_0 {runs[h1_qwen3_0p6b_q4_0][finished]:,} + {runs[h1_qwen3_0p6b_q4_0][excluded]} excluded, Q4_K_M {runs[h1_qwen3_0p6b_q4_k_m][finished]:,} + {runs[h1_qwen3_0p6b_q4_k_m][excluded]}, IQ4_XS {runs[h1_qwen3_0p6b_iq4_xs][finished]:,} + {runs[h1_qwen3_0p6b_iq4_xs][excluded]} of 2,505 episodes",
-   "Qwen3-1.7B and LFM2.5-1.2B cells submitted (arrays 111933–111943)",
+   "Qwen3-1.7B {runs[h1_qwen3_1p7b_q4_0][finished]:,} / {runs[h1_qwen3_1p7b_q4_k_m][finished]:,} / {runs[h1_qwen3_1p7b_iq4_xs][finished]:,}, LFM2.5-1.2B {runs[h1_lfm2p5_1p2b_q4_0][finished]:,} / {runs[h1_lfm2p5_1p2b_q4_k_m][finished]:,} / {runs[h1_lfm2p5_1p2b_iq4_xs][finished]:,} of 2,505 (Q4_0 / Q4_K_M / IQ4_XS; arrays 111933–111943)",
    "R1 grammars: JSON and Pythonic, property-tested with llama.cpp's validator",
-   "R2a variants built. R2b for Qwen3-0.6B built: 78 of 196 tensors at Q8_0, 5.56 bits/weight (FR-E10 passes); WikiText KL 0.102 vs 0.061 for uniform Q5_0 at the same size. 1.7B and LFM2.5-1.2B: base logits done, rankings queued one P100 at a time, not finished (jobs 112005–112014)",
+   "R2a variants built. R2b for Qwen3-0.6B built: 78 of 196 tensors at Q8_0, 5.56 bits/weight (FR-E10 passes); WikiText KL 0.102 vs 0.061 for uniform Q5_0 at the same size. 1.7B and LFM2.5-1.2B: base logits done, rankings queued (jobs 112005–112014)",
    "Label kit: 30 + 300 blank sheets, rater guide, kappa script"
   ],
   "dec4": [
@@ -51,7 +51,7 @@
  ],
  "plan_open": [
   "Since Nov 9: ",
-  "the SmolLM3 and LFM2.5 prompt handlers are done (their chat templates); LFM2.5-1.2B's BF16 reference is complete, SmolLM3's and LFM2.5-2.6B's are running, and the 1.7B / LFM2.5-1.2B damage cells are submitted. Open: owners from next week (team meeting)."
+  "the SmolLM3 and LFM2.5 prompt handlers are done (their chat templates); LFM2.5-1.2B's and SmolLM3's BF16 references are complete, LFM2.5-2.6B's is running, and the 1.7B / LFM2.5-1.2B damage cells are submitted. Open: owners from next week (team meeting)."
  ],
  "notes": {
   "status": "YASHASHAV (about 1 min 30 s)\nThree columns: M2, M3, and the Dec 4 Canvas items. The numbers come from the run directories at the time the deck was built. This week every package ran from my account, on branches named for each package's Workbook 2 owner; the team decides on Friday's points and on merging.\nM2: the three Qwen3 references are complete. Of the three new models, LFM2.5-1.2B's reference is complete and agrees 100% with the official evaluators. SmolLM3's reference is complete too, but it stays below 99% finished: its tau2 runs lost episodes to empty simulated-user replies, mostly after it wrote a tool call as text. That is question 10. Its evaluator check disagrees on one episode of {runs[_fre2_smol][n]:,}, so it does not pass; that is question 11. LFM2.5-2.6B's reference is still running. M3: the KL exit item is met; the first damage cell is the one in the preview later on.",
@@ -64,5 +64,19 @@
   "damage": "YASHASHAV (about 1 min 30 s)\nThe first damage numbers: for each failure class, the 4-bit rate per 100 steps, and the ratio to BF16 with a 95% interval from a task-cluster bootstrap. A preview on development data from the three complete cells, not the registered test.",
   "example": "YASHASHAV (about 1 min)\nA real episode from our logs, copied, not written by hand: the same task and seed under BF16 and under 4-bit, step by step, with each step's class.",
   "questions": "YASHASHAV (about 1 min, then questions)\nEleven things we would like from you: the decisions, the confirmatory classes, the CPU scope, the node limit, the OSF filing, the Dec 4 demo and draft, what 'examples for all modalities' meant, the next meeting date, the Canvas title, two tau2 simulator rules (decisions 15 and 16 in docs/m2_decisions.md), and how the evaluator check should treat a malformed tool call (decision 17), the one episode where SmolLM3's check disagrees."
- }
+ },
+ "retext": [
+  {
+   "slide": 4,
+   "shape": "Text 0",
+   "old": "Our scoring matches the official evaluators on every episode",
+   "new": "Our scoring matches the official evaluators on every Qwen3 episode"
+  },
+  {
+   "slide": 4,
+   "shape": "Big number label",
+   "old": "verdicts identical to bfcl-eval and τ²-bench when every finished reference episode is re-scored from its logged trajectory (FR-E2: PASS)",
+   "new": "verdicts identical to bfcl-eval and τ²-bench when every finished Qwen3 reference episode is re-scored from its logged trajectory (FR-E2: PASS)"
+  }
+ ]
 }
