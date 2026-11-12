@@ -1,5 +1,5 @@
 {
- "collected": "2026-11-12T00:20-08:00",
+ "collected": "2026-11-12T06:59-08:00",
  "runs": {
   "ref_qwen3_0p6b": {
    "dir": "/scratch/cmpe295-bertin/runs/ref_qwen3_0p6b/cd314594fb",
@@ -123,20 +123,20 @@
     "bf16"
    ],
    "specs": 2505,
-   "finished": 1355,
-   "excluded": 46,
-   "finished_share": 0.5409,
+   "finished": 2458,
+   "excluded": 47,
+   "finished_share": 0.9812,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
-     100,
+     500,
      500
     ],
     "bfcl_multi_turn_miss_func": [
-     404,
+     500,
      500
     ],
     "bfcl_multi_turn_miss_param": [
-     100,
+     500,
      500
     ],
     "tau2_verified_airline": [
@@ -148,7 +148,7 @@
      520
     ],
     "tau2_verified_telecom": [
-     147,
+     354,
      355
     ]
    }
@@ -199,32 +199,32 @@
     "bf16"
    ],
    "specs": 2505,
-   "finished": 1295,
+   "finished": 2443,
    "excluded": 1,
-   "finished_share": 0.517,
+   "finished_share": 0.9752,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
-     499,
+     500,
      500
     ],
     "bfcl_multi_turn_miss_func": [
-     300,
+     500,
      500
     ],
     "bfcl_multi_turn_miss_param": [
-     318,
+     500,
      500
     ],
     "tau2_verified_airline": [
-     128,
+     129,
      130
     ],
     "tau2_verified_retail": [
-     50,
+     520,
      520
     ],
     "tau2_verified_telecom": [
-     0,
+     294,
      355
     ]
    }
@@ -351,32 +351,32 @@
     "q4_0"
    ],
    "specs": 2505,
-   "finished": 0,
-   "excluded": 0,
-   "finished_share": 0.0,
+   "finished": 1941,
+   "excluded": 35,
+   "finished_share": 0.7749,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
-     0,
+     500,
      500
     ],
     "bfcl_multi_turn_miss_func": [
-     0,
+     500,
      500
     ],
     "bfcl_multi_turn_miss_param": [
-     0,
+     500,
      500
     ],
     "tau2_verified_airline": [
-     0,
+     120,
      130
     ],
     "tau2_verified_retail": [
-     0,
+     61,
      520
     ],
     "tau2_verified_telecom": [
-     0,
+     260,
      355
     ]
    }
@@ -389,12 +389,12 @@
     "q4_k_m"
    ],
    "specs": 2505,
-   "finished": 0,
+   "finished": 94,
    "excluded": 0,
-   "finished_share": 0.0,
+   "finished_share": 0.0375,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
-     0,
+     94,
      500
     ],
     "bfcl_multi_turn_miss_func": [
@@ -681,6 +681,8 @@
   "2026-11-11 23:50:55 SUBMIT 113078 test-suite on -ekant 8d94524 (judge 500 patch)",
   "2026-11-11 23:53:59 ACTION -wk and -a2 moved to 8d94524 (judge-500 keeps scored episode; run_status count); suite 113078 268 passed 1 skipped; 113054 released; SUBMIT 113079 LFM2.5-2.6B index 7 (airline greedy 25/26, judge HTTP 500 7/7 in 111887_7); 111888 afterany:111887:113079",
   "2026-11-11 23:59:34 CANCEL 113079 (no TESTBED_SIMUSER_ENDPOINT: would start its own simulator); SUBMIT 113083 LFM2.5-2.6B index 7 with the shared endpoint; 111888 afterany:111887:113083. Note: 112924_10 (22:48) ran its own gpt-oss (server_logs/simuser.log), same 500",
-  "2026-11-12 00:04 slot-monitor ALERT: job ended badly: 113079_[7] tb-ref_lfm2p5_2p6b CANCELLED by + 00:00:00 None assi+"
+  "2026-11-12 00:04 slot-monitor ALERT: job ended badly: 113079_[7] tb-ref_lfm2p5_2p6b CANCELLED by + 00:00:00 None assi+",
+  "2026-11-12 06:47:06 SUBMIT 113184 a2-smol-out (cpuqs, CMPE_295A-ekant 8d94524, shadow parquet): SmolLM3-3B inclusion + FR-E2 (R-3). 113054 ended 06:43:39: telecom 207/208, f86be84f4255 excluded after 4 simulator 500s; report 111884: 2458/2505 finished, 47 excluded",
+  "2026-11-12 06:55:36 STOP SmolLM3-3B A2 item: FR-E2 2455/2456 (99.96%) FAIL. 1 BFCL disagreement, multi_turn_base_139 seed 3 (17fa839b04e1): runner scores a non-{name,arguments} block as inference_error; the replay drops that block and bfcl scoring passes. No patch, no rerun (Stop and report; research-design call). Inclusion JSON left on scratch: runs/week_outputs/a2_smollm3_113184/"
  ]
 }
