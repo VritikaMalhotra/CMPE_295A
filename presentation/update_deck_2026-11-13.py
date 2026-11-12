@@ -442,10 +442,12 @@ def slide_status(slide, st, runs):
 def slide_questions(slide, qs):
     clear_body(slide)
     set_title(slide, "What we would like from you today")
+    rows = max(5, -(-len(qs) // 2))                     # two columns; 11 or 12 asks take a sixth row
+    step = 1.0 if rows == 5 else 0.9
     for i, q in enumerate(qs):
-        col, row = divmod(i, 5)
+        col, row = divmod(i, rows)
         x = 0.8 + col * 6.1
-        y = 1.35 + row * 1.0
+        y = 1.35 + row * step
         from pptx.enum.shapes import MSO_SHAPE
         c = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(x), Inches(y), Inches(0.5), Inches(0.5))
         c.name = f"Ask {i + 1} circle"
@@ -462,7 +464,7 @@ def slide_questions(slide, qs):
         r.font.size = Pt(14 if i < 9 else 12)
         r.font.bold = True
         r.font.color.rgb = __import__("pptx").dml.color.RGBColor(0xFF, 0xFF, 0xFF)
-        tb = text(slide, x + 0.7, y - 0.02, 5.2, 0.9, f"Ask {i + 1} text", [[(q, {"color": "bg1", "size": 14})]], 14)
+        tb = text(slide, x + 0.7, y - 0.02, 5.2, min(0.9, step - 0.05), f"Ask {i + 1} text", [[(q, {"color": "bg1", "size": 14})]], 14)
 
 
 class _Runs(dict):
@@ -488,6 +490,10 @@ def main():
     if os.path.exists(os.path.join(ROOT, fre2_lfm)):                 # absent: a template that uses it raises
         f2 = J(fre2_lfm)
         runs["_fre2_lfm12b"] = {"agree": f2["agree"], "n": f2["n"]}
+    fre2_smol = "results/m2/evaluator_agreement_smollm3-3b.json"    # A2 (wk11-ekant d43676f; FAIL, decision 17)
+    if os.path.exists(os.path.join(ROOT, fre2_smol)):
+        f2 = J(fre2_smol)
+        runs["_fre2_smol"] = {"agree": f2["agree"], "n": f2["n"]}
     a3 = "results/m2/mixed_effects_qwen3-0.6b.json"    # A3 real-data run (wk11-vritika; present on the integration branch)
     runs["_a3"] = {"text": "real-data run waits for the first finished 4-bit cell"}
     if os.path.exists(os.path.join(ROOT, a3)):
