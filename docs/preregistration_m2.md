@@ -55,7 +55,7 @@ Workbook 2 (Ch. 3 Hypotheses, Ch. 7 Statistical Analysis Plan); deviations from 
 - Unit of analysis: the task. Trials are averaged within a task before paired tests; the greedy pass is
   analysed separately (flip rates, backend agreement).
 - Primary outcome (decision 2, Ekant 2026-11-08, advisor to confirm): failures per agent step, by C6 failure class (codebook v0,
-  `docs/codebook_v0.md`, with `tool_error_payload` and `missing_call_direct_answer` (decisions 3a/3b), commit _[hash]_). Episode success is secondary.
+  `docs/codebook_v0.md`, with `tool_error_payload` and `missing_call_direct_answer` (decisions 3a/3b), commit `88f8865`, provisional: see §7). Episode success is secondary.
 - Step type: the kind of output a step produces: tool call, text reply to the user, or end of conversation.
 - Depth: the step's index within the episode, in bins 0–1, 2–3, 4–6, 7+ (decision 8, Ekant 2026-11-08, advisor
   to confirm; `testbed/mixed_effects.py` `DEPTH_BINS`).
@@ -114,9 +114,19 @@ Decision 11 (Ekant 2026-11-08, advisor to confirm): the rules below apply to the
 - Any analysis whose code hash differs from the registered one is labelled exploratory by C10.
 
 ## 7. What is frozen with the registration
-- Analysis code commit: _[hash]_ (C10 statistics, `analysis/mixed_effects.R`, report generator).
-- Codebook v0 commit: _[hash]_; codebook v1 (after the κ study, M3) is filed as an amendment.
-- Configs: reference and main-grid experiment files with their experiment hashes _[list]_.
+- **Provisional (2026-11-12): final when the advisor confirms decisions 2, 11, 15 and 16.** Commits are on
+  `week-2026-11-13`; each is the last commit touching the files named.
+- Analysis code commit: `39c9500` (C10 statistics, `analysis/mixed_effects.R`, report generator: `testbed/stats.py`,
+  `testbed/mixed_effects.py`, `analysis/mixed_effects.R`, `testbed/report.py`).
+- Codebook v0 commit: `88f8865` (`docs/codebook_v0.md`, `testbed/classifier.py`); codebook v1 (after the κ study,
+  M3) is filed as an amendment.
+- Configs: reference and main-grid experiment files with their experiment hashes (read from each run's
+  `manifest.json`). BF16 references: `ref_qwen3_0p6b` cd314594fb, `ref_qwen3_1p7b` c456da2aef, `ref_qwen3_4b`
+  1c7b26d4e7, `ref_smollm3_3b` 5053915afb, `ref_lfm2p5_1p2b` 3018b3dc15, `ref_lfm2p5_2p6b` 86ef1012fd. 4-bit cells
+  run so far (H1): `h1_qwen3_0p6b_{q4_0,q4_k_m,iq4_xs}` c200505b35 / b85b3044db / b7e629273d,
+  `h1_qwen3_1p7b_{q4_0,q4_k_m,iq4_xs}` 81058311fd / f1bd825c41 / bb695f9151,
+  `h1_lfm2p5_1p2b_{q4_0,q4_k_m,iq4_xs}` 55a6367d24 / dac01ff9a0 / 52af219f58. The main grid beyond these is not
+  configured yet.
 
 ## 8. Data already seen (honest disclosure)
 All runs before registration are development data and excluded from confirmatory tests: the October pilot
