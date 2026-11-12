@@ -392,9 +392,14 @@ and what the logs showed.
         identical in all 1,500 matched episodes (BF16 vs Q4_0, same task and seed), so the code renders the same
         prompt; but 479 of 624 matched τ² episodes have a different first agent prompt, because the simulator's
         first message differs (e.g. retail task 17 seed 1: "Hi, … Could you help me with that?" vs "Hello, …
-        Could you confirm the change?"), even at temperature 0 with the same model file. Cause not checked (one
-        candidate: batching on the shared simulator). The analysis pairs by task, averaging trials, so this adds
-        noise to τ² pairs rather than breaking them; for the advisor.
+        Could you confirm the change?"), even at temperature 0 with the same model file. **Checked on the request
+        itself (by 09:18, read-only on both runs' simulator caches):** 421 first-turn simulator requests are
+        byte-identical in the two runs (same messages, `seed`, `temperature` 0, `reasoning_effort` low), and only
+        113 of them got the same reply; 308 got a different one. So the input is the same and the simulator's
+        output is not reproducible across runs. Cause not checked (candidates: the simulator server runs 4 parallel
+        slots, so batching differs; different GPU and host). Within one run the cache makes the reply to a repeated
+        request identical. The analysis pairs by task, averaging trials, so this adds noise to τ² pairs rather
+        than breaking them; for the advisor.
   - **Why SmolLM3 has 46 exclusions when the three Qwen3 references had 7 in all** (read-only scan of the
     simulated-user caches and steps, 2026-11-11 22:40; scripts and their output in
     `runs/week_outputs/equiv_scan_20261111_2209/`):
