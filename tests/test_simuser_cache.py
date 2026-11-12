@@ -264,3 +264,35 @@ def test_simulator_failure_kind():
     assert isinstance(_simulator_failure(c, 4, 2, "x"), SimulatorRequestFailed)     # 1 new failure, a 500
     assert isinstance(_simulator_failure(c, 3, 2, "x"), SimulatorUnavailable)       # 2 new, only 1 a 500
     assert isinstance(_simulator_failure(c, 5, 3, "x"), SimulatorUnavailable)       # none new
+
+
+def test_judge_error_keeps_the_scored_episode_unless_outage():
+    """The NL judge is diagnostic: a plain judge error or an HTTP 500 answer keeps the episode; an outage does not."""
+    from types import SimpleNamespace
+    from testbed.tau2_bench import _judge_error_keeps_episode
+    assert _judge_error_keeps_episode(SimpleNamespace(upstream_failures=2, upstream_500s=1), 2, 1)      # no failure
+    assert _judge_error_keeps_episode(SimpleNamespace(upstream_failures=3, upstream_500s=2), 2, 1)      # one 500
+    assert not _judge_error_keeps_episode(SimpleNamespace(upstream_failures=3, upstream_500s=1), 2, 1)  # outage
+
+
+def test_run_status_counts_used_up_attempts_as_excluded(tmp_path):
+    """scripts/run_status.py: a permanent line or MAX_INFRA_ATTEMPTS attempts = excluded, as in retry_count."""
+    import importlib.util
+    import os
+    from testbed.logger import MAX_INFRA_ATTEMPTS, record_retry
+    spec = importlib.util.spec_from_file_location(
+        "run_status", os.path.join(os.path.dirname(__file__), "..", "scripts", "run_status.py"))
+    rs = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(rs)
+    assert rs.MAX_INFRA_ATTEMPTS == MAX_INFRA_ATTEMPTS
+    rd = tmp_path / "run"
+    (rd / "episodes").mkdir(parents=True)
+    with open(rd / "specs.jsonl", "w") as f:
+        for i in range(3):
+            f.write(json.dumps({"run_id": f"r{i}", "benchmark": "tau2_verified_retail", "experiment": "x",
+                                "model": "m", "variant": "bf16"}) + "\n")
+    for _ in range(MAX_INFRA_ATTEMPTS):
+        record_retry(str(rd), "r0", RuntimeError("HTTP 500"))
+    record_retry(str(rd), "r1", RuntimeError("once"))
+    st = rs.status(str(rd))
+    assert st["excluded"] == 1 and st["finished"] == 0
