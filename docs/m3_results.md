@@ -1,7 +1,8 @@
 # M3 results (Yashashav's packages: IQ4_XS + KL on both backends, R2a variants, QAD data)
 
-Runbook: `docs/m3_quant.md`. QAD data: `docs/qad_data.md`. Everything here ran from Yashashav's account on
-2026-11-09, at commits `fa32f84` → `4a021c8` of `m3-yashashav-prep`. llama.cpp d812350; the CUDA build ran on
+Runbook: `docs/m3_quant.md`. QAD data: `docs/qad_data.md`. Everything here ran from Yashashav's account. The
+sections through the QAD mix ran on 2026-11-09, at commits `fa32f84` → `4a021c8` of `m3-yashashav-prep`; B4 and R2b
+ran 2026-11-10 to 11-11 (dates and job IDs in their sections). llama.cpp d812350; the CUDA build ran on
 P100 nodes (gpuqs), the CPU build on 32-core cpuqs nodes.
 
 ## Checks before the runs (runbook step 0–1)
@@ -57,7 +58,7 @@ BF16 on both backends.
 
 **Observations to discuss with the team**
 1. **SmolLM3-3B breaks the expected order.** Q5_0-pure (0.060 CUDA / 0.057 CPU) is worse than Q4_K_M (0.045 /
-   0.043) and IQ4_XS. The other five models follow Q8_0 < Q6_K < Q5_0 < IQ4_XS ≈ Q4_K_M < Q4_0-pure.
+   0.043) and IQ4_XS. The other five models follow Q8_0 < Q6_K < Q5_0 < IQ4_XS ≤ Q4_K_M < Q4_0-pure on both backends.
    - Cause, confirmed 2026-11-10: the precision of SmolLM3's tied output head. See "SmolLM3-3B: the tied output
      head (B4)" below.
    - This affects how the R2a uniform-bits arm reads on SmolLM3 (runbook choice 1).
@@ -77,7 +78,7 @@ recipes treat it differently:
 
 | SmolLM3 file | `token_embd` (= head) | Other 2-D tensors |
 |---|---|---|
-| Q4_K_M | Q6_K | 216 Q4_K, plus 36 at Q6_K (18 `attn_v`, 18 `ffn_down`) |
+| Q4_K_M | Q6_K | 216 Q4_K, plus 36 at Q6_K (18 `attn_v`, 18 `ffn_down`: llama.cpp's `use_more_bits` rule picks 18 of 36 layers; `tensor_types.jsonl` records the totals, 37 Q6_K with the head) |
 | IQ4_XS | Q6_K | 216 IQ4_XS, plus 36 at Q5_K |
 | Q5_0-pure | **Q5_0** | 252 Q5_0 |
 
@@ -129,11 +130,11 @@ its ids are disjoint from the training set.
 **R2b ranking window (default D-1, decided 11-09; set 2026-11-10).**
 - **Ranking text.** `rank_text_t256.txt` is the same 2,000 held-out conversations with every tool reply cut to 256
   Qwen3-0.6B tokens (`train/build_qad_mix.py rank-text`, job 111874):
-  - 1,690 of 6,806 tool replies cut;
+  - 1,690 of 6,806 tool replies cut (from `rank_text_t256.json` on the cluster, not yet committed);
   - 4,632,056 tokens;
   - SHA-256 `dc06ce1f93061baccb8088fc96e4673472bacc3884029febea038a9253cfa438`;
   - shares no 13-gram with the benchmarks (`rank_text_t256.json` next to it).
-- **Timing probe on Qwen3-0.6B** (ctx 512; `slurm/rank_probe.sbatch`):
+- **Timing probe on Qwen3-0.6B** (ctx 512; `slurm/rank_probe.sbatch`; numbers from the job logs, not committed):
 
   | Chunks | GPU | Base pass | Per tensor | Base-logits file | Job |
   |---|---|---|---|---|---|
@@ -162,7 +163,7 @@ its ids are disjoint from the training set.
 
 **Qwen3-0.6B R2b result (jobs 112001–112004; the last one ended 2026-11-11 17:52).**
 - **Ranking.** All 196 candidate tensors have a score file, and all 196 record ctx 512, 1,000 chunks and text SHA-256
-  `dc06ce1f…`. Array 112001 ran on two P100s (g2, g4).
+  `dc06ce1f…`. Array 112001 ran on two P100s (g2, g4; nodes and times here from `sacct`).
   - Highest score: `blk.2.ffn_down.weight`, KLD 0.0105 when it alone is Q4_0.
   - Lowest: `blk.1.attn_k.weight`, 0.00016.
 - **Selection** (`results/m3/r2b_selection_Qwen3-0.6B.json`; build input `r2b_tensor_types_Qwen3-0.6B.txt`).
@@ -187,8 +188,8 @@ its ids are disjoint from the training set.
   | **R2b-LS5.5** | **5.56** | **0.1021** | **0.1014** | **83.0%** |
   | Q5_0-pure | 5.57 | 0.0605 | 0.0596 | 86.6% |
 
-- **Reading.** At the same file size, R2b's WikiText KL is about 1.7× that of uniform Q5_0-pure. It is no lower than
-  IQ4_XS, which uses 0.77 fewer bits per weight.
+- **Reading.** At the same file size, R2b's WikiText KL is about 1.7× that of uniform Q5_0-pure. Against IQ4_XS, which
+  uses 0.77 fewer bits per weight, it ties on CUDA (0.1021 vs 0.1023) and is about 5% lower on CPU (0.1014 vs 0.1072).
   - This check is outside R2b's ranking domain. R2b ranks tensors by KL on held-out agent conversations, not on
     WikiText. Whether it helps on agent steps is not measured: no damage run uses the R2b file yet.
   - A possible reason, not tested: R2b leaves 57% of linear weights at Q4_0 and spends the extra bits on the other
