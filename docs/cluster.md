@@ -273,7 +273,7 @@ and what the logs showed.
 - **Arrays.**
   - SmolLM3-3B: 111883, plus 112924_10, which resubmits task 10.
   - LFM2.5-1.2B-Instruct: 111885.
-  - LFM2.5-2.6B: 111887, queued and not started.
+  - LFM2.5-2.6B: 111887. Task 0 started 2026-11-11 20:43; task 1 finished 100/100 at 21:42.
   - All on A100s with cs001 excluded, sharing one simulated user (`gpusafe/simuser_safe.sbatch`).
   - Code `6be0ff7`, checkout `CMPE_295A-a2`.
 - **FR-E2 preview**, on the episodes finished by about 8:20 PM: **3,432 / 3,432 verdicts agree**
@@ -289,24 +289,49 @@ and what the logs showed.
     returned HTTP 500 ("The model produced output that does not match the expected peg-native format"). The runner
     treats a simulator failure as "unavailable": the episode stays pending, τ² scheduling stops, and the task
     exits 0. Resubmitted as 112924_10. B1's Q4_0 telecom shard stopped the same way and completed on retry.
-  - **SmolLM3 τ² exclusions** (empty simulated-user reply, the registered rule): 44 by 18:20 (airline 7 + 1,
-    retail 7 + 29). A2 asks for ≥ 99% finished, so whether exclusions count as finished matters here.
+  - **SmolLM3 τ² exclusions** (empty simulated-user reply, the registered rule): 46 by 22:00 (airline 7 + 1,
+    retail 7 + 31; `excluded` lines in the task logs). A2 asks for ≥ 99% of 2,505 specs finished, and the spec does
+    not say whether an excluded episode counts as finished:
+    - if it does not, SmolLM3 can reach at most 2,459 / 2,505 = 98.2%, below the bar;
+    - if it does, the bar is reachable once the pending tasks finish.
+    - This is for the team and the advisor to decide; nothing here assumes either reading.
+  - **SmolLM3 still to run** (pending for an A100): BFCL tasks 0 (0/400), 3 (4/100) and 4 (0/400), which were
+    requeued off P100s on 11-10 and 11-11, and telecom task 10 (208 episodes, 112924_10).
+  - **LFM2.5-1.2B: all 12 tasks ended** (last at 21:48). Its report job 111886 ran at 21:49 and logged 2,484 of
+    2,505 episodes: 10 excluded (empty simulated-user reply) and the 11 failed ones below. 2,484 / 2,505 = 99.2%
+    counting exclusions as not finished. A new report job, 112992, runs after the retries (afterany:112937); the
+    SmolLM3 report job 111884 now also waits for 112924.
+  - **Report header.** Every report and manifest says "M1 walking skeleton … excluded from the study", including
+    these references and the Qwen3 ones. The text is hard-coded (`testbed/report.py:82`,
+    `testbed/registry.py:160`); no analysis code reads it. It does not describe the run.
   - **LFM2.5-1.2B: 11 episodes failed** (by 20:45), all with lone surrogates in the prompt:
     - 10 with `UnicodeEncodeError: surrogates not allowed` while hashing the prompt;
     - 1 with HTTP 400 from llama-server's `/tokenize`, which rejects an unpaired surrogate.
     - Affected: BFCL base_188 s0/s2/s3, miss_func_58 s2, miss_func_86 s1, miss_func_170 s1, miss_param_5 s4,
       miss_param_68 s1/s2, miss_param_183 s2/s3.
     - The likely cause, fixed in `ffe8873`: the Pythonic parser read `\ud83d\ude80`-style escapes as lone
-      surrogates. It is not confirmed from the failing episodes, whose logs are discarded.
+      surrogates. It is not confirmed from the failing episodes, whose steps are not kept. What supports it: each
+      of the 10 encode errors is at two adjacent positions (e.g. 34238\u201334239), which is what one escaped pair
+      gives. The 400 is probably an unpaired surrogate, which the fix turns into a call that does not parse
+      (logged as malformed, like any other unparseable call). The retries, run on the fixed code, will show.
 - **Code change during the run (2026-11-11 20:46).** `CMPE_295A-a2`, the checkout every agent array runs from,
   moved from `6be0ff7` to week `8c605a1`.
   - On the run path that adds only three things:
-    - `backends.py` asks `/tokenize` for `parse_special` explicitly, as llama-server already does by default;
+    - `backends.py` asks `/tokenize` for `parse_special` explicitly, as llama-server already does by default
+      (llama.cpp d812350, `tools/server/server-context.cpp:5446`: `json_value(body, "parse_special", true)`).
+      SmolLM3 sends token ids too, so this is the only change that reaches SmolLM3, and it changes nothing;
     - the NUL fix (47d41f7);
     - the surrogate fix (ffe8873).
   - None of the 24,294 completed LFM2.5 steps has a NUL, and none has a lone surrogate. So every episode that
     completes on `6be0ff7` comes out the same on `8c605a1`; only episodes that used to crash change.
-  - Tasks already running kept `6be0ff7`. Tasks started after 20:46 run `8c605a1`.
+  - The move is at 20:46:43 (`git reflog` in the checkout). Each array task is one Python process, and
+    `testbed/run.py` imports `backends` and `prompt_formats` (which imports `lfm2_format`) when it starts, so a task
+    runs the commit it found at start:
+    - `6be0ff7`: every LFM2.5-1.2B task (111885_0–11), LFM2.5-2.6B tasks 0 and 1 (task 1's manifest was written at
+      20:46:34 with `6be0ff7`), and every SmolLM3 task that has run so far;
+    - `8c605a1`: LFM2.5-2.6B tasks 2–6, which started between 20:53 and 21:48 (`sacct`; the manifests of tasks
+      5 and 6 record `8c605a1`, the earlier ones were overwritten), tasks 7–11 when they start, and SmolLM3
+      tasks 0, 3, 4, 112924_10 and the retries 112937 when they start.
   - The per-host manifests (which hold only the latest commit) were copied first, to
     `runs/week_outputs/manifest_snapshot_6be0ff7_20261111_2046/`.
   - The 11 episodes were resubmitted as 112937_[0,1,2,4].
