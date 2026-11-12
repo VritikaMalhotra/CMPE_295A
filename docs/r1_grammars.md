@@ -24,8 +24,14 @@ dicts as JSON, through llama.cpp's own converter. For LFM2.5-2.6B, whose answer 
   - every schema-valid call is accepted, and a Pythonic call also parses back unchanged;
   - an unknown name, a missing required key and an extra key are rejected;
   - the free branch accepts text unless it starts with `<` or whitespace.
-  - Part of the cluster suite run (job 111882: 260 passed, 1 skipped, the validator found).
-- **Smoke, grammar on** (job 111954, P100, one BFCL base task, greedy, Q4_0-pure, each with its no-grammar
+  - Cluster suite 111882: 260 passed, 1 skipped, validator found.
+  - A later cluster suite (112511) failed one Pythonic property test: hypothesis found `cd(folder='\x00')`, which
+    the grammar accepts but the parser did not read back (Python rejects a NUL byte in source). Fixed in 47d41f7,
+    with the input pinned as an example.
+  - After the fix: suite 112513 gave 263 passed, 1 skipped; property tests under 5 more hypothesis seeds (112514)
+    gave 10/10 on each.
+  - Counts are from the job logs (cluster only, not committed).
+- **Smoke, grammar on** (job 111954, P100; step and token counts from its log, not committed; one BFCL base task, greedy, Q4_0-pure, each with its no-grammar
   control):
   - **JSON, Qwen3-0.6B:** 10 steps, every step a schema-valid call or text. Identical to the control: greedy
     Qwen3 output already fits the grammar here.
