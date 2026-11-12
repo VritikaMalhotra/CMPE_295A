@@ -7,7 +7,7 @@
    "FR-E2: {runs[_fre2][agree]:,} / {runs[_fre2][n]:,} verdicts agree (Qwen3)",
    "S10 rerun on the merged code (array 111842): {runs[s10_requeue][finished]} of 104 episodes",
    "Statistics: planted-effect check passes; {runs[_a3][text]}",
-   "Pre-registration: review fixes in; decisions marked proposed until you confirm",
+   "Pre-registration: review fixes in; commit hashes filled (provisional); decisions marked proposed until you confirm",
    "Needs the team: merge to main, human labels (blank kit ready), OSF filing"
   ],
   "m3": [
