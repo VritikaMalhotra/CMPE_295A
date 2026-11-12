@@ -338,6 +338,16 @@ and what the logs showed.
   - **LFM2.5-1.2B: finished** (as far as it can). All 12 tasks ended at 21:48; the 11 failed episodes ran again
     on the fixed code as 112937 (22:49–22:51, all finished), and report job 112992 (22:52) rebuilt the report:
     2,495 / 2,505 finished, 10 excluded. The SmolLM3 report job 111884 now also waits for 112924.
+    - **A2 outputs for LFM2.5-1.2B** (job 113030, cpuqs, checkout `CMPE_295A-wk` at week `b8bed21`, which has
+      the surrogate fix; 2026-11-11 23:03–23:06; parquet built in a shadow directory):
+      - FR-E2 on every finished episode: **2,494 / 2,494 agree (100%), PASS**; BFCL 1,500/1,500, τ² 994/994;
+        one τ² episode has no simulation to re-score (simulated-user context overflow)
+        (`results/m2/evaluator_agreement_lfm2.5-1.2b.json`; its `stand_ins` list equals the one in
+        `evaluator_agreement.json` and is replaced by that pointer).
+      - Inclusion set: 34 multi-turn tasks included (BFCL base 15, miss_func 1, miss_param 14; τ² retail 4,
+        airline 0, telecom 0), below the 120 needed, so single-turn-only confirmatory analysis, as for the three
+        Qwen3 models (`results/m2/inclusion_lfm2.5-1.2b.json`).
+      - Still to do for A2: the power table for all 6 models, which needs the SmolLM3 and LFM2.5-2.6B references.
   - **Report header.** Every report and manifest says "M1 walking skeleton … excluded from the study", including
     these references and the Qwen3 ones. The text is hard-coded (`testbed/report.py:82`,
     `testbed/registry.py:160`), written whatever the experiment; no analysis code reads it.
