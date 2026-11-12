@@ -46,6 +46,12 @@
      "file_bytes": 622733632,
      "n_weights": 751632384,
      "bpw_file": 6.6281
+    },
+    "R2b-LS5.5": {
+     "sha256": "5d20e96f4b465c9846c4510d41e7e6d1829b7adcffcdb5f709f9424defacb5a5",
+     "file_bytes": 522817856,
+     "n_weights": 751632384,
+     "bpw_file": 5.5646
     }
    }
   },
