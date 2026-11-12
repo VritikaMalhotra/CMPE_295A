@@ -132,10 +132,22 @@ def split_think(text: str) -> tuple[str, str]:
 _NAMES = {"true": True, "false": False, "null": None, "True": True, "False": False, "None": None}
 
 
+def _text(s: str) -> str:
+    """Python string syntax keeps the escapes ``\\ud83d\\ude80`` as two lone surrogates, which UTF-8 cannot encode.
+    A pair is read as the character it encodes, as JSON reads it; an unpaired surrogate is not text, so it is an
+    error and the block does not parse."""
+    if not any("\ud800" <= c <= "\udfff" for c in s):
+        return s
+    try:
+        return s.encode("utf-16", "surrogatepass").decode("utf-16")
+    except UnicodeDecodeError as e:
+        raise ValueError("unpaired surrogate in a string argument") from e
+
+
 def _literal(node):
     """ast.literal_eval plus JSON's true/false/null (the template writes list and dict arguments as JSON)."""
     if isinstance(node, ast.Constant):
-        return node.value
+        return _text(node.value) if isinstance(node.value, str) else node.value
     if isinstance(node, ast.Name) and node.id in _NAMES:
         return _NAMES[node.id]
     if isinstance(node, ast.UnaryOp) and isinstance(node.op, (ast.USub, ast.UAdd)):

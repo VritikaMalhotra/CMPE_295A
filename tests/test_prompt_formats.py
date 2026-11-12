@@ -78,6 +78,18 @@ def test_lfm_round_trip(calls):
     assert got == calls and n == len(calls)
 
 
+def test_lfm_surrogate_escapes_read_as_text():
+    """Python string syntax keeps the escapes ``\\ud83d\\ude80`` as two lone surrogates, which UTF-8 cannot encode
+    (the next step's prompt hash then fails: LFM2.5 reference, 2026-11-11). A pair reads as the character it
+    encodes, as JSON does for Qwen3's calls; an unpaired surrogate is not text, so the block does not parse."""
+    calls, n = lfm2_format.extract_tool_calls(
+        "<|tool_call_start|>[post(text='done \\ud83d\\ude80', tags=['\\ud83d\\ude00'])]<|tool_call_end|>")
+    assert calls == [{"name": "post", "arguments": {"text": "done \U0001F680", "tags": ["\U0001F600"]}}] and n == 1
+    json.dumps(calls, ensure_ascii=False).encode("utf-8")              # encodable, so the prompt can be hashed
+    calls, n = lfm2_format.extract_tool_calls("<|tool_call_start|>[post(text='x \\ud83d')]<|tool_call_end|>")
+    assert (calls, n) == ([], 1)
+
+
 @pytest.mark.parametrize("raw,n_calls,n_blocks", [
     ("<|tool_call_start|>[ls('docs')]<|tool_call_end|>", 0, 1),                     # positional argument
     ("<|tool_call_start|>[ls(a=True]<|tool_call_end|>", 0, 1),                       # syntax error
