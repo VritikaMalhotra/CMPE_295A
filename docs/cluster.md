@@ -266,6 +266,38 @@ Finished: 2,502 / 2,502 / 2,504; the rest are the excluded empty-simulated-user 
   unknown_tool and missing_call depend on D (estimate it from the Stage 1 pairs); the rest are pooled or
   exploratory, as registered.
 
+## A2 in progress (2026-11-11): BF16 references for SmolLM3-3B and LFM2.5 (development data)
+
+Not finished. Counts are in `results/m3/run_status.json` (refreshed for the deck); this section records the job IDs
+and what the logs showed.
+- **Arrays.**
+  - SmolLM3-3B: 111883, plus 112924_10, which resubmits task 10.
+  - LFM2.5-1.2B-Instruct: 111885.
+  - LFM2.5-2.6B: 111887, queued and not started.
+  - All on A100s with cs001 excluded, sharing one simulated user (`gpusafe/simuser_safe.sbatch`).
+  - Code `6be0ff7`, checkout `CMPE_295A-a2`.
+- **FR-E2 preview**, on the episodes finished by about 8:20 PM: **3,432 / 3,432 verdicts agree**
+  (`results/m2/evaluator_agreement_preview_20261111.json`, job 112923).
+  - SmolLM3: BFCL 604/604, τ² 749/749.
+  - LFM2.5-1.2B: BFCL 1,489/1,489, τ² 590/590.
+  - The parquet files were built in a shadow directory of symlinks, never in the live runs.
+  - The models have no bfcl-eval handler, so the BFCL part runs our own parser for each model before bfcl-eval's
+    scoring. It checks the scoring path, not the parser.
+  - One SmolLM3 τ² episode had no simulation to re-score (simulated-user context overflow).
+- **What the task logs showed** (`runs/ref_*/*/slurm_logs/`). A task that exits COMPLETED is not always finished:
+  - **SmolLM3 task 10 (telecom): 76 of 284 episodes, then stopped.** At 2026-11-11 16:29 the simulated user
+    returned HTTP 500 ("The model produced output that does not match the expected peg-native format"). The runner
+    treats a simulator failure as "unavailable": the episode stays pending, τ² scheduling stops, and the task
+    exits 0. Resubmitted as 112924_10. B1's Q4_0 telecom shard stopped the same way and completed on retry.
+  - **SmolLM3 τ² exclusions** (empty simulated-user reply, the registered rule): 44 by 18:20 (airline 7 + 1,
+    retail 7 + 29). A2 asks for ≥ 99% finished, so whether exclusions count as finished matters here.
+  - **LFM2.5-1.2B: 5 episodes failed** with `UnicodeEncodeError: surrogates not allowed` while hashing the prompt:
+    BFCL base_188 seeds 0/2/3, miss_func_86 and miss_func_170 seed 1.
+    - Fixed in `ffe8873`: the Pythonic parser read `\ud83d\ude80`-style escapes as lone surrogates.
+    - None of the 2,088 completed step files had one, so only these episodes are affected.
+    - The cause is not confirmed from the failing episodes, whose logs are discarded.
+    - They will be rerun from a separate checkout at the fixed commit after 111885 finishes.
+
 ## First results (2026-10-26, development data)
 - Onboarding step 2: llama.cpp d812350 built in job 96279 on g2 (P100 node) in 17 min, CPU build plus CUDA 12.6 for sm 60, 80 and 90.
 - The rebuilt GGUF files (job 96280) are byte-identical to the Oct 8 Colab pilot: SHA-256 of BF16, Q4_K_M and
