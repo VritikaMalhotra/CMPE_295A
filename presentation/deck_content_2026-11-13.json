@@ -15,7 +15,7 @@
    "H1 damage runs, Qwen3-0.6B (array 111846, packs 111930 / 111931 / 112021 / 112078 / 112163): Q4_0 {runs[h1_qwen3_0p6b_q4_0][finished]:,} + {runs[h1_qwen3_0p6b_q4_0][excluded]} excluded, Q4_K_M {runs[h1_qwen3_0p6b_q4_k_m][finished]:,} + {runs[h1_qwen3_0p6b_q4_k_m][excluded]}, IQ4_XS {runs[h1_qwen3_0p6b_iq4_xs][finished]:,} + {runs[h1_qwen3_0p6b_iq4_xs][excluded]} of 2,505 episodes",
    "Qwen3-1.7B and LFM2.5-1.2B cells submitted (arrays 111933–111943)",
    "R1 grammars: JSON and Pythonic, property-tested with llama.cpp's validator",
-   "R2a variants built. R2b for Qwen3-0.6B built: 78 of 196 tensors at Q8_0, 5.56 bits/weight (FR-E10 passes); WikiText KL 0.102 vs 0.061 for uniform Q5_0 at the same size. 1.7B and LFM2.5-1.2B rankings running (jobs 112005–112014)",
+   "R2a variants built. R2b for Qwen3-0.6B built: 78 of 196 tensors at Q8_0, 5.56 bits/weight (FR-E10 passes); WikiText KL 0.102 vs 0.061 for uniform Q5_0 at the same size. 1.7B and LFM2.5-1.2B: base logits done, rankings queued one P100 at a time, not finished (jobs 112005–112014)",
    "Label kit: 30 + 300 blank sheets, rater guide, kappa script"
   ],
   "dec4": [
