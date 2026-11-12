@@ -130,23 +130,26 @@ its ids are disjoint from the training set.
 **R2b ranking window (default D-1, decided 11-09; set 2026-11-10).**
 - **Ranking text.** `rank_text_t256.txt` is the same 2,000 held-out conversations with every tool reply cut to 256
   Qwen3-0.6B tokens (`train/build_qad_mix.py rank-text`, job 111874):
-  - 1,690 of 6,806 tool replies cut (from `rank_text_t256.json` on the cluster, not yet committed);
+  - 1,690 of 6,806 tool replies cut (`results/m3/rank_text_t256.json`; log `results/m3/logs/rank-text_111874.out`);
   - 4,632,056 tokens;
   - SHA-256 `dc06ce1f93061baccb8088fc96e4673472bacc3884029febea038a9253cfa438`;
   - shares no 13-gram with the benchmarks (`rank_text_t256.json` next to it).
-- **Timing probe on Qwen3-0.6B** (ctx 512; `slurm/rank_probe.sbatch`; numbers from the job logs, not committed):
+- **Timing probe on Qwen3-0.6B** (ctx 512; `slurm/rank_probe.sbatch`; logs in `results/m3/logs/rank-probe_*.out`):
 
   | Chunks | GPU | Base pass | Per tensor | Base-logits file | Job |
   |---|---|---|---|---|---|
-  | 20 | A100 | 11 s | about 5 s | 1.5 GB | 111875 |
-  | 200 | A100 | 32 s | about 15.6 s | 15.5 GB | 111875 |
-  | 1,000 | P100 | 242 s | 200.6–205.9 s | 77.5 GB | 111927 |
+  | 20 | A100 | 11 s | 4.9–6.8 s (4 tensors) | 1.5 GB | 111875 |
+  | 200 | A100 | 32 s | 15.5–15.7 s (the first of 4 took 25.8 s) | 15.5 GB | 111875 |
+  | 1,000 | P100 | 242 s | 200.6–205.9 s (3 tensors) | 77.5 GB | 111927 |
 
-  The base-logits file grows by 77.5 MB per chunk (Qwen3's 151k vocabulary). Past a few tens of GB it no longer
+  The base-logits file grows by 77.5 MB per chunk (Qwen3's 151k vocabulary): the ranking run's 1,000-chunk file
+  `runs/rank/Qwen3-0.6B/BF16.kld` is 77,491,448,020 bytes. The 20- and 200-chunk sizes are that rate × chunks; the
+  probe files were deleted after the probe. Past a few tens of GB it no longer
   fits the job's page cache, so every tensor rereads it from NFS. That is why the 1,000-chunk point was measured
   rather than extrapolated from 200.
 - **RANK_CHUNKS = 1,000.** At 1,000 chunks, one model's ranking takes 196 tensors × about 204 s ÷ 2 GPUs ≈
-  5.6 h, within the 6 h budget. The fitted limit is about 1,080 chunks, so we used the largest measured value
+  5.6 h, within the 6 h budget. The fitted limit is about 1,080 chunks (6 h × 2 GPUs ÷ 196 tensors = 220 s per tensor, at about 0.204 s
+  per chunk), so we used the largest measured value
   under it. The window is 512,000 tokens, about 11% of the ranking text, or about 220 conversations (20 chunks
   covered about 4).
   - Assumption: the two array tasks reading the same base file at once may run slower than the single-task probe.
