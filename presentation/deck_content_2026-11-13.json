@@ -3,7 +3,7 @@
   "title": "Where we are against M2, M3 and Dec 4",
   "m2": [
    "BF16 references: Qwen3 0.6B / 1.7B / 4B done ({runs[ref_qwen3_0p6b][finished]:,} / {runs[ref_qwen3_1p7b][finished]:,} / {runs[ref_qwen3_4b][finished]:,} of 2,505; the rest excluded by rule)",
-   "New handlers for SmolLM3 and LFM2.5 (their chat templates); BF16 references: SmolLM3-3B and LFM2.5-1.2B running (arrays 111883 / 111885), LFM2.5-2.6B queued and not started (111887). Finished: {runs[ref_smollm3_3b][finished]:,} / {runs[ref_lfm2p5_1p2b][finished]:,} / {runs[ref_lfm2p5_2p6b][finished]:,} of 2,505",
+   "New models' BF16 references: LFM2.5-1.2B done ({runs[ref_lfm2p5_1p2b][finished]:,} of 2,505, {runs[ref_lfm2p5_1p2b][finished_share]:.1%} finished; FR-E2 {runs[_fre2_lfm12b][agree]:,} / {runs[_fre2_lfm12b][n]:,}); LFM2.5-2.6B running ({runs[ref_lfm2p5_2p6b][finished]:,}); SmolLM3-3B running ({runs[ref_smollm3_3b][finished]:,} + {runs[ref_smollm3_3b][excluded]} excluded), cannot reach our 99% finished bar (question 10)",
    "FR-E2: {runs[_fre2][agree]:,} / {runs[_fre2][n]:,} verdicts agree (Qwen3)",
    "S10 rerun on the merged code (array 111842): {runs[s10_requeue][finished]} of 104 episodes",
    "Statistics: planted-effect check passes; {runs[_a3][text]}",
@@ -35,7 +35,8 @@
   "Dec 4: live demo or recording, and when do you want the chapter draft?",
   "\"Use examples for all modalities\": one per benchmark, domain and failure class, or a second modality?",
   "Next meeting: Nov 27 is the day after Thanksgiving. Which slot instead?",
-  "Canvas still lists our title as \"KV Cache Behavior...\": how do we get it changed?"
+  "Canvas still lists our title as \"KV Cache Behavior...\": how do we get it changed?",
+  "τ² simulator rules (decisions 15, 16): keep SmolLM3's {runs[ref_smollm3_3b][excluded]} empty-reply episodes excluded, or score them as failures? Retry, then exclude, a simulator HTTP 500?"
  ],
  "examples": [
   {
@@ -49,10 +50,10 @@
  ],
  "plan_open": [
   "Since Nov 9: ",
-  "the SmolLM3 and LFM2.5 prompt handlers are done (their chat templates); their BF16 references and the 1.7B / LFM2.5-1.2B damage cells are submitted. Open: owners from next week (team meeting)."
+  "the SmolLM3 and LFM2.5 prompt handlers are done (their chat templates); LFM2.5-1.2B's BF16 reference is complete, SmolLM3's and LFM2.5-2.6B's are running, and the 1.7B / LFM2.5-1.2B damage cells are submitted. Open: owners from next week (team meeting)."
  ],
  "notes": {
-  "status": "YASHASHAV (about 1 min 30 s)\nThree columns: M2, M3, and the Dec 4 Canvas items. The numbers come from the run directories at the time the deck was built. This week every package ran from my account, on branches named for each package's Workbook 2 owner; the team decides on Friday's points and on merging.\nM2: the three Qwen3 references are complete; the three new models now have prompt handlers and their references are running. M3: the KL exit item is met; the first damage cell is the one in the preview later on.",
+  "status": "YASHASHAV (about 1 min 30 s)\nThree columns: M2, M3, and the Dec 4 Canvas items. The numbers come from the run directories at the time the deck was built. This week every package ran from my account, on branches named for each package's Workbook 2 owner; the team decides on Friday's points and on merging.\nM2: the three Qwen3 references are complete. Of the three new models, LFM2.5-1.2B's reference is complete and agrees 100% with the official evaluators; SmolLM3's and LFM2.5-2.6B's are running. SmolLM3 cannot reach 99% finished: its tau2 runs lost episodes to empty simulated-user replies, mostly after it wrote a tool call as text. That is question 10. M3: the KL exit item is met; the first damage cell is the one in the preview later on.",
   "agent_loop": "YASHASHAV (about 1 min)\nThis answers what kind of agent we test. One small model is the agent. Each step it reads the conversation and the tools, then calls tools or answers in text; the result goes back in, and it continues. It is the ReAct loop from Workbook 2, chapter 1.",
   "agent_parts": "YASHASHAV (about 1 min)\nWhat sits around the agent. The tools are deterministic code. The user is scripted in BFCL and simulated by a second LLM in tau2. The judges are the official checkers. Only the agent changes between configurations, so we call it a single-agent setup, not a multi-agent system.",
   "architecture": "YASHASHAV (about 1 min 30 s)\nThe layers of the testbed and why each matters, with numbers we measured: GPU throughput, the two-node limit, the CUDA versus CPU agreement, and the memory per format.",
@@ -61,6 +62,6 @@
   "which_fail": "YASHASHAV (about 1 min 30 s)\nWhich tasks fail, by benchmark and domain and by failure class, BF16 against 4-bit on the same tasks and seeds. Bars are means over the four sampled seeds with one standard deviation. Development data.",
   "damage": "YASHASHAV (about 1 min 30 s)\nThe first damage numbers: for each failure class, the 4-bit rate per 100 steps, and the ratio to BF16 with a 95% interval from a task-cluster bootstrap. A preview on development data from the three complete cells, not the registered test.",
   "example": "YASHASHAV (about 1 min)\nA real episode from our logs, copied, not written by hand: the same task and seed under BF16 and under 4-bit, step by step, with each step's class.",
-  "questions": "YASHASHAV (about 1 min, then questions)\nNine things we would like from you: the decisions, the confirmatory classes, the CPU scope, the node limit, the OSF filing, the Dec 4 demo and draft, what 'examples for all modalities' meant, the next meeting date, and the Canvas title."
+  "questions": "YASHASHAV (about 1 min, then questions)\nTen things we would like from you: the decisions, the confirmatory classes, the CPU scope, the node limit, the OSF filing, the Dec 4 demo and draft, what 'examples for all modalities' meant, the next meeting date, the Canvas title, and two tau2 simulator rules (decisions 15 and 16 in docs/m2_decisions.md)."
  }
 }
