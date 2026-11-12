@@ -285,6 +285,38 @@ Every handler ran one BFCL and one τ² episode end to end, scored by the offici
 test, only LFM2.5-2.6B's BFCL episode passed; no τ² smoke episode was solved (the BF16 references of SmolLM3,
 LFM2.5-1.2B and Qwen3-0.6B later solved airline in 0 of 122, 128 and 128 episodes). No new smoke runs were made.
 
+## A2 results (2026-11-12): BF16 references for SmolLM3-3B and LFM2.5 (development data; JSON in `results/m2/`)
+
+Runs `ref_smollm3_3b/5053915afb`, `ref_lfm2p5_1p2b/3018b3dc15`, `ref_lfm2p5_2p6b/86ef1012fd` (2,505 specs each,
+the Qwen3 references' design). A2's bar: at least 99% of specs finished; an excluded episode is not finished
+(ruling, 2026-11-11). How each run got there, with every log finding, is in the next section.
+
+| Model | Jobs (array; reruns; report; A2 check) | Finished | Excluded | 99% bar | FR-E2 | Multi-turn tasks included |
+|---|---|---|---|---|---|---|
+| SmolLM3-3B | 111883; 112924_10, telecom loop 113054; 111884; 113184 | 2,458 (98.1%) | 47: 46 empty reply, 1 simulator HTTP 500 × 4 | not met | 2,455 / 2,456, **FAIL** (decision 17) | 10, or 11 with bfcl's verdict (not committed) |
+| LFM2.5-1.2B | 111885; 112937; 112992; 113030 | 2,495 (99.6%) | 10, empty reply | met | 2,494 / 2,494, PASS | 34 (single-turn-only) |
+| LFM2.5-2.6B | 111887; 113083, retry 113224; 111888, 113225; 113236 | 2,504 (99.96%) | 1, empty reply | met | 2,504 / 2,504, PASS | 360 (full multi-turn) |
+
+- JSON: `results/m2/evaluator_agreement_{smollm3-3b,lfm2.5-1.2b,lfm2.5-2.6b}.json`,
+  `results/m2/inclusion_lfm2.5-{1.2b,2.6b}.json`. SmolLM3's inclusion set stays on scratch
+  (`runs/week_outputs/a2_smollm3_113184/inclusion_smollm3-3b.json`) because it depends on the disputed verdict.
+  Counts: report jobs and `results/m3/run_status.json` (09:54).
+- **Episode success, sampled trials, of finished episodes** (greedy in brackets where it differs by more than 1
+  point; episodes parquet built in each A2 check's shadow directory, computed 2026-11-12 by 09:58):
+
+  | Model | BFCL base | miss_func | miss_param | τ² airline | retail | telecom |
+  |---|---|---|---|---|---|---|
+  | SmolLM3-3B | 2.2% | 0.5% | 0.2% | 0.0% | 1.8% | 0.0% |
+  | LFM2.5-1.2B | 8.8% (13.0) | 0.5% | 8.8% (12.0) | 0.0% | 2.2% | 0.0% |
+  | LFM2.5-2.6B | 68.2% (67.0) | 49.0% (46.0) | 39.2% (35.0) | 35.9% (30.8) | 38.9% (33.7) | 63.7% (56.3) |
+
+  LFM2.5-2.6B (whose template always opens a reasoning block) is far ahead of every other reference, Qwen3-4B
+  included (12.2% BFCL base, 1.1% telecom). FR-E2 agrees on all its episodes, so our scoring matches the
+  official evaluators, but the size of the gap (telecom 64% at 2.6B) has not been checked against any outside
+  result: **unverified, notable**. Its successful telecom episodes take 10–39 steps (median 18).
+- **Power table for all 6 models: pending.** Due only if SmolLM3 and LFM2.5-2.6B both complete A2; the SmolLM3
+  item stopped at FR-E2 (decision 17).
+
 ## A2 in progress (2026-11-11): BF16 references for SmolLM3-3B and LFM2.5 (development data)
 
 Not finished. Counts are in `results/m3/run_status.json` (refreshed for the deck); this section records the job IDs
@@ -367,7 +399,9 @@ and what the logs showed.
       advisor: 34 of the 46 empty replies end with gpt-oss's 32,768-token slot full (`finish_reason = length`,
       `total_tokens` = 32,768 in every one), and §5 scores "simulated user runs out of context (its 32,768-token
       slot)" as a failure, not an exclusion. Read that way, SmolLM3 would have 12 exclusions and could reach
-      2,493 / 2,505 = 99.5%. Because that reading turns a fail into a pass, it is not applied here. Slot-full /
+      2,493 / 2,505 = 99.5%. Because that reading turns a fail into a pass, it is not applied here. (Final,
+      2026-11-12: the finished reference also has 1 telecom exclusion after 4 simulator HTTP 500s, so under that
+      reading it would have 13 exclusions and 2,492 / 2,505 = 99.5%.) Slot-full /
       stopped-empty split of the exclusions in the other references: LFM2.5-1.2B 7 / 3, Qwen3-0.6B 1 / 2,
       Qwen3-1.7B 1 / 2, Qwen3-4B 1 / 0 (`empty_split.out`).
     - **Exclusions under quantization (Qwen3-0.6B, the only finished 4-bit cells with τ²; `run_status.py`):**

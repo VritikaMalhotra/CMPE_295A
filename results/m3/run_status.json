@@ -1,5 +1,5 @@
 {
- "collected": "2026-11-12T09:54-08:00",
+ "collected": "2026-11-12T12:28-08:00",
  "runs": {
   "ref_qwen3_0p6b": {
    "dir": "/scratch/cmpe295-bertin/runs/ref_qwen3_0p6b/cd314594fb",
@@ -351,9 +351,9 @@
     "q4_0"
    ],
    "specs": 2505,
-   "finished": 2161,
-   "excluded": 67,
-   "finished_share": 0.8627,
+   "finished": 2274,
+   "excluded": 91,
+   "finished_share": 0.9078,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -372,7 +372,7 @@
      130
     ],
     "tau2_verified_retail": [
-     186,
+     299,
      520
     ],
     "tau2_verified_telecom": [
@@ -389,9 +389,9 @@
     "q4_k_m"
    ],
    "specs": 2505,
-   "finished": 2033,
-   "excluded": 6,
-   "finished_share": 0.8116,
+   "finished": 2496,
+   "excluded": 9,
+   "finished_share": 0.9964,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -410,11 +410,11 @@
      130
     ],
     "tau2_verified_retail": [
-     369,
+     512,
      520
     ],
     "tau2_verified_telecom": [
-     35,
+     355,
      355
     ]
    }
@@ -427,28 +427,28 @@
     "iq4_xs"
    ],
    "specs": 2505,
-   "finished": 0,
-   "excluded": 0,
-   "finished_share": 0.0,
+   "finished": 1630,
+   "excluded": 4,
+   "finished_share": 0.6507,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
-     0,
+     500,
      500
     ],
     "bfcl_multi_turn_miss_func": [
-     0,
+     500,
      500
     ],
     "bfcl_multi_turn_miss_param": [
-     0,
+     500,
      500
     ],
     "tau2_verified_airline": [
-     0,
+     58,
      130
     ],
     "tau2_verified_retail": [
-     0,
+     72,
      520
     ],
     "tau2_verified_telecom": [
@@ -687,6 +687,8 @@
   "2026-11-12 08:44:12 SUBMIT 113224 tb-rerun LFM2.5-2.6B telecom config 1742b19769c7 (111887_10 ended 08:41 281/284; 3 episodes pending with 1 of 4 simulator-500 attempts each), retry loop from CMPE_295A-a2 8d94524, shared endpoint, nice 0 (R-1); SUBMIT 113225 report_only afterany:113224 (R-2; 111888 already ran 08:42: 2501/2505)",
   "2026-11-12 08:44:51 ACTION nice: H1 pending arrays 111935/111937/111939/111941/111943 20->70, B3 GPU 112006/112011/112008/112013 85->150, so retry 113224 (nice 0) is first, H1 second, B3 third (R-5; no hold/release)",
   "2026-11-12 09:18:44 EVENT cs002 DRAIN by root 2026-11-12T08:40:23 (Reason=hw). Running jobs continue (simuser 112691 to Fri 13:49, park 112689, 111935_8); new GPU jobs only on cs004 under the 2-node cap. ACTION 113224 ExcNodeList=cs001,cs002; simuser successor 112692 unpinned (was -w cs002): ReqNodeList cleared, ExcNodeList=cs001,cs002. Note: 112691 has --requeue and ReqNodeList=cs002; if cs002 reboots, check its state (a requeued 112691 pending on cs002 blocks afterany).",
-  "2026-11-12 09:49:36 SUBMIT 113236 a2-lfm26b-out (cpuqs, CMPE_295A-ekant 8d94524, shadow parquet): LFM2.5-2.6B inclusion + FR-E2 (R-3). 113224 ended 09:45: telecom 3/3 finished in pass 1; report 113225: 2504/2505 finished, 1 excluded"
+  "2026-11-12 09:49:36 SUBMIT 113236 a2-lfm26b-out (cpuqs, CMPE_295A-ekant 8d94524, shadow parquet): LFM2.5-2.6B inclusion + FR-E2 (R-3). 113224 ended 09:45: telecom 3/3 finished in pass 1; report 113225: 2504/2505 finished, 1 excluded",
+  "2026-11-12 11:55:48 SUBMIT 113286 tb-rerun Qwen3-1.7B Q4_K_M retail config 3e887613d1be (111935_8 ended 11:03 409/416 + 6 excluded; d3a6609728d8 task 20 seed 3 pending, 1 of 4 simulator attempts), retry loop from CMPE_295A-a2, shared endpoint, nice 0, exclude cs001,cs002 (R-1); SUBMIT 113287 report_only afterany:113286 (R-2; 111936 ran 11:31: 2495/2505). Note: Mac slept ~10:2x-11:35 (lid closed), job-end watcher paused; events audited on wake",
+  "2026-11-12 11:56:01 ACTION nice: H1 arrays 111937/111939/111941/111943 70->100 (aged above retry 113286), B3 GPU 150->180 (R-5)"
  ]
 }
