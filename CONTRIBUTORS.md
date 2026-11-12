@@ -41,7 +41,7 @@ their packages from the following week. This section records who did what; it do
 | Package (Workbook 2) | WB2 owner | Run by this week | Branch |
 |---|---|---|---|
 | A1 prompt handlers for SmolLM3-3B and LFM2.5 | none | Yashashav | `wk11-ekant` |
-| A2 BF16 references for those three models | none | Yashashav (runs submitted) | `wk11-ekant` |
+| A2 BF16 references for those three models (LFM2.5-1.2B finished with FR-E2 and inclusion set; parser and runner fixes found on the way) | none | Yashashav | `wk11-ekant` |
 | A3 statistics (C10): planted-effect check, real-data mixed-effects run | Vritika | Yashashav | `wk11-vritika` |
 | A4 pre-registration fixes (not filed) | Vritika (DL-3) | Yashashav | `wk11-vritika` |
 | A5 S10 rerun on the integration branch | Ekant | Yashashav | `wk11-ekant` |
@@ -52,6 +52,7 @@ their packages from the following week. This section records who did what; it do
 | B5 H2 label kit (blank sheets, guide, kappa script; no labels) | Vritika | Yashashav | `wk11-vritika` |
 | C1–C4 docs answering the 11-09 feedback (agents and data, architecture, which tasks fail, worked examples) | none | Yashashav | `wk11-ekant` |
 | C5 advisor deck for 11-13 | none | Yashashav | `m3-yashashav-prep` |
+| A4 decisions 15–16 (τ² simulator rules) proposed for the advisor | Vritika (DL-3) | Yashashav | `wk11-vritika` |
 
 Earlier M2 work by Ekant on `m2-phase1`, already in the history and credited there: codebook v0, the inclusion
 filter, the simulated user as a cluster job, the Qwen3 BF16 references, FR-E2, the power table, parity and
