@@ -1,0 +1,161 @@
+{
+ "generated": "2026-11-12 00:17:34",
+ "label": "development data (A1 smoke runs)",
+ "runs": [
+  {
+   "run_dir": "a1_smoke_smollm3_3b/c72d6cd924",
+   "testbed_commits": [
+    "ef37df08bcd6fa9f9960a95cdbdc836494430d85"
+   ],
+   "specs_written": "2026-11-10 10:49",
+   "episodes": [
+    {
+     "benchmark": "bfcl_multi_turn_base",
+     "task_id": "multi_turn_base_55",
+     "seed": 0,
+     "model": "smollm3-3b",
+     "ran_end_to_end": true,
+     "valid": false,
+     "n_steps": 9,
+     "error_type": "multi_turn:empty_turn_model_response",
+     "tau2_reward": null
+    },
+    {
+     "benchmark": "tau2_verified_airline",
+     "task_id": "7",
+     "seed": 0,
+     "model": "smollm3-3b",
+     "ran_end_to_end": true,
+     "valid": false,
+     "n_steps": 6,
+     "error_type": "tau2:user_stop:reward_0",
+     "tau2_reward": 0.0
+    }
+   ]
+  },
+  {
+   "run_dir": "a1_smoke_lfm2p5_1p2b/5b23bed3a9",
+   "testbed_commits": [
+    "ef37df08bcd6fa9f9960a95cdbdc836494430d85"
+   ],
+   "specs_written": "2026-11-10 10:52",
+   "episodes": [
+    {
+     "benchmark": "bfcl_multi_turn_base",
+     "task_id": "multi_turn_base_55",
+     "seed": 0,
+     "model": "lfm2.5-1.2b-instruct",
+     "ran_end_to_end": true,
+     "valid": false,
+     "n_steps": 5,
+     "error_type": "multi_turn:empty_turn_model_response",
+     "tau2_reward": null
+    },
+    {
+     "benchmark": "tau2_verified_airline",
+     "task_id": "7",
+     "seed": 0,
+     "model": "lfm2.5-1.2b-instruct",
+     "ran_end_to_end": true,
+     "valid": false,
+     "n_steps": 3,
+     "error_type": "tau2:user_stop:reward_0",
+     "tau2_reward": 0.0
+    }
+   ]
+  },
+  {
+   "run_dir": "a1_smoke_lfm2p5_2p6b/847fd09a64",
+   "testbed_commits": [
+    "ef37df08bcd6fa9f9960a95cdbdc836494430d85"
+   ],
+   "specs_written": "2026-11-10 10:53",
+   "episodes": [
+    {
+     "benchmark": "bfcl_multi_turn_base",
+     "task_id": "multi_turn_base_55",
+     "seed": 0,
+     "model": "lfm2.5-2.6b",
+     "ran_end_to_end": true,
+     "valid": false,
+     "n_steps": 5,
+     "error_type": "multi_turn:empty_turn_model_response",
+     "tau2_reward": null
+    },
+    {
+     "benchmark": "tau2_verified_airline",
+     "task_id": "7",
+     "seed": 0,
+     "model": "lfm2.5-2.6b",
+     "ran_end_to_end": true,
+     "valid": false,
+     "n_steps": 6,
+     "error_type": "tau2:user_stop:reward_0",
+     "tau2_reward": 0.0
+    }
+   ]
+  },
+  {
+   "run_dir": "a1_smoke_v2/a1_smoke_lfm2p5_1p2b/5b23bed3a9",
+   "testbed_commits": [
+    "5ebfd2b095eb874d0460a9b89534cf6615af6191"
+   ],
+   "specs_written": "2026-11-10 11:00",
+   "episodes": [
+    {
+     "benchmark": "bfcl_multi_turn_base",
+     "task_id": "multi_turn_base_55",
+     "seed": 0,
+     "model": "lfm2.5-1.2b-instruct",
+     "ran_end_to_end": true,
+     "valid": false,
+     "n_steps": 12,
+     "error_type": "multi_turn:instance_state_mismatch",
+     "tau2_reward": null
+    },
+    {
+     "benchmark": "tau2_verified_airline",
+     "task_id": "7",
+     "seed": 0,
+     "model": "lfm2.5-1.2b-instruct",
+     "ran_end_to_end": true,
+     "valid": false,
+     "n_steps": 14,
+     "error_type": "tau2:user_stop:reward_0",
+     "tau2_reward": 0.0
+    }
+   ]
+  },
+  {
+   "run_dir": "a1_smoke_v2/a1_smoke_lfm2p5_2p6b/847fd09a64",
+   "testbed_commits": [
+    "5ebfd2b095eb874d0460a9b89534cf6615af6191"
+   ],
+   "specs_written": "2026-11-10 11:02",
+   "episodes": [
+    {
+     "benchmark": "bfcl_multi_turn_base",
+     "task_id": "multi_turn_base_55",
+     "seed": 0,
+     "model": "lfm2.5-2.6b",
+     "ran_end_to_end": true,
+     "valid": true,
+     "n_steps": 15,
+     "error_type": "",
+     "tau2_reward": null
+    },
+    {
+     "benchmark": "tau2_verified_airline",
+     "task_id": "7",
+     "seed": 0,
+     "model": "lfm2.5-2.6b",
+     "ran_end_to_end": true,
+     "valid": false,
+     "n_steps": 11,
+     "error_type": "tau2:user_stop:reward_0",
+     "tau2_reward": 0.0
+    }
+   ]
+  }
+ ]
+}
