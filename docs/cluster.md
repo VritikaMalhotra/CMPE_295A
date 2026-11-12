@@ -291,12 +291,25 @@ and what the logs showed.
     exits 0. Resubmitted as 112924_10. B1's Q4_0 telecom shard stopped the same way and completed on retry.
   - **SmolLM3 τ² exclusions** (empty simulated-user reply, the registered rule): 44 by 18:20 (airline 7 + 1,
     retail 7 + 29). A2 asks for ≥ 99% finished, so whether exclusions count as finished matters here.
-  - **LFM2.5-1.2B: 5 episodes failed** with `UnicodeEncodeError: surrogates not allowed` while hashing the prompt:
-    BFCL base_188 seeds 0/2/3, miss_func_86 and miss_func_170 seed 1.
-    - Fixed in `ffe8873`: the Pythonic parser read `\ud83d\ude80`-style escapes as lone surrogates.
-    - None of the 2,088 completed step files had one, so only these episodes are affected.
-    - The cause is not confirmed from the failing episodes, whose logs are discarded.
-    - They will be rerun from a separate checkout at the fixed commit after 111885 finishes.
+  - **LFM2.5-1.2B: 11 episodes failed** (by 20:45), all with lone surrogates in the prompt:
+    - 10 with `UnicodeEncodeError: surrogates not allowed` while hashing the prompt;
+    - 1 with HTTP 400 from llama-server's `/tokenize`, which rejects an unpaired surrogate.
+    - Affected: BFCL base_188 s0/s2/s3, miss_func_58 s2, miss_func_86 s1, miss_func_170 s1, miss_param_5 s4,
+      miss_param_68 s1/s2, miss_param_183 s2/s3.
+    - The likely cause, fixed in `ffe8873`: the Pythonic parser read `\ud83d\ude80`-style escapes as lone
+      surrogates. It is not confirmed from the failing episodes, whose logs are discarded.
+- **Code change during the run (2026-11-11 20:46).** `CMPE_295A-a2`, the checkout every agent array runs from,
+  moved from `6be0ff7` to week `8c605a1`.
+  - On the run path that adds only three things:
+    - `backends.py` asks `/tokenize` for `parse_special` explicitly, as llama-server already does by default;
+    - the NUL fix (47d41f7);
+    - the surrogate fix (ffe8873).
+  - None of the 24,294 completed LFM2.5 steps has a NUL, and none has a lone surrogate. So every episode that
+    completes on `6be0ff7` comes out the same on `8c605a1`; only episodes that used to crash change.
+  - Tasks already running kept `6be0ff7`. Tasks started after 20:46 run `8c605a1`.
+  - The per-host manifests (which hold only the latest commit) were copied first, to
+    `runs/week_outputs/manifest_snapshot_6be0ff7_20261111_2046/`.
+  - The 11 episodes were resubmitted as 112937_[0,1,2,4].
 
 ## First results (2026-10-26, development data)
 - Onboarding step 2: llama.cpp d812350 built in job 96279 on g2 (P100 node) in 17 min, CPU build plus CUDA 12.6 for sm 60, 80 and 90.
