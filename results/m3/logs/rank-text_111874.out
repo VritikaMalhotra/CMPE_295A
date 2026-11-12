@@ -1,0 +1,17 @@
+job 111874 on c5.hpc.coe; CUDA_VISIBLE_DEVICES=unset
+[transformers] Token indices sequence length is longer than the specified maximum sequence length for this model (4632056 > 131072). Running this sequence through the model will result in indexing errors
+{
+ "created": "2026-11-10T18:49:33Z",
+ "source": "/scratch/cmpe295-bertin/data/qad_mix/rank_conversations.jsonl",
+ "source_sha256": "43dce72fcd8bf209390790b57fbfbd6bb52a4d16f376e3ab04171a8fbad54be8",
+ "max_tool_tokens": 256,
+ "planning_tokenizer": "/scratch/cmpe295-bertin/models/hf/Qwen3-0.6B",
+ "conversations": 2000,
+ "tool_replies": 6806,
+ "tool_replies_cut": 1690,
+ "text": "/scratch/cmpe295-bertin/data/qad_mix/rank_text_t256.txt",
+ "text_sha256": "dc06ce1f93061baccb8088fc96e4673472bacc3884029febea038a9253cfa438",
+ "text_tokens_qwen3": 4632056,
+ "n_overlapping_13grams": 0,
+ "pass": true
+}
