@@ -1,0 +1,84 @@
+{
+ "criterion": "FR-E2: 100% verdict agreement with the official evaluators on >= 200 replayed trajectories",
+ "stand_ins": "identical to the stand_ins list in results/m2/evaluator_agreement.json (inert stubs for API-client modules bfcl-eval imports)",
+ "models": {
+  "ref_smollm3_3b": {
+   "bfcl": {
+    "n": 604,
+    "agree": 604,
+    "disagree": [],
+    "by_benchmark": {
+     "bfcl_multi_turn_base": 100,
+     "bfcl_multi_turn_miss_func": 404,
+     "bfcl_multi_turn_miss_param": 100
+    },
+    "agree_by_benchmark": {
+     "bfcl_multi_turn_base": 100,
+     "bfcl_multi_turn_miss_func": 404,
+     "bfcl_multi_turn_miss_param": 100
+    },
+    "parser": "testbed prompt_formats.smollm3 parser (no bfcl-eval handler) + bfcl-eval scoring",
+    "disagree_total": 0
+   },
+   "tau2": {
+    "n": 749,
+    "agree": 749,
+    "disagree": [],
+    "no_simulation": {
+     "tau2:user_context_overflow": 2
+    },
+    "by_benchmark": {
+     "tau2_verified_telecom": 145,
+     "tau2_verified_airline": 122,
+     "tau2_verified_retail": 482
+    },
+    "agree_by_benchmark": {
+     "tau2_verified_telecom": 145,
+     "tau2_verified_airline": 122,
+     "tau2_verified_retail": 482
+    },
+    "disagree_total": 0
+   }
+  },
+  "ref_lfm2p5_1p2b": {
+   "bfcl": {
+    "n": 1489,
+    "agree": 1489,
+    "disagree": [],
+    "by_benchmark": {
+     "bfcl_multi_turn_miss_func": 497,
+     "bfcl_multi_turn_miss_param": 495,
+     "bfcl_multi_turn_base": 497
+    },
+    "agree_by_benchmark": {
+     "bfcl_multi_turn_miss_func": 497,
+     "bfcl_multi_turn_miss_param": 495,
+     "bfcl_multi_turn_base": 497
+    },
+    "parser": "testbed prompt_formats.lfm2.5-1.2b parser (no bfcl-eval handler) + bfcl-eval scoring",
+    "disagree_total": 0
+   },
+   "tau2": {
+    "n": 590,
+    "agree": 590,
+    "disagree": [],
+    "no_simulation": {},
+    "by_benchmark": {
+     "tau2_verified_retail": 395,
+     "tau2_verified_airline": 128,
+     "tau2_verified_telecom": 67
+    },
+    "agree_by_benchmark": {
+     "tau2_verified_retail": 395,
+     "tau2_verified_airline": 128,
+     "tau2_verified_telecom": 67
+    },
+    "disagree_total": 0
+   }
+  }
+ },
+ "n": 3432,
+ "agree": 3432,
+ "agreement": 1.0,
+ "pass": true
+}
