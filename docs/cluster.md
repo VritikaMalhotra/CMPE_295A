@@ -296,6 +296,22 @@ and what the logs showed.
       (14 of 14 attempts failed). B1's telecom shard recovered from a 500 on retry, but that was a different
       request. Not resubmitted again (the spec's stop rule: the same job failing twice); while this request
       fails, every resubmission stops here and leaves the other 207 episodes pending.
+    - **Runner fix (wk11-ekant `9d8b13f`, week `8417963`, 2026-11-11 23:20).** The runner never applied the
+      registered infrastructure rule (pre-registration §5: retried up to three times with the same seed, then
+      excluded and listed) to simulator errors: any simulator failure stopped τ² scheduling and recorded nothing.
+      Now an HTTP 500 that the simulator answers (it is up; one request failed) is an attempt of that episode,
+      recorded in `retries/`, and the other episodes go on; after four attempts the existing rule excludes it.
+      Unreachable, 502/503/504 and the budget ceiling are still an outage, and three such episodes in a row are
+      treated as one. Tests: local 254 passed, 13 skipped; cluster suite 113052 on `8417963`: 266 passed, 1
+      skipped.
+    - **Run: job 113053** (A100, five passes of config `486579e948da` only) from checkout `CMPE_295A-wk` at
+      `8417963`, so this configuration's remaining episodes run on `8417963`; the other SmolLM3 configurations
+      stay on `CMPE_295A-a2`. Per-host manifests copied first to
+      `runs/week_outputs/manifest_snapshot_smollm3_20261111_2328/`. The SmolLM3 report job 111884 now waits for
+      111883 and 113053.
+    - **Not covered:** LFM2.5-2.6B tasks 7–11 and SmolLM3 tasks 0, 3 and 4 start from `CMPE_295A-a2` (`8c605a1`),
+      which has no fix; a simulator 500 there would stall a task the same way. Moving that checkout is a
+      separate decision (Yashashav's).
   - **SmolLM3 τ² exclusions** (empty simulated-user reply, the registered rule): 46 by 22:00 (airline 7 + 1,
     retail 7 + 31; `excluded` lines in the task logs).
   - **Ruling on A2's ≥ 99% bar (Yashashav, 2026-11-11 22:56): an excluded episode does not count as finished.**
@@ -310,7 +326,19 @@ and what the logs showed.
       cache and replayed (`testbed/simuser_cache.py`), the simulator runs at temperature 0, and a `permanent`
       retry line makes `retry_count` return the limit (`testbed/logger.py:69`), so the runner skips the episode.
       Finishing them would need a protocol change (a different simulator setting for those episodes, with the
-      cache rows and exclusion lines set aside), which overrides pre-registration §5. Not done.
+      cache rows and exclusion lines set aside), which overrides pre-registration §5. Not done: it would be a
+      post-hoc change for one model, and gpt-oss already failed at low, medium and high reasoning effort.
+    - **Decision (2026-11-11, after a review of the evidence): keep the 46 exclusions under the registered rule;
+      SmolLM3 does not meet A2's 99%.** One reading of pre-registration §5 would change this and is for the
+      advisor: 34 of the 46 empty replies end with gpt-oss's 32,768-token slot full (`finish_reason = length`,
+      `total_tokens` = 32,768 in every one), and §5 scores "simulated user runs out of context (its 32,768-token
+      slot)" as a failure, not an exclusion. Read that way, SmolLM3 would have 12 exclusions and could reach
+      2,493 / 2,505 = 99.5%. Because that reading turns a fail into a pass, it is not applied here. Slot-full /
+      stopped-empty split of the exclusions in the other references: LFM2.5-1.2B 7 / 3, Qwen3-0.6B 1 / 2,
+      Qwen3-1.7B 1 / 2, Qwen3-4B 1 / 0 (`empty_split.out`).
+    - **Exclusions under quantization (Qwen3-0.6B, the only finished 4-bit cells with τ²; `run_status.py`):**
+      BF16 3, Q4_0 4, Q4_K_M 1, IQ4_XS 7, all slot-full. Small and mixed, but if 4-bit models trigger more
+      exclusions, the rule removes episodes the agent caused and can hide damage. For the advisor.
   - **Why SmolLM3 has 46 exclusions when the three Qwen3 references had 7 in all** (read-only scan of the
     simulated-user caches and steps, 2026-11-11 22:40; scripts and their output in
     `runs/week_outputs/equiv_scan_20261111_2209/`):
@@ -325,10 +353,11 @@ and what the logs showed.
       `{'type': 'function', 'function': {'name': 'calculate', …}}`; BFCL passes bare docs, shown as
       `{'name': 'authenticate_twitter', …}`. Both prompts carry the `<tool_call>` instructions, and the τ² one
       carries the policy. The same holds for every model (τ² tools are wrapped for Qwen3 and LFM2.5 too).
-    - The renderer matches SmolLM3's chat template for the tools it is given (`tests/test_prompt_formats.py`, case
-      `tau2_policy`, template sha256 `3e0e275a…`), but that test has one tool and does not settle which tool
-      shape the model expects. **Not established:** whether the wrapped shape causes SmolLM3's 0.4% call rate,
-      or whether it is the model's own behaviour. Settling it needs a small τ² run with bare tools.
+    - The τ² prompt is a faithful rendering: SmolLM3's chat template prints each tool exactly as given
+      (`tool | string`, no unwrapping), the wrapped shape is what Hugging Face's `tools=` argument passes, and the
+      golden cases, rendered from the template (sha256 `3e0e275a…`), use the wrapped shape. **Untested:** only
+      the model's sensitivity to the tool shape (wrapped in τ², bare in BFCL); a small τ² run with bare tools
+      would show it.
     - SmolLM3's τ² successes so far: retail 9 of 482 episodes (2 tasks), airline 0 of 122, telecom 0 of 147;
       Qwen3-0.6B: retail 10 of 519 (2 tasks), 0 elsewhere; LFM2.5-1.2B: retail 12 of 512 (4 tasks).
     - Either way, these exclusions follow what the agent wrote, not only the simulator. Pre-registration §5 says
