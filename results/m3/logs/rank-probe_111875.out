@@ -1,0 +1,18 @@
+job 111875 on cs003.hpc.coe; CUDA_VISIBLE_DEVICES=1
+0, NVIDIA A100-PCIE-40GB, 40960 MiB, 590.44.01
+1, NVIDIA A100-PCIE-40GB, 40960 MiB, 590.44.01
+2, NVIDIA A100-PCIE-40GB, 40960 MiB, 590.44.01
+3, NVIDIA A100-PCIE-40GB, 40960 MiB, 590.44.01
+Qwen3-0.6B: 311 tensors, 196 candidates (440.4M weights) -> /scratch/cmpe295-bertin/runs/rank/Qwen3-0.6B/tensors.json
+base logits -> /scratch/cmpe295-bertin/runs/rank_probe/Qwen3-0.6B/c20/BF16.kld {'ctx': 512, 'chunks': 20, 'text': '/scratch/cmpe295-bertin/data/qad_mix/rank_text_t256.txt', 'text_sha256': 'dc06ce1f93061baccb8088fc96e4673472bacc3884029febea038a9253cfa438'}
+blk.0.ffn_down.weight: KLD 0.00105 ± 0.00005 (6.8 s)
+blk.0.ffn_gate.weight: KLD 0.00076 ± 0.00005 (5.1 s)
+blk.0.ffn_up.weight: KLD 0.00106 ± 0.00006 (6.0 s)
+blk.0.attn_k.weight: KLD 0.00051 ± 0.00005 (4.9 s)
+PROBE chunks=20 base_s=11 score_s_total=23 tensors=4 candidates=196
+base logits -> /scratch/cmpe295-bertin/runs/rank_probe/Qwen3-0.6B/c200/BF16.kld {'ctx': 512, 'chunks': 200, 'text': '/scratch/cmpe295-bertin/data/qad_mix/rank_text_t256.txt', 'text_sha256': 'dc06ce1f93061baccb8088fc96e4673472bacc3884029febea038a9253cfa438'}
+blk.0.ffn_down.weight: KLD 0.00139 ± 0.00007 (25.8 s)
+blk.0.ffn_gate.weight: KLD 0.00085 ± 0.00002 (15.7 s)
+blk.0.ffn_up.weight: KLD 0.00119 ± 0.00003 (15.6 s)
+blk.0.attn_k.weight: KLD 0.00057 ± 0.00002 (15.5 s)
+PROBE chunks=200 base_s=32 score_s_total=73 tensors=4 candidates=196
