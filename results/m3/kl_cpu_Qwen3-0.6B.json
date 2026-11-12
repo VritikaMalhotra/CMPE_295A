@@ -178,6 +178,33 @@
    "n_weights": 751632384,
    "bpw_file": 8.5654,
    "complete": true
+  },
+  "R2b-LS5.5": {
+   "ppl_q": 21.905759,
+   "ppl_q_unc": 0.644075,
+   "ppl_base": 20.254786,
+   "ppl_base_unc": 0.588266,
+   "ppl_ratio": 1.08151,
+   "ppl_ratio_unc": 0.005594,
+   "kld_mean": 0.101392,
+   "kld_mean_unc": 0.001203,
+   "kld_max": 4.141065,
+   "kld_p999": 1.437081,
+   "kld_p99": 0.609951,
+   "kld_median": 0.071473,
+   "dp_mean_pct": -1.209,
+   "dp_mean_pct_unc": 0.067,
+   "dp_rms_pct": 7.627,
+   "dp_rms_pct_unc": 0.134,
+   "same_top_p_pct": 83.2,
+   "same_top_p_pct_unc": 0.331,
+   "chunks_scored": 50,
+   "n_ctx": 512,
+   "sha256": "5d20e96f4b465c9846c4510d41e7e6d1829b7adcffcdb5f709f9424defacb5a5",
+   "file_bytes": 522817856,
+   "n_weights": 751632384,
+   "bpw_file": 5.5646,
+   "complete": true
   }
  },
  "merged_from": [
@@ -197,6 +224,13 @@
     "Q5_0-pure",
     "Q6_K-pure",
     "Q8_0"
+   ]
+  },
+  {
+   "file": "/scratch/cmpe295-bertin/runs/kl_cpu_m3/Qwen3-0.6B-R2b/kl_Qwen3-0.6B.json",
+   "created": "2026-11-12T01:52:26+00:00",
+   "variants": [
+    "R2b-LS5.5"
    ]
   }
  ]

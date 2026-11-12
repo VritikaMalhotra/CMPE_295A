@@ -159,3 +159,40 @@ its ids are disjoint from the training set.
   | Qwen3-0.6B | 112000 | 112001 | 112002 | 112003 | 112004 |
   | Qwen3-1.7B | 112005 | 112006 | 112007 | 112008 | 112009 |
   | LFM2.5-1.2B-Instruct | 112010 | 112011 | 112012 | 112013 | 112014 |
+
+**Qwen3-0.6B R2b result (jobs 112001–112004, finished 2026-11-11 17:50).**
+- **Ranking.** All 196 candidate tensors have a score file, and all 196 record ctx 512, 1,000 chunks and text SHA-256
+  `dc06ce1f…`. Array 112001 ran on two P100s (g2, g4).
+  - Highest score: `blk.2.ffn_down.weight`, KLD 0.0105 when it alone is Q4_0.
+  - Lowest: `blk.1.attn_k.weight`, 0.00016.
+- **Selection** (`results/m3/r2b_selection_Qwen3-0.6B.json`; build input `r2b_tensor_types_Qwen3-0.6B.txt`).
+  78 tensors go to Q8_0, 42.6% of linear weights, for a predicted 5.501 bits per weight.
+  - By kind, of 28 each: ffn_up 24, attn_v 21, ffn_down 13, ffn_gate 10, attn_output 5, attn_k 3, attn_q 2.
+  - By layer: spread over layers 0–22, plus 26 and 27. None come from layers 23–25.
+- **Build and FR-E10** (job 112002, `results/m3/r2b_check_Qwen3-0.6B.json`). Measured 5.5646 bits per weight, so
+  FR-E10 (5.5 ± 0.1) passes.
+  - The 0.063 above the prediction is the GGUF header and vocabulary. Q4_0-pure shows the same gap: 4.5657
+    measured against 4.5 nominal.
+  - Weights by type: Q4_0 563.9M, Q8_0 187.7M, F32 65.5k.
+  - Added to `results/m3/models_manifest.json` as `R2b-LS5.5` (SHA-256 `5d20e96f…`).
+- **KL against BF16** (112003 CUDA on a P100, 112004 CPU). Settings are the WikiText-2 ones of the table above.
+  Merged into `results/m3/kl_{cuda,cpu}_Qwen3-0.6B.json` with `scripts/merge_kl.py`; the BF16 perplexity of the
+  parts agrees.
+
+  | Qwen3-0.6B | Bits per weight | KLD CUDA | KLD CPU | Same top token, CUDA |
+  |---|---|---|---|---|
+  | IQ4_XS | 4.79 | 0.1023 | 0.1072 | 83.7% |
+  | Q4_K_M | 5.15 | 0.1083 | 0.1143 | 83.3% |
+  | **R2b-LS5.5** | **5.56** | **0.1021** | **0.1014** | **83.0%** |
+  | Q5_0-pure | 5.57 | 0.0605 | 0.0596 | 86.6% |
+
+- **Reading.** At the same file size, R2b's WikiText KL is about 1.7× that of uniform Q5_0-pure. It is no lower than
+  IQ4_XS, which uses 0.77 fewer bits per weight.
+  - This check is outside R2b's ranking domain. R2b ranks tensors by KL on held-out agent conversations, not on
+    WikiText, so whether it helps on agent steps is for the damage runs.
+  - A possible reason, not tested: R2b leaves 57% of linear weights at Q4_0 and spends the extra bits on the other
+    43%, whereas Q5_0 raises every tensor by one bit.
+  - The ranking scores each tensor alone. If the damage from tensors kept at Q4_0 adds up in a way those
+    single-tensor scores don't capture, the selection can be far from the best one for its size.
+- **The other two core models.** Qwen3-1.7B (112005–112009) and LFM2.5-1.2B-Instruct (112010–112014) were
+  submitted 2026-11-10. 112005 started 2026-11-11 17:53 on a P100.
