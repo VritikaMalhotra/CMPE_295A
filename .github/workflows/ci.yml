@@ -29,7 +29,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Install (as scripts/setup_env.sh does)
         run: |
-          uv venv -p "$PYTHON_VERSION" .venv
+          [ -d .venv ] || uv venv -p "$PYTHON_VERSION" .venv
           uv pip install --python .venv/bin/python -e ".[dev]"
           uv pip install --python .venv/bin/python --no-deps "bfcl-eval==2026.3.23"
       - name: Tests with coverage
