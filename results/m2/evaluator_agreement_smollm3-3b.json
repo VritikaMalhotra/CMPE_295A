@@ -1,0 +1,57 @@
+{
+ "criterion": "FR-E2: 100% verdict agreement with the official evaluators on >= 200 replayed trajectories",
+ "stand_ins": "identical to the stand_ins list in results/m2/evaluator_agreement.json (inert stubs for API-client modules bfcl-eval imports)",
+ "models": {
+  "ref_smollm3_3b": {
+   "bfcl": {
+    "n": 1500,
+    "agree": 1499,
+    "disagree": [
+     {
+      "run_id": "17fa839b04e1",
+      "task_id": "multi_turn_base_139",
+      "ours": false,
+      "ours_error": "multi_turn:inference_error",
+      "official": true,
+      "official_error": ""
+     }
+    ],
+    "by_benchmark": {
+     "bfcl_multi_turn_base": 500,
+     "bfcl_multi_turn_miss_param": 500,
+     "bfcl_multi_turn_miss_func": 500
+    },
+    "agree_by_benchmark": {
+     "bfcl_multi_turn_base": 499,
+     "bfcl_multi_turn_miss_param": 500,
+     "bfcl_multi_turn_miss_func": 500
+    },
+    "parser": "testbed prompt_formats.smollm3 parser (no bfcl-eval handler) + bfcl-eval scoring",
+    "disagree_total": 1
+   },
+   "tau2": {
+    "n": 956,
+    "agree": 956,
+    "disagree": [],
+    "no_simulation": {
+     "tau2:user_context_overflow": 2
+    },
+    "by_benchmark": {
+     "tau2_verified_telecom": 352,
+     "tau2_verified_airline": 122,
+     "tau2_verified_retail": 482
+    },
+    "agree_by_benchmark": {
+     "tau2_verified_telecom": 352,
+     "tau2_verified_airline": 122,
+     "tau2_verified_retail": 482
+    },
+    "disagree_total": 0
+   }
+  }
+ },
+ "n": 2456,
+ "agree": 2455,
+ "agreement": 0.9995928338762216,
+ "pass": false
+}

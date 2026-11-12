@@ -411,6 +411,41 @@ and what the logs showed.
         airline 0, telecom 0), below the 120 needed, so single-turn-only confirmatory analysis, as for the three
         Qwen3 models (`results/m2/inclusion_lfm2.5-1.2b.json`).
       - Still to do for A2: the power table for all 6 models, which needs the SmolLM3 and LFM2.5-2.6B references.
+      - Its 100% did not exercise the rule behind the SmolLM3 disagreement below: LFM2.5-1.2B has 0 BFCL
+        episodes scored `multi_turn:inference_error` (SmolLM3: 33).
+  - **SmolLM3-3B: finished** (as far as it can; 2026-11-12). Telecom job 113054 (03:30–06:43, cs004, `8d94524`,
+    shared simulator) ended after 4 passes with nothing left to try: 207 of the 208 pending episodes finished;
+    `f86be84f4255` (`[mobile_data_issue]bad_network_preference|bad_vpn|user_abroad_roaming_disabled_on`, seed 2)
+    got the simulator's HTTP 500 ("The model produced output that does not match the expected peg-native format")
+    in passes 1–4, 4 recorded attempts in `retries/`, so it is excluded (pre-registration §5). 0 FAILED, 0
+    "simulated user unavailable". Report 111884 (06:43–06:44): **2,458 / 2,505 finished (98.1%), 47 excluded**;
+    BFCL 1,500/1,500; airline 97/104 + 25/26, retail 385/416 + 97/104, telecom 283/284 + 71/71.
+    - **A2 outputs for SmolLM3** (job 113184, cpuqs, checkout `CMPE_295A-ekant` at `8d94524`, 2026-11-12
+      06:47–06:51; parquet built in a shadow directory):
+      - **FR-E2: 2,455 / 2,456 agree (99.96%), FAIL.** τ² 956/956 (two episodes have no simulation to re-score,
+        simulated-user context overflow); BFCL 1,499/1,500 (`results/m2/evaluator_agreement_smollm3-3b.json`,
+        `stand_ins` replaced by the pointer as above). **This stops the SmolLM3 A2 item** (Stop and report). No
+        code was changed and nothing was rerun.
+      - **The disagreement:** `multi_turn_base_139` seed 3 (`17fa839b04e1`, config `4313e23b16b8`). In turn 1
+        SmolLM3 wrote two `<tool_call>` blocks: `{"name": "get_watchlist", "arguments": {}}` and
+        `{"watchlist": ["NVDA", "ZETA"]}` (the earlier tool result, copied as a call). The runner scores a block
+        that is not a `{name, arguments}` object as `multi_turn:inference_error` at once (`testbed/runner.py:123`,
+        the logged deviation: bfcl keeps it in history and crashes on the next prompt). The replay's
+        `FormatHandler` (`scripts/evaluator_agreement.py`, used for models without a bfcl-eval handler) drops such
+        blocks and keeps the rest, so bfcl's scoring sees `get_watchlist()` and passes the episode. 33 SmolLM3
+        BFCL episodes are scored `inference_error`; 32 of them also fail bfcl's scoring.
+      - **Probe** (2026-11-12, read-only, login node): the same raw text through bfcl-eval's unmodified
+        `QwenFCHandler`: `_parse_query_response_prompting` keeps both blocks in the chat-history message;
+        `decode_execute` and the next prompt build (`_add_assistant_message_prompting` + `_format_prompt`) both
+        raise `KeyError: 'name'`. That supports the runner's verdict, but SmolLM3 has no bfcl-eval handler, so
+        which side is "official" is **unverified**. Fixing either side is a research-design call (for the
+        advisor), not made here.
+      - **Inclusion set** (not committed; scratch `runs/week_outputs/a2_smollm3_113184/inclusion_smollm3-3b.json`):
+        10 multi-turn tasks included (BFCL base 6, miss_func 1, miss_param 1; τ² retail 2, airline 0, telecom 0),
+        single-turn-only confirmatory analysis; 39 sampled trials excluded by the infrastructure rule. It depends
+        on the disputed verdict: `multi_turn_base_139` is excluded (all four sampled trials fail by our scoring);
+        with bfcl's verdict for seed 3 it would be included (11 tasks; single-turn-only either way).
+      - The power table for all 6 models is pending: the SmolLM3 A2 item is stopped.
   - **Report header.** Every report and manifest says "M1 walking skeleton … excluded from the study", including
     these references and the Qwen3 ones. The text is hard-coded (`testbed/report.py:82`,
     `testbed/registry.py:160`), written whatever the experiment; no analysis code reads it.
