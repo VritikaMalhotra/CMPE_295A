@@ -334,6 +334,10 @@ and what the logs showed.
       `testbed/simuser_cache.py`, `testbed/tau2_bench.py` (this fix). Per-host manifests copied first to
       `runs/week_outputs/manifest_snapshot_smollm3_20261111_2328/`. The SmolLM3 report job 111884 now waits for
       111883 and 113054. `CMPE_295A-wk` stays frozen until 113054 ends (each pass is a new process).
+    - **First run (2026-11-12 03:30, cs004, commit `8d94524`):** pass 1 had 208 episodes to try. The failing episode
+      (`f86be84f4255`) got the same HTTP 500 and was recorded as attempt 1 of 4, a non-permanent
+      `SimulatorRequestFailed` line in `retries/`, and the next episodes ran (5 finished within 3 minutes). It used
+      the shared simulator (no new `server_logs/simuser.log`). The new runner branch works as designed.
     - **Not covered:** every τ² task that starts from `CMPE_295A-a2` (`8c605a1`, no fix) can stall the same way
       on a simulator 500: LFM2.5-2.6B tasks 6–11 (6 running, 7–11 pending) and the τ² tasks (6–11) of the six
       pending H1 arrays (111933, 111935, 111937, 111939, 111941, 111943). SmolLM3 tasks 0, 3 and 4 are BFCL and
