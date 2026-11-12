@@ -55,4 +55,4 @@ their packages from the following week. This section records who did what; it do
 
 Earlier M2 work by Ekant on `m2-phase1`, already in the history and credited there: codebook v0, the inclusion
 filter, the simulated user as a cluster job, the Qwen3 BF16 references, FR-E2, the power table, parity and
-throughput. Vritika's labels, κ study and codebook v1 are hers to do; this week only prepared the blank sheets.
+throughput, and the mixed-effects models in R (lme4 models A/B/C, b1e61cb) that A3 ran on real data this week. Vritika's labels, κ study and codebook v1 are hers to do; this week only prepared the blank sheets.
