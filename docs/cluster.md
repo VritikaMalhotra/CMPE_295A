@@ -473,6 +473,21 @@ and what the logs showed.
         on the disputed verdict: `multi_turn_base_139` is excluded (all four sampled trials fail by our scoring);
         with bfcl's verdict for seed 3 it would be included (11 tasks; single-turn-only either way).
       - The power table for all 6 models is pending: the SmolLM3 A2 item is stopped.
+  - **LFM2.5-2.6B: finished** (2026-11-12). Telecom task 111887_10 (01:37–08:41, cs002, `8d94524`) ended 281/284:
+    3 episodes got the simulator's HTTP 500 ("does not match the expected peg-native format"), attempt 1 of 4
+    each. Retry loop 113224 (09:41–09:45, cs004, `8d94524`, shared simulator) finished all 3 in pass 1 (the 500
+    did not recur); 0 FAILED, 0 "unavailable". Report 113225 (09:45): **2,504 / 2,505 finished (99.96%), 1
+    excluded** (airline task 12, empty simulated-user reply); A2's 99% bar is met.
+    - **A2 outputs for LFM2.5-2.6B** (job 113236, cpuqs, checkout `CMPE_295A-ekant` at `8d94524`, 2026-11-12
+      09:49–09:53; parquet built in a shadow directory):
+      - FR-E2 on every finished episode: **2,504 / 2,504 agree (100%), PASS**; BFCL 1,500/1,500, τ² 1,004/1,004
+        (`results/m2/evaluator_agreement_lfm2.5-2.6b.json`, `stand_ins` replaced by the pointer). LFM2.5-2.6B has
+        0 BFCL episodes scored `multi_turn:inference_error`, so the decision-17 difference cannot arise here.
+      - Inclusion set: **360 multi-turn tasks included** (BFCL base 85, miss_func 68, miss_param 59; τ² airline
+        16, retail 67, telecom 65), above the 120 needed, so LFM2.5-2.6B is the first model with full multi-turn
+        confirmatory analysis; 1 sampled trial excluded by the infrastructure rule
+        (`results/m2/inclusion_lfm2.5-2.6b.json`).
+      - The power table for all 6 models stays pending: the SmolLM3 A2 item is stopped (FR-E2, decision 17).
   - **Report header.** Every report and manifest says "M1 walking skeleton … excluded from the study", including
     these references and the Qwen3 ones. The text is hard-coded (`testbed/report.py:82`,
     `testbed/registry.py:160`), written whatever the experiment; no analysis code reads it.
