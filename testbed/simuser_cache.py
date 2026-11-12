@@ -84,6 +84,8 @@ class SimUserCache:
         """)
         self._db.commit()
         self.upstream_failures = 0          # read by the runner: >0 during an episode = simulator outage
+        self.upstream_500s = 0              # the part of upstream_failures that was an HTTP 500 answer: the
+                                            # simulator is up and failed on one request (see tau2_bench)
         self.user_overflows = 0             # read by the runner: >0 during an episode = the user's context ran out
         self.empty_replies = 0              # empty after every escalation step (stored, so replays repeat it)
 
@@ -155,6 +157,8 @@ class SimUserCache:
                 if r.status_code != 200:
                     with self._lock:
                         self.upstream_failures += 1
+                        if r.status_code == 500:    # the simulator is up and failed on this request
+                            self.upstream_500s += 1
                         self._log(key, role, f"upstream_{r.status_code}", dt)
                     return 503, {"error": {"message": f"upstream returned {r.status_code}: {r.text[:300]}"}}
                 resp = r.json()

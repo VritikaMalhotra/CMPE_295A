@@ -48,6 +48,23 @@ class SimulatorUnavailable(RuntimeError):
     """The simulated user could not be reached (or the C4 budget stopped it): retry, never score."""
 
 
+class SimulatorRequestFailed(RuntimeError):
+    """The simulated user is up but answered one of this episode's requests with HTTP 500 (e.g. gpt-oss output
+    that llama-server cannot parse: "does not match the expected peg-native format"). An infrastructure error
+    of this episode, not an outage: the attempt is recorded and the episode retried on a later run; after
+    MAX_INFRA_ATTEMPTS attempts it is excluded and listed (pre-registration 5). The other episodes go on."""
+
+
+def _simulator_failure(cache, fails0: int, f500_0: int, msg: str) -> RuntimeError:
+    """Every upstream failure since the episode started was an HTTP 500 answer: the simulator is up and failed on
+    a request of this episode (SimulatorRequestFailed). Anything else (unreachable, 502/503/504, the budget
+    ceiling) is an outage (SimulatorUnavailable), which stops tau2 scheduling as before."""
+    n = cache.upstream_failures - fails0
+    if n > 0 and getattr(cache, "upstream_500s", 0) - f500_0 == n:
+        return SimulatorRequestFailed(msg)
+    return SimulatorUnavailable(msg)
+
+
 class SimulatorEmptyReply(RuntimeError):
     """The simulated user stayed empty after every escalation step. Deterministic (the empty reply is cached),
     so retrying cannot help: the episode is excluded at once and listed (decision of Nov 9, 2026)."""
@@ -327,6 +344,7 @@ def run_tau2_episode(spec: RunSpec, task: Tau2Task, backend, grammar_for, log_st
                         max_steps=int(t2.get("max_steps", 200)), max_errors=int(t2.get("max_errors", 10)),
                         seed=spec.seed, solo_mode=False, validate_communication=False)
     fails0 = cache.upstream_failures if cache is not None else 0
+    f500_0 = getattr(cache, "upstream_500s", 0) if cache is not None else 0
     over0 = cache.user_overflows if cache is not None else 0
     empty0 = cache.empty_replies if cache is not None else 0
     t0 = time.time()
@@ -347,13 +365,13 @@ def run_tau2_episode(spec: RunSpec, task: Tau2Task, backend, grammar_for, log_st
             # the simulated user's context ran out: scored as a failed episode (reward 0), flagged apart
             termination, error_type = "user_context_overflow", "tau2:user_context_overflow"
         elif cache is not None and cache.upstream_failures > fails0:
-            raise SimulatorUnavailable(str(e)) from e
+            raise _simulator_failure(cache, fails0, f500_0, str(e)) from e
         elif "simulator" in str(e).lower() or "ServiceUnavailable" in type(e).__name__:
             raise SimulatorUnavailable(str(e)) from e
         else:
             raise
     if cache is not None and cache.upstream_failures > fails0:
-        raise SimulatorUnavailable("simulator failed during the episode")
+        raise _simulator_failure(cache, fails0, f500_0, "simulator failed during the episode")
     if cache is not None and cache.user_overflows > over0:   # also when tau2 caught the error itself
         termination, error_type = "user_context_overflow", "tau2:user_context_overflow"
     if sim_run is not None and termination != "user_context_overflow":
@@ -368,7 +386,7 @@ def run_tau2_episode(spec: RunSpec, task: Tau2Task, backend, grammar_for, log_st
                        "checks": [c.model_dump() for c in (nl_res.nl_assertions or [])]}
         except Exception as e:
             if cache is not None and cache.upstream_failures > fails0:
-                raise SimulatorUnavailable(str(e)) from e
+                raise _simulator_failure(cache, fails0, f500_0, str(e)) from e
             nl_info = {"error": f"{type(e).__name__}: {str(e)[:200]}"}
     if sim_dir:
         os.makedirs(sim_dir, exist_ok=True)
