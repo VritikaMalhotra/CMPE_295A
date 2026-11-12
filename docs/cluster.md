@@ -282,8 +282,8 @@ keep the call markers and think tags (`runs/a1_smoke_v2/`). Counts read from the
 | LFM2.5-2.6B | `5ebfd2b` | ran, **solved** (15 steps) | ran, reward 0 (11 steps) |
 
 Every handler ran one BFCL and one τ² episode end to end, scored by the official evaluators. As a task-success
-test, only LFM2.5-2.6B's BFCL episode passed; no τ² smoke episode was solved (the BF16 references later solved
-airline in 0 of 122–128 episodes for every model). No new smoke runs were made.
+test, only LFM2.5-2.6B's BFCL episode passed; no τ² smoke episode was solved (the BF16 references of SmolLM3,
+LFM2.5-1.2B and Qwen3-0.6B later solved airline in 0 of 122, 128 and 128 episodes). No new smoke runs were made.
 
 ## A2 in progress (2026-11-11): BF16 references for SmolLM3-3B and LFM2.5 (development data)
 
