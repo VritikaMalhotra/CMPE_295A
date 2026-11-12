@@ -452,9 +452,11 @@ def slide_questions(slide, qs):
         _scheme_fill(c, val="accent1")
         c.line.fill.background()
         tf = c.text_frame
+        tf.word_wrap = False                            # "10" must stay on one line in the circle
+        tf.margin_left = tf.margin_right = 0
         tf.text = str(i + 1)
         r = tf.paragraphs[0].runs[0]
-        r.font.size = Pt(14)
+        r.font.size = Pt(14 if i < 9 else 12)
         r.font.bold = True
         r.font.color.rgb = __import__("pptx").dml.color.RGBColor(0xFF, 0xFF, 0xFF)
         tb = text(slide, x + 0.7, y - 0.02, 5.2, 0.9, f"Ask {i + 1} text", [[(q, {"color": "bg1", "size": 14})]], 14)
@@ -526,7 +528,7 @@ def main():
     ex = J("results/m3/worked_examples_qwen3-0.6b.json")
     slides = list(prs.slides)
     slide_status(slides[1], content["status"], runs)
-    slide_questions(slides[11], content["questions"])
+    slide_questions(slides[11], [fill(q) for q in content["questions"]])   # counts in a question come from run_status
     set_notes(slides[1], fill(content["notes"]["status"]))
     set_notes(slides[11], fill(content["notes"]["questions"]))
     for sh in slides[9].shapes:                # plan slide: the open item it named is done
