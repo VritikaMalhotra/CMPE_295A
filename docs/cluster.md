@@ -168,7 +168,7 @@ simulator stop 109572. Inclusion sets afterwards with `python -m testbed.inclusi
   started quoting `only_config`; review follow-up 1): same experiment hash `4375dbd0be`, fresh output root
   `runs/s10_rerun_20261110/`.
   - Array 111842, 5-minute walltime, one task at a time. Every one of the 8 tasks was cut and resumed.
-  - The slowest configuration (R1 forced on Q4_0) used its 5 requeues with 10 episodes left, as on 11-03.
+  - The slowest configuration (R1 forced on Q4_0) used its 5 requeues with 10 episodes left (on 11-03 it was 3).
   - A 5-minute resubmission (112015) made no progress: what is left of a cycle after server start-up is too short
     for one of its episodes.
   - The last 10 ran with `slurm.time=00:20:00` (112024).
@@ -194,7 +194,7 @@ simulator stop 109572. Inclusion sets afterwards with `python -m testbed.inclusi
   | Qwen3-4B | 96.0% / 100% / 100% / 46 | 67.0% / 97.5% / 95.0% / 21 |
 
   **No model reaches the 99% pooling rule: backend stays a factor in every RQ1 analysis (decision 7).**
-  The CUDA and CPU kernels round differently; 4-bit weights amplify it (outputs diverge about twice as often).
+  The CUDA and CPU kernels round differently; 4-bit weights amplify it (outputs diverge 4–8× as often: 9.5% / 8% / 4% at BF16, 47% / 33.5% / 33% at Q4_0).
   `results/m2/parity_qwen3-{0.6b,1.7b,4b}.json`.
 - **NFR-5 throughput pilot** (`scripts/throughput_submit.sh`, Qwen3-0.6B BF16 BFCL, 24 episodes per job):
 

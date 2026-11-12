@@ -25,11 +25,15 @@ All numbers below are development data.
 
 | Resource | What we use it for | Measured |
 |---|---|---|
-| P100 PCIe 12 GB (15 nodes, 1 GPU each) | Small agent runs, KL checks, S10 | S1 decode 144 tok/s (Qwen3-0.6B Q4_K_M); 182 episodes/h on one GPU (NFR-5 pilot). Qwen3-4B BF16 at ctx 40,960 does not fit (8 GB weights + 5.8 GB KV cache) |
-| A100 PCIe 40 GB (4 nodes × 4 GPUs; cs001 and cs002 faulty) | Reference and damage runs; the simulated user (one GPU); QAD tests | S1 231 tok/s; a 0.6B BFCL episode in about 2.4 s (7× a P100); 1,578 episodes/h with 4 GPUs |
+| P100 PCIe 12 GB (15 nodes, 1 GPU each; 8 were up on 2026-11-11) | Small agent runs, KL checks, S10 | S1 decode 144 tok/s (Qwen3-0.6B Q4_K_M); 182 episodes/h on one GPU (NFR-5 pilot). Qwen3-4B BF16 at ctx 40,960 does not fit: 8 GB of weights plus a 5,760 MiB f16 KV cache (36 layers × 8 KV heads × 128 dims × K and V × 2 bytes × 40,960 tokens) |
+| A100 PCIe 40 GB (4 nodes × 4 GPUs; on 2026-11-11 cs001 GPUs 1–3 and cs002 GPU 0 were faulty) | Reference and damage runs; the simulated user (one GPU); QAD tests | S1 231 tok/s; median 2.4 s per 0.6B BFCL episode against 16.5 s on P100s (about 7×); 1,578 episodes/h from a 4-task array of which at most 2 ran at once (`results/m2/throughput.json`) |
 | H100 PCIe 80 GB (3 nodes) | QAD training (R3), the largest BF16 models | S1 350 tok/s |
 | CPU nodes (`cpuqs`, up to 128 cores; `defq`, 2 CPUs per job) | The CPU backend arm, KL on CPU, analysis in R, builds | One 0.6B CPU episode takes about 11 min on 4 cores |
-| Slurm, account `coe`, QoS `gpu3nodes` | Array jobs with walltime requeue (USR1 3 minutes before the limit) | **At most 2 GPU nodes per user**, so NFR-5 (≥ 8 concurrent jobs) is not met: plan 3–7 concurrent A100 jobs, or a share of the grid per member |
+| Slurm, account `coe`, partition QoS `gpu2nodes` | Array jobs with walltime requeue (USR1 3 minutes before the limit) | **At most 2 GPU nodes per user**, so NFR-5 (≥ 8 concurrent jobs) is not met: plan 3–7 concurrent A100 jobs, or a share of the grid per member |
+
+Sources: S1 decode rates, the CPU episode time and the concurrency plan are from the M2 notes in `docs/cluster.md`
+(job logs; not committed as JSON). Throughput and parity numbers are from `results/m2/throughput.json` and
+`results/m2/parity_qwen3-*.json`.
 
 **Why the hardware matters.** The models are meant for laptops and phones, but the study needs about 2,500
 episodes per model, format and backend: about 15,000 BF16 reference episodes for six models, before any 4-bit
@@ -48,7 +52,8 @@ token IDs were identical in 100% of prompts.
 | Qwen3-4B | 96.0% / 100% | 67.0% / 95.0% |
 
 **Why it matters.** No model reaches the 99% needed to pool, so the backend is a factor in every RQ1 comparison.
-4-bit weights roughly double how often the two backends diverge. KL on CPU is also higher than on CUDA for
+4-bit weights make the two backends diverge 4–8× as often: outputs differ on 9.5% / 8% / 4% of prompts at BF16 and on
+47% / 33.5% / 33% at Q4_0 (Qwen3 0.6B / 1.7B / 4B; `results/m2/parity_qwen3-*.json`). KL on CPU is also higher than on CUDA for
 Q6_K-pure and Q4_K_M on 4 of 6 models (`docs/m3_results.md`). A damage map measured on one backend does not
 transfer to the other.
 

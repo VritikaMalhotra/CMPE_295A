@@ -83,7 +83,7 @@ episodes** per model, format and backend.
 |---|---|---|---|
 | KL check of every quantized file against BF16 (M2, M3) | WikiText-2 raw, **test** split (SHA-256 `173c87a5…`), ctx 512, 50 chunks | Merity et al. 2016, via llama.cpp's `scripts/get-wikitext-2.sh` (`scripts/get_eval_text.sh`) | none (never used for calibration) |
 | Importance matrix for IQ4_XS (M3) | WikiText-2 raw, **train** split, 200 × 512 tokens | same | every line sharing a 13-gram with any benchmark text is dropped (FR-E5): 0 of 36,719 lines hit (`results/m3/calib_ngram_check.json`) |
-| R2b layer-sensitivity ranking (J1) | 2,000 held-out Toucan multi-turn conversations (`rank_text.txt`, 7.0M tokens) | `Agent-Ark/Toucan-1.5M` (Apache-2.0) | 13-gram filter; disjoint from the QAD training set |
+| R2b layer-sensitivity ranking (J1) | 2,000 held-out Toucan multi-turn conversations with tool replies cut to 256 tokens (`rank_text_t256.txt`, 4,632,056 tokens, SHA-256 `dc06ce1f…`); the ranking reads the first 512,000 tokens | `Agent-Ark/Toucan-1.5M` (Apache-2.0) | 13-gram filter; disjoint from the QAD training set |
 | QAD training mix (R3, K) | 41,545 records, 50.0M Qwen3 tokens: Toucan 15M, Nemotron-Agentic tool_calling 5M, ToolACE 5M, FineWeb-Edu 20M, Cosmopedia v2 5M | Hugging Face, revisions pinned (`docs/qad_data.md`) | 13-gram filter against BFCL and τ² text, then dedupe |
 | Parity prompts (FR-E17) | 200 fixed prompts per model, replayed from the Oct 28 BF16 episodes | our own logs | — |
 
