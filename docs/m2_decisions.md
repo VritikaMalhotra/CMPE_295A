@@ -46,7 +46,7 @@ and three questions from the `m2-phase1` review are added below as pending.
 
 | # | Follow-up | Status |
 |---|---|---|
-| 1 | Rerun S10 on the merged branch (array template now quotes `only_config`) | Running on `week-2026-11-13`: array 111842 (same experiment hash `4375dbd0be` as 2026-11-03), output `results/m2/s10_check_rerun.json` |
+| 1 | Rerun S10 on the merged branch (array template now quotes `only_config`) | Done: passed on `week-2026-11-13`, 104/104 episodes, no missing or duplicate episodes (array 111842 and its resubmissions; same experiment hash `4375dbd0be` as 2026-11-03; `results/m2/s10_check_rerun.json`, commit d1626fd) |
 | 2 | "proposed" until the advisor confirms; pre-registration stays DRAFT | Done (this file; pre-registration status line) |
 | 3 | Notes of the 2026-10-30 advisor review | Left: only the members who attended can write them |
 | 4 | Confirmatory failure classes | Added as pending item 12 and in pre-registration §6 |
@@ -54,5 +54,5 @@ and three questions from the `m2-phase1` review are added below as pending.
 | 6 | The two 2026-11-09 simulated-user rules in pre-registration §5 | Done (pre-registration §5) |
 | 7 | Slide 16 #1 and #4 | Added as pending items S16-1 and S16-4 |
 | 8 | CPU-backend scope | Added as pending item 13 and in pre-registration §3 |
-| 9 | A recorded run of the R script | Planted-effect check recorded (`results/m2/planted_effect.json`, job 111860, pass); one real-data run follows the first finished 4-bit cell (`results/m2/mixed_effects_<model>.json`) |
+| 9 | A recorded run of the R script | Done: planted-effect check recorded (`results/m2/planted_effect.json`, job 111860, pass); one real-data run, Qwen3-0.6B BF16 vs Q4_K_M (`results/m2/mixed_effects_qwen3-0.6b.json`, job 112507, commit c5c5590) |
 | 10 | Prompt handlers for SmolLM3 and LFM2.5 | Written from each model's chat template (`testbed/prompt_formats.py`, branch `wk11-ekant`); their BF16 references follow |
