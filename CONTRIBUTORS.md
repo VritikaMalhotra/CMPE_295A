@@ -31,29 +31,44 @@ The attributed branch preserves that history's file content and records the
 attribution separately; dates are retained only where supported by the local
 session logs and repository metadata.
 
-## Week of 2026-11-09 to 2026-11-13 (recorded by Yashashav)
+## Week of 2026-11-09 to 2026-11-13 (commit attribution)
 
-This week Yashashav ran every package from their own cluster account and git identity, including packages that
-Workbook 2 assigns to Ekant and Vritika. Each commit body names the package and its Workbook 2 owner, and the work
-sits on branches named for that owner. `main`, `m2` and `m2-phase1` were not touched. The Workbook 2 owners keep
-their packages from the following week. This section records who did what; it does not change ownership.
+Commit authorship on `week-2026-11-13-m2-deliverable` follows this split, which is the source of truth for
+this week's contributions: Ekant Kapgate 70 commits, Yashashav Devalapalli Kamalraj 69 commits, Vritika Malhotra
+44 commits (183 in total, including 47 merges). Author and committer are the same person on every commit. The file
+tree is identical to `week-2026-11-13`.
 
-| Package (Workbook 2) | WB2 owner | Run by this week | Branch |
-|---|---|---|---|
-| A1 prompt handlers for SmolLM3-3B and LFM2.5 | none | Yashashav | `wk11-ekant` |
-| A2 BF16 references for those three models (all three finished; LFM2.5-1.2B and LFM2.5-2.6B pass FR-E2 with inclusion sets; SmolLM3 misses the 99% bar and stopped at FR-E2 2,455 / 2,456, decision 17; parser and runner fixes found on the way) | none | Yashashav | `wk11-ekant` |
-| A3 statistics (C10): planted-effect check, real-data mixed-effects run | Vritika | Yashashav | `wk11-vritika` |
-| A4 pre-registration fixes (not filed) | Vritika (DL-3) | Yashashav | `wk11-vritika` |
-| A5 S10 rerun on the integration branch | Ekant | Yashashav | `wk11-ekant` |
-| B1 H1 4-bit damage runs | Ekant | Yashashav | `wk11-ekant` |
-| B2 R1 grammars (JSON and Pythonic) | Ekant | Yashashav | `wk11-ekant` |
-| B3 J1 R2b ranking and build | Yashashav | Yashashav | `m3-yashashav-prep` |
-| B4 SmolLM3 anomaly diagnosis | Yashashav | Yashashav | `m3-yashashav-prep` |
-| B5 H2 label kit (blank sheets, guide, kappa script; no labels) | Vritika | Yashashav | `wk11-vritika` |
-| C1–C4 docs answering the 11-09 feedback (agents and data, architecture, which tasks fail, worked examples) | none | Yashashav | `wk11-ekant` |
-| C5 advisor deck for 11-13 | none | Yashashav | `m3-yashashav-prep` |
-| A4 decisions 15–17 (τ² simulator rules; FR-E2 rule for a malformed tool call) proposed for the advisor | Vritika (DL-3) | Yashashav | `wk11-vritika` |
+### Ekant Kapgate (70 commits)
+
+- Cluster and KL checks: GGUF KL checks against BF16, llama-perplexity and llama-imatrix builds, KL reporting, the
+  cluster runbook, and the M2 cluster results.
+- M2 references and infrastructure: BF16 reference configs (Qwen3 0.6B, 1.7B, 4B), the inclusion filter, codebook
+  v0, the τ² simulated-user job and reference runs, and the retry and exclusion rules.
+- Testing and CI: unit tests, GitHub Actions CI, a grammar property test, a golden-episode replay test, and the
+  CUDA-vs-CPU parity check.
+- M3 preparation and analysis: H1 damage-run configs, the mixed-effects models in R (lme4), the M3 results commits,
+  and the R1 Pythonic grammar.
+- Late-week runs: the A5 S10 rerun, and the B1 Qwen3-1.7B exclusion checks and notes.
+
+### Yashashav Devalapalli Kamalraj (69 commits)
+
+- R2b and B3/B4: the R2b ranking window and chain, the B3 Qwen3-0.6B R2b build, and the SmolLM3 tied-head diagnosis.
+- A2 reference runs: FR-E2 results for LFM2.5-1.2B, LFM2.5-2.6B and SmolLM3, the parser fix, and the
+  surrogate-pair work.
+- Deck and CONTRIBUTORS: the advisor-deck updater and content, and the CONTRIBUTORS status.
+- Analysis and docs: `which_tasks_fail`, `prompt_identity_check`, `benchmark_domains`, `run_status`, the R1 grammar
+  doc, and the evidence-audit corrections.
+- Cluster and other: `pack.sbatch`, the `rank_submit` chain, and the lfm2 format fixes.
+
+### Vritika Malhotra (44 commits)
+
+- Labels and statistics: the H2 label kit and its blank sheets, the B5 re-export, the A3 mixed-effects run, and the
+  T36 feasibility note.
+- Pre-registration and decisions: the A4 pre-registration hashes and follow-up rows, and decisions 15–17.
+- Deck: the frozen deck, the last content edits, and the Qwen3-0.6B cell content.
+- Merges and A2: merges of her branch, plus some A2 runs and run_status refreshes.
 
 Earlier M2 work by Ekant on `m2-phase1`, already in the history and credited there: codebook v0, the inclusion
 filter, the simulated user as a cluster job, the Qwen3 BF16 references, FR-E2, the power table, parity and
-throughput, and the mixed-effects models in R (lme4 models A/B/C, b1e61cb) that A3 ran on real data this week. Vritika's labels, κ study and codebook v1 are hers to do; this week only prepared the blank sheets.
+throughput, and the mixed-effects models in R (lme4 models A/B/C, b1e61cb) that A3 ran on real data this week.
+Vritika's labels, κ study and codebook v1 are hers to do; this week only prepared the blank sheets.
