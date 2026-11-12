@@ -373,28 +373,33 @@ and what the logs showed.
     - **Exclusions under quantization (Qwen3-0.6B, the only finished 4-bit cells with τ²; `run_status.py`):**
       BF16 3, Q4_0 4, Q4_K_M 1, IQ4_XS 7, all slot-full. Small and mixed, but if 4-bit models trigger more
       exclusions, the rule removes episodes the agent caused and can hide damage. For the advisor.
-    - **Qwen3-1.7B Q4_0 (array 111933, still running; 2026-11-12 08:40, development data): 59 empty-reply
+    - **Qwen3-1.7B Q4_0 (array 111933, still running; 2026-11-12 08:34, development data): 59 empty-reply
       exclusions so far, against 3 for the BF16 1.7B reference.** By configuration (`SimulatorEmptyReply` lines in
       `retries/`): retail greedy `1ab77a0bf7f3` 24 of 104 (task 9 ended 08:32, 80 finished, nothing pending),
       retail sampled `844cbb5cf2b0` 25 (task 8 running), airline sampled `35cd8bf82d5a` 9, airline greedy
-      `95ea1c0a0fba` 1. Split (`empty_split.py`, output `empty_split_1p7b_20261112_0840.out` in the same folder):
+      `95ea1c0a0fba` 1. Split (`empty_split.py`, output `empty_split_1p7b_20261112.out`, 08:34 in the same folder):
       37 slot-full (`finish_reason = length`, 32,768 tokens), 22 stopped empty. Q4_K_M (111935; its τ² tasks
       started 07:49, running): 1 so far. Why the 4-bit agent triggers so many more is not checked.
-    - **Read-only checks of that comparison (2026-11-12 08:50; scripts and output in the same folder):**
+    - **Read-only checks of that comparison (2026-11-12 08:34–08:38; scripts and output in the same folder):**
       - Simulator settings are the same in both manifests (gpt-oss-20b MXFP4, same sha256, ctx 32,768,
         temperature 0, reasoning effort low; τ² `864350a`; llama.cpp `d812350`). The testbed commit differs: the
         BF16 reference ran on `c6e83a2` (dirty), the Q4_0 τ² tasks on `8d94524`, each with its own simulator job.
       - The agent writes tool calls as text far more often at Q4_0: 59 of the 60 empty replies (one more arrived
-        during the scan) follow such a message (`textcall_scan.py`, `textcall_1p7b_q4_0_20261112_0850.out`); over
+        during the scan) follow such a message (`textcall_scan.py`, `textcall_1p7b_q4_0_20261112.out`, 08:37); over
         all τ² reply steps, 412 of 4,814 (8.6%) look like a written tool call, against 33 of 6,945 (0.5%) for BF16.
       - BF16 1.7B's 3 empty-reply exclusions: retail sampled 1, airline sampled 2; retail greedy 0 of 104 (Q4_0: 24).
       - **The simulated user's opening message is not reproducible across runs.** BFCL first prompts are
         identical in all 1,500 matched episodes (BF16 vs Q4_0, same task and seed), so the code renders the same
         prompt; but 479 of 624 matched τ² episodes have a different first agent prompt, because the simulator's
         first message differs (e.g. retail task 17 seed 1: "Hi, … Could you help me with that?" vs "Hello, …
-        Could you confirm the change?"), even at temperature 0 with the same model file. Cause not checked (one
-        candidate: batching on the shared simulator). The analysis pairs by task, averaging trials, so this adds
-        noise to τ² pairs rather than breaking them; for the advisor.
+        Could you confirm the change?"), even at temperature 0 with the same model file. **Checked on the request
+        itself (by 09:18, read-only on both runs' simulator caches):** 421 first-turn simulator requests are
+        byte-identical in the two runs (same messages, `seed`, `temperature` 0, `reasoning_effort` low), and only
+        113 of them got the same reply; 308 got a different one. So the input is the same and the simulator's
+        output is not reproducible across runs. Cause not checked (candidates: the simulator server runs 4 parallel
+        slots, so batching differs; different GPU and host). Within one run the cache makes the reply to a repeated
+        request identical. The analysis pairs by task, averaging trials, so this adds noise to τ² pairs rather
+        than breaking them; for the advisor.
   - **Why SmolLM3 has 46 exclusions when the three Qwen3 references had 7 in all** (read-only scan of the
     simulated-user caches and steps, 2026-11-11 22:40; scripts and their output in
     `runs/week_outputs/equiv_scan_20261111_2209/`):
