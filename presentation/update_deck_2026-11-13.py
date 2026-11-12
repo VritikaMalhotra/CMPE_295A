@@ -479,6 +479,10 @@ def main():
     runs = _Runs(J(a.status)["runs"])
     fre2 = J("results/m2/evaluator_agreement.json")
     runs["_fre2"] = {"agree": fre2["agree"], "n": fre2["n"]}
+    fre2_lfm = "results/m2/evaluator_agreement_lfm2.5-1.2b.json"    # A2 (wk11-ekant; on the integration branch)
+    if os.path.exists(os.path.join(ROOT, fre2_lfm)):                 # absent: a template that uses it raises
+        f2 = J(fre2_lfm)
+        runs["_fre2_lfm12b"] = {"agree": f2["agree"], "n": f2["n"]}
     a3 = "results/m2/mixed_effects_qwen3-0.6b.json"    # A3 real-data run (wk11-vritika; present on the integration branch)
     runs["_a3"] = {"text": "real-data run waits for the first finished 4-bit cell"}
     if os.path.exists(os.path.join(ROOT, a3)):
