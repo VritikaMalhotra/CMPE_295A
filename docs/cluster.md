@@ -289,21 +289,55 @@ and what the logs showed.
     returned HTTP 500 ("The model produced output that does not match the expected peg-native format"). The runner
     treats a simulator failure as "unavailable": the episode stays pending, τ² scheduling stops, and the task
     exits 0. Resubmitted as 112924_10. B1's Q4_0 telecom shard stopped the same way and completed on retry.
+    - **112924_10 failed the same way** (2026-11-11 22:48–22:49, cs002): the same episode
+      (`[mobile_data_issue]bad_network_preference|bad_vpn|user_abroad_roaming_disabled_on`, seed 2) got the same
+      HTTP 500, and the task stopped with 0 new episodes. A 500 is not cached, so each attempt asks the simulator
+      again: the ledger of this configuration's cache holds 14 `upstream_500` rows, all for one request key
+      (14 of 14 attempts failed). B1's telecom shard recovered from a 500 on retry, but that was a different
+      request. Not resubmitted again (the spec's stop rule: the same job failing twice); while this request
+      fails, every resubmission stops here and leaves the other 207 episodes pending.
   - **SmolLM3 τ² exclusions** (empty simulated-user reply, the registered rule): 46 by 22:00 (airline 7 + 1,
-    retail 7 + 31; `excluded` lines in the task logs). A2 asks for ≥ 99% of 2,505 specs finished, and the spec does
-    not say whether an excluded episode counts as finished:
-    - if it does not, SmolLM3 can reach at most 2,459 / 2,505 = 98.2%, below the bar;
-    - if it does, the bar is reachable once the pending tasks finish.
-    - Precedent: the 11-09 Qwen3 section below counts excluded episodes as not finished ("Finished: 2,502 /
-      2,502 / 2,504; the rest are the excluded …"), and `scripts/run_status.py` reports `finished` and `excluded`
-      separately. Read that way, SmolLM3 misses the bar.
-    - This is for the team and the advisor to decide; nothing here assumes either reading.
+    retail 7 + 31; `excluded` lines in the task logs).
+  - **Ruling on A2's ≥ 99% bar (Yashashav, 2026-11-11 22:56): an excluded episode does not count as finished.**
+    This matches the 11-09 Qwen3 section below ("Finished: 2,502 / 2,502 / 2,504; the rest are the excluded …")
+    and `scripts/run_status.py`, which reports `finished` and `excluded` separately. Counts at 22:53
+    (`run_status.py`):
+    - SmolLM3-3B: 1,355 / 2,505 finished, 46 excluded. At most 2,459 / 2,505 = 98.2%: **A2 cannot pass for
+      SmolLM3** under the registered rules.
+    - LFM2.5-1.2B: 2,495 / 2,505 = 99.6% finished, 10 excluded: **passes**.
+    - LFM2.5-2.6B: 785 / 2,505 finished, 0 excluded, running.
+    - Running the excluded episodes again gives the same result: the empty reply is stored in the simulated-user
+      cache and replayed (`testbed/simuser_cache.py`), the simulator runs at temperature 0, and a `permanent`
+      retry line makes `retry_count` return the limit (`testbed/logger.py:69`), so the runner skips the episode.
+      Finishing them would need a protocol change (a different simulator setting for those episodes, with the
+      cache rows and exclusion lines set aside), which overrides pre-registration §5. Not done.
+  - **Why SmolLM3 has 46 exclusions when the three Qwen3 references had 7 in all** (read-only scan of the
+    simulated-user caches and steps, 2026-11-11 22:40; scripts and their output in
+    `runs/week_outputs/equiv_scan_20261111_2209/`):
+    - 33 of the 46 empty replies follow an agent message with a tool call written as text (`"name": …` JSON,
+      a ```json block, "Tool Call: …"); among non-empty replies the share is 1,026 / 8,230 (12%).
+    - 34 of the 46 end with `finish_reason = length`: gpt-oss reasons until its 32,768-token slot is full
+      (e.g. "We should not mention we are the user …" repeated).
+    - SmolLM3 writes a `<tool_call>` block in 21 of 5,872 τ² steps (0.4%), against 781 of 3,404 BFCL steps
+      (23%); 5,736 τ² steps (98%) are plain replies. LFM2.5-1.2B and the Qwen3 models reply in 49–61% of τ² steps.
+    - **Tool shape differs by benchmark** (`render_smol.py` in the same folder, the testbed's own loaders and
+      SmolLM3 handler, 2026-11-11 23:10). τ² passes each tool in OpenAI's wrapped form, so SmolLM3's prompt shows
+      `{'type': 'function', 'function': {'name': 'calculate', …}}`; BFCL passes bare docs, shown as
+      `{'name': 'authenticate_twitter', …}`. Both prompts carry the `<tool_call>` instructions, and the τ² one
+      carries the policy. The same holds for every model (τ² tools are wrapped for Qwen3 and LFM2.5 too).
+    - The renderer matches SmolLM3's chat template for the tools it is given (`tests/test_prompt_formats.py`, case
+      `tau2_policy`, template sha256 `3e0e275a…`), but that test has one tool and does not settle which tool
+      shape the model expects. **Not established:** whether the wrapped shape causes SmolLM3's 0.4% call rate,
+      or whether it is the model's own behaviour. Settling it needs a small τ² run with bare tools.
+    - SmolLM3's τ² successes so far: retail 9 of 482 episodes (2 tasks), airline 0 of 122, telecom 0 of 147;
+      Qwen3-0.6B: retail 10 of 519 (2 tasks), 0 elsewhere; LFM2.5-1.2B: retail 12 of 512 (4 tasks).
+    - Either way, these exclusions follow what the agent wrote, not only the simulator. Pre-registration §5 says
+      "the fault is the simulator's, not the agent's". For the team and the advisor.
   - **SmolLM3 still to run** (pending for an A100): BFCL tasks 0 (0/400), 3 (4/100) and 4 (0/400), which were
-    requeued off P100s on 11-10 and 11-11, and telecom task 10 (208 episodes, 112924_10).
-  - **LFM2.5-1.2B: all 12 tasks ended** (last at 21:48). Its report job 111886 ran at 21:49 and logged 2,484 of
-    2,505 episodes: 10 excluded (empty simulated-user reply) and the 11 failed ones below. 2,484 / 2,505 = 99.2%
-    counting exclusions as not finished. A new report job, 112992, runs after the retries (afterany:112937); the
-    SmolLM3 report job 111884 now also waits for 112924.
+    requeued off P100s on 11-10 and 11-11. Telecom task 10 is stopped at 76/284 (above).
+  - **LFM2.5-1.2B: finished** (as far as it can). All 12 tasks ended at 21:48; the 11 failed episodes ran again
+    on the fixed code as 112937 (22:49–22:51, all finished), and report job 112992 (22:52) rebuilt the report:
+    2,495 / 2,505 finished, 10 excluded. The SmolLM3 report job 111884 now also waits for 112924.
   - **Report header.** Every report and manifest says "M1 walking skeleton … excluded from the study", including
     these references and the Qwen3 ones. The text is hard-coded (`testbed/report.py:82`,
     `testbed/registry.py:160`), written whatever the experiment; no analysis code reads it.
@@ -312,8 +346,12 @@ and what the logs showed.
     - 1 with HTTP 400 from llama-server's `/tokenize`, which rejects an unpaired surrogate.
     - Affected: BFCL base_188 s0/s2/s3, miss_func_58 s2, miss_func_86 s1, miss_func_170 s1, miss_param_5 s4,
       miss_param_68 s1/s2, miss_param_183 s2/s3.
-    - The likely cause, fixed in `ffe8873`: the Pythonic parser read `\ud83d\ude80`-style escapes as lone
-      surrogates. It is not confirmed from the failing episodes, whose steps are not kept. What supports it: each
+    - **Cause confirmed by the retries** (112937, on `8c605a1`): base_188's raw output holds
+      `post_tweet(content="Excited for my upcoming adventure! \ud83c\udf89 \u2026")`, an escaped pair, which the
+      fixed parser reads as one emoji; seeds 0, 2 and 3 now finish. miss_param_5 seed 4 (the HTTP 400) holds an
+      unpaired `\ud83d` followed by a real emoji; that step is now logged as `malformed` and the episode goes on.
+    - Before the retries: the cause, fixed in `ffe8873`, was that the Pythonic parser read `\ud83d\ude80`-style
+      escapes as lone surrogates. The failing episodes' steps are not kept. What supported it: each
       of the 10 encode errors is at two adjacent positions (e.g. 34238\u201334239), which is what one escaped pair
       gives. The 400 is probably an unpaired surrogate, which the fix turns into a call that does not parse
       (logged as malformed, like any other unparseable call). The retries, run on the fixed code, will show.
