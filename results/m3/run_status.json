@@ -1,5 +1,5 @@
 {
- "collected": "2026-11-10T21:27-08:00",
+ "collected": "2026-11-12T00:20-08:00",
  "runs": {
   "ref_qwen3_0p6b": {
    "dir": "/scratch/cmpe295-bertin/runs/ref_qwen3_0p6b/cd314594fb",
@@ -123,32 +123,32 @@
     "bf16"
    ],
    "specs": 2505,
-   "finished": 65,
-   "excluded": 0,
-   "finished_share": 0.0259,
+   "finished": 1355,
+   "excluded": 46,
+   "finished_share": 0.5409,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
-     65,
+     100,
      500
     ],
     "bfcl_multi_turn_miss_func": [
-     0,
+     404,
      500
     ],
     "bfcl_multi_turn_miss_param": [
-     0,
+     100,
      500
     ],
     "tau2_verified_airline": [
-     0,
+     122,
      130
     ],
     "tau2_verified_retail": [
-     0,
+     482,
      520
     ],
     "tau2_verified_telecom": [
-     0,
+     147,
      355
     ]
    }
@@ -161,32 +161,32 @@
     "bf16"
    ],
    "specs": 2505,
-   "finished": 0,
-   "excluded": 0,
-   "finished_share": 0.0,
+   "finished": 2495,
+   "excluded": 10,
+   "finished_share": 0.996,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
-     0,
+     500,
      500
     ],
     "bfcl_multi_turn_miss_func": [
-     0,
+     500,
      500
     ],
     "bfcl_multi_turn_miss_param": [
-     0,
+     500,
      500
     ],
     "tau2_verified_airline": [
-     0,
+     128,
      130
     ],
     "tau2_verified_retail": [
-     0,
+     512,
      520
     ],
     "tau2_verified_telecom": [
-     0,
+     355,
      355
     ]
    }
@@ -199,28 +199,28 @@
     "bf16"
    ],
    "specs": 2505,
-   "finished": 0,
-   "excluded": 0,
-   "finished_share": 0.0,
+   "finished": 1295,
+   "excluded": 1,
+   "finished_share": 0.517,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
-     0,
+     499,
      500
     ],
     "bfcl_multi_turn_miss_func": [
-     0,
+     300,
      500
     ],
     "bfcl_multi_turn_miss_param": [
-     0,
+     318,
      500
     ],
     "tau2_verified_airline": [
-     0,
+     128,
      130
     ],
     "tau2_verified_retail": [
-     0,
+     50,
      520
     ],
     "tau2_verified_telecom": [
@@ -624,6 +624,63 @@
   "pack 112078 cancelled (Q4_0 telecom shard 7e3001ec5578 1/2 stopped at 36/129 after a simulator error, waiting for pass 2); replaced by 112163 (p100 K=2, list b1_0p6b_v3.txt: both Q4_0 telecom shards first); stop job 112079 also waits for 112163 2026-11-10T15:17:48-08:00",
   "holds on 111883 111885 111887 112000 (set so 112163 got the freed slot) released 2026-11-10T15:17:57-08:00",
   "B1 0.6B cells complete (q4_0 2501+4, q4_k_m 2504+1, iq4_xs 2498+7); held arrays 111846/111848/111850 cancelled so reports 111847/111849/111851 run 2026-11-10T21:25:29-08:00",
-  "A3 real-data R run 112507: BF16 ref_qwen3_0p6b/cd314594fb vs first finished 4-bit cell h1_qwen3_0p6b_q4_k_m/b85b3044db (last episode 17:28; q4_0 18:13, iq4_xs 20:24), after report 111849, code 976136f 2026-11-10T21:25:57-08:00"
+  "A3 real-data R run 112507: BF16 ref_qwen3_0p6b/cd314594fb vs first finished 4-bit cell h1_qwen3_0p6b_q4_k_m/b85b3044db (last episode 17:28; q4_0 18:13, iq4_xs 20:24), after report 111849, code 976136f 2026-11-10T21:25:57-08:00",
+  "nice raised: A2 111883/111885/111887 -> 60, B1 1.7B/LFM2.5 111933-111943 -> 80, B3 1.7B/LFM2.5 112005-112014 -> 85, so B3 0.6B 112001 (nice 15) takes the next GPU slot; A2 task 111883_2 got the slot at 22:18 by age 2026-11-10T22:21:00-08:00",
+  "2026-11-11 07:05 A2 111883_2 COMPLETED (08:40:48 on g2, ref_smollm3_3b). B3 112001_0 rank-tensors Qwen3-0.6B started 06:58 on g2 (P100); 112001_1 pending, needs a P100 slot (task requests gpu:p100:1, so cs003 A100s not eligible).",
+  "2026-11-11 11:00 gpu-diag 112655 (cs001, 4x A100) and 112656 (cs002, 2x A100): 5-min CUDA start-up check on every GPU (PyTorch matmul + llama-server --list-devices), at the user request for an active check before the HPC support request; deliberate exception to --exclude=cs001,cs002",
+  "2026-11-11 11:00 nice +75 on pending jobs (list and old values in /scratch/cmpe295-bertin/src/017856371/diag_nice_restore.txt) so gpu-diag 112655/112656 run in the next free slot; restore when both end",
+  "2026-11-11 11:03 requeued 112001_0 (B3 0.6B, resumable) at user request so gpu-diag 112655/112656 run now",
+  "2026-11-11 11:04 gpu-diag done. B3 0.6B chain 112001-112004 nice 0; other pending jobs nice old+300 (old values in /scratch/cmpe295-bertin/src/017856371/diag_nice_restore.txt) so kl-check 112003 (P100) is not overtaken by A2 after the requeue reset 112001_0 age; restore when 112003 starts",
+  "2026-11-11 11:09 PAUSE at user request: 112001_1 requeuehold, 112001 held, for a full GPU check of reachable nodes",
+  "2026-11-11 11:10 gpu-diag2 jobs (5 min, read-only GPU checks):  cs001:112658 cs002:112659 g2:112660 g4:112661 g5:112662 g7:112663 g8:112664 g11:112665 g12:112666 g13:112667",
+  "2026-11-11 11:16 111883_3 (A2 SmolLM3, took g4 at 11:05 when B3 paused) requeuehold so gpu-diag2 can run; release after diag",
+  "2026-11-11 11:18 111883_4 requeuehold; held pending A2/B1/B3-other arrays until gpu-diag2 112659 (cs002) runs",
+  "2026-11-11 11:19 gpu-query CPU-only read-only jobs:  cs004:112675 g16:112676 g18:112677 g19:112678 cs001:112679 cs002:112680",
+  "2026-11-11 11:22 GPU check done; released B3 112001 (P100-pinned). A2/B1/B3-other arrays and 111883_3/_4 stay held pending layout decision",
+  "2026-11-11 11:36 pinned rank-tensors 112001_1 112005 112006 112010 112011 to gpu:p100:1 (submit line had overridden the sbatch p100 header to untyped gpu:1; base logits 112000 ran on P100)",
+  "2026-11-11 11:47 GPU plan (user approved): cancelled 111955 (successor) and 111845 (simuser cs003; no tau2 tasks running); park-bad-gpu 112689 on cs002",
+  "2026-11-11 11:48 simuser_safe S2=112691 (cs002, health-checked GPU, 16G) and successor S3=112692 (afterany:112691, cs002); new stop job 112693 (afterany on the 9 agent arrays: scancel 112691 112692 112689) replaces 112079 (cancelled)",
+  "2026-11-11 11:49 9 agent arrays: Gres gpu:a100:1, ExcNodeList cs001, nice A2 60 / B1 80, released; B3 1.7B/LFM2.5 chains 112005-112014 nice 85, released (P100-pinned)",
+  "2026-11-11 12:38 112005/112010 (B3 1.7B/LFM2.5 base) now afterany:112003 so the 0.6B kl-check keeps the P100 slot (cluster-side, no local watcher needed)",
+  "2026-11-11 14:42 slot-monitor INFO: slot-monitor started (job interactive)",
+  "2026-11-11 14:42 slot-monitor INFO: slot-monitor started (job 112772)",
+  "2026-11-11 17:53 slot-monitor EVENT: 112002 r2b-build 0.6B COMPLETED",
+  "2026-11-11 17:53 slot-monitor EVENT: 112003 kl-check 0.6B (CUDA) COMPLETED",
+  "2026-11-11 17:53 slot-monitor EVENT: 112004 kl-check 0.6B (CPU) COMPLETED",
+  "2026-11-11 17:53 slot-monitor EVENT: 112001 rank-tensors 0.6B COMPLETED",
+  "2026-11-11 17:57 B3 0.6B verified: FR-E10 5.5646 bpw within 0.1; KL CUDA 0.1021 / CPU 0.1014; results committed m3-yashashav-prep 18b2452",
+  "2026-11-11 18:03 fre2-preview 112866 (CPU, cpuqs): FR-E2 early check on finished SmolLM3-3B / LFM2.5-1.2B reference episodes -> runs/week_outputs/fre2_preview_20261111.json",
+  "2026-11-11 18:11 slot-monitor restarted as 112869 with: node-cap alert after 2 cycles, tau2 simulator-outage scan of agent logs, watches 112007/112012 (FR-E10) and 112866 (fre2-preview); old 112772 cancelled",
+  "2026-11-11 18:11 slot-monitor INFO: slot-monitor started (job 112869)",
+  "2026-11-11 20:23 slot-monitor restarted as 112922: its failed-job check missed failures since 14:42 (sacct -s needs -E now; checked: only 112772 cancelled and 112866 failed in that window); 112869 cancelled",
+  "2026-11-11 20:23 fre2-preview 112923 resubmitted: 112866 FAILED (no episodes.parquet in a running run); now builds parquet in a shadow dir of symlinks, live runs untouched",
+  "2026-11-11 20:23 slot-monitor INFO: slot-monitor started (job 112922)",
+  "2026-11-11 20:23 slot-monitor ALERT: job ended badly: 112869 slot-monitor CANCELLED by + 02:11:45 c2",
+  "2026-11-11 20:23 A2 SmolLM3 task 10 (config 486579e948da, telecom) resubmitted as 112924_10: 111883_10 stopped tau2 at 76/284 after a simulator HTTP 500 (peg-native format); registered handling is retry; same code 6be0ff7, a100, exclude cs001, nice 60",
+  "2026-11-11 20:27 test-suite 112925 on week-2026-11-13 3d165dd (checkout CMPE_295A-ekant, detached, via bundle): owed after the 11-11 merges b11a391..3d165dd",
+  "2026-11-11 20:28 slot-monitor ALERT: job ended badly: 112925 test-suite FAILED 00:00:00 c18",
+  "2026-11-11 20:32 test-suite 112925 FAILED on c18 (node fails jobs at start); resubmitted as 112926 with --exclude=c18 on week 3d165dd",
+  "2026-11-11 20:43 slot-monitor ACTION: requeued 112006_0 (B3 ranking, resumable) on g2 so agents can take cs004 ([0, 1] healthy free) ",
+  "2026-11-11 20:46 CMPE_295A-a2 (checkout of every agent array) moved 6be0ff7 -> 8c605a1 (week head). Run-path diff: backends.py parse_special explicit (= llama-server default), lfm2_format.py NUL fix (47d41f7; 0 of 24,294 LFM2.5 steps have a NUL) and surrogate fix (ffe8873; 0 completed steps have a lone surrogate): identical for every episode that completes on 6be0ff7. Running tasks keep 6be0ff7; tasks starting after this use the new commit. Manifest snapshot: /scratch/cmpe295-bertin/runs/week_outputs/manifest_snapshot_6be0ff7_20261111_2046",
+  "2026-11-11 20:46 A2 LFM2.5-1.2B tasks 0,1,2,4 resubmitted as 112937_[0,1,2,4] on 8c605a1: their 11 pending episodes (10 UnicodeEncodeError + 1 HTTP 400 at /tokenize, all lone-surrogate prompts under 6be0ff7) rerun with the surrogate fix; a100, exclude cs001, nice 60",
+  "2026-11-11 22:04:11 ACTION nice=0 on 112937 112924 so retries run before H1 arrays",
+  "2026-11-11 22:04:20 SUBMIT 112992 ref_lfm2p5_1p2b report_only afterany:112937; 111884 dependency now afterany:111883:112924",
+  "2026-11-11 22:53 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/ref_smollm3_3b/5053915afb/slurm_logs/112924_10.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-11 23:02:20 SUBMIT 113029 a2-lfm12b-out (inclusion + full FR-E2, LFM2.5-1.2B, cpuqs)",
+  "2026-11-11 23:02:34 CANCEL 113029 (checkout -wk at 5f46aad lacks the surrogate fix; rerun on week head)",
+  "2026-11-11 23:02:42 SUBMIT 113030 a2-lfm12b-out on -wk at b8bed21 (replaces 113029)",
+  "2026-11-11 23:03 slot-monitor ALERT: job ended badly: 113029 a2-lfm12b-out CANCELLED by + 00:00:00 None assi+",
+  "2026-11-11 23:26:09 SUBMIT 113052 test-suite on -wk 8417963 (runner 500 fix)",
+  "2026-11-11 23:28:58 SUBMIT 113053 SmolLM3 telecom 486579e948da on -wk 8417963 (500 = episode infra attempt), 5 passes, a100, nice 0; manifests snapshot /scratch/cmpe295-bertin/runs/week_outputs/manifest_snapshot_smollm3_20261111_2328; 111884 afterany:111883:112924:113053",
+  "2026-11-11 23:34:08 CANCEL 113053 (5-pass loop could end with episodes pending); SUBMIT 113054 same config, loop until no pending episode has < 4 attempts (max 15 passes), stop on outage; 111884 afterany:111883:113054",
+  "2026-11-11 23:39 slot-monitor ALERT: job ended badly: 113053 tb-smol-telecom CANCELLED by + 00:00:00 None assi+",
+  "2026-11-11 23:45:17 ACTION CMPE_295A-a2 moved 8c605a1 -> 88ea54e at 23:45:02 (runner 500 fix; user approved, unstarted runs only); pending jobs held 23:44-23:45 during the move; running 111887_0/2/4/6/8 keep 8c605a1; manifests snapshot /scratch/cmpe295-bertin/runs/week_outputs/manifest_snapshot_a2_move_20261111_2344",
+  "2026-11-11 23:45:33 ACTION priority order restored after hold/release (age reset): nice 0 on 111887_9-11 111883_0/3/4, nice 20 on H1 arrays; B3 rankings stay nice 85",
+  "2026-11-11 23:49 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/ref_lfm2p5_2p6b/86ef1012fd/slurm_logs/111887_7.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-11 23:49:08 ACTION hold 113054 (judge-500 handling to be patched before it runs)",
+  "2026-11-11 23:50:55 SUBMIT 113078 test-suite on -ekant 8d94524 (judge 500 patch)",
+  "2026-11-11 23:53:59 ACTION -wk and -a2 moved to 8d94524 (judge-500 keeps scored episode; run_status count); suite 113078 268 passed 1 skipped; 113054 released; SUBMIT 113079 LFM2.5-2.6B index 7 (airline greedy 25/26, judge HTTP 500 7/7 in 111887_7); 111888 afterany:111887:113079",
+  "2026-11-11 23:59:34 CANCEL 113079 (no TESTBED_SIMUSER_ENDPOINT: would start its own simulator); SUBMIT 113083 LFM2.5-2.6B index 7 with the shared endpoint; 111888 afterany:111887:113083. Note: 112924_10 (22:48) ran its own gpt-oss (server_logs/simuser.log), same 500",
+  "2026-11-12 00:04 slot-monitor ALERT: job ended badly: 113079_[7] tb-ref_lfm2p5_2p6b CANCELLED by + 00:00:00 None assi+"
  ]
 }
