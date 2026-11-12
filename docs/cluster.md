@@ -373,6 +373,13 @@ and what the logs showed.
     - **Exclusions under quantization (Qwen3-0.6B, the only finished 4-bit cells with τ²; `run_status.py`):**
       BF16 3, Q4_0 4, Q4_K_M 1, IQ4_XS 7, all slot-full. Small and mixed, but if 4-bit models trigger more
       exclusions, the rule removes episodes the agent caused and can hide damage. For the advisor.
+    - **Qwen3-1.7B Q4_0 (array 111933, still running; 2026-11-12 08:40, development data): 59 empty-reply
+      exclusions so far, against 3 for the BF16 1.7B reference.** By configuration (`SimulatorEmptyReply` lines in
+      `retries/`): retail greedy `1ab77a0bf7f3` 24 of 104 (task 9 ended 08:32, 80 finished, nothing pending),
+      retail sampled `844cbb5cf2b0` 25 (task 8 running), airline sampled `35cd8bf82d5a` 9, airline greedy
+      `95ea1c0a0fba` 1. Split (`empty_split.py`, output `empty_split_1p7b_20261112_0840.out` in the same folder):
+      37 slot-full (`finish_reason = length`, 32,768 tokens), 22 stopped empty. Q4_K_M (111935, τ² tasks not yet
+      run): 1 so far. Why the 4-bit agent triggers so many more is not checked.
   - **Why SmolLM3 has 46 exclusions when the three Qwen3 references had 7 in all** (read-only scan of the
     simulated-user caches and steps, 2026-11-11 22:40; scripts and their output in
     `runs/week_outputs/equiv_scan_20261111_2209/`):
