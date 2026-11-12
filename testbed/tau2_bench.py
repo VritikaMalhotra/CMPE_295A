@@ -65,6 +65,14 @@ def _simulator_failure(cache, fails0: int, f500_0: int, msg: str) -> RuntimeErro
     return SimulatorUnavailable(msg)
 
 
+def _judge_error_keeps_episode(cache, fails0: int, f500_0: int) -> bool:
+    """The NL-assertion judge is diagnostic only and runs after the episode is scored. Its error is recorded in
+    ``nl_judge`` and the episode kept, unless the simulator endpoint is down (an outage still stops scheduling, so
+    the judge can run again later). An HTTP 500 answer on the judge's request is not an outage."""
+    n = cache.upstream_failures - fails0
+    return n == 0 or isinstance(_simulator_failure(cache, fails0, f500_0, ""), SimulatorRequestFailed)
+
+
 class SimulatorEmptyReply(RuntimeError):
     """The simulated user stayed empty after every escalation step. Deterministic (the empty reply is cached),
     so retrying cannot help: the episode is excluded at once and listed (decision of Nov 9, 2026)."""
@@ -385,7 +393,7 @@ def run_tau2_episode(spec: RunSpec, task: Tau2Task, backend, grammar_for, log_st
             nl_info = {"reward": nl_res.reward,
                        "checks": [c.model_dump() for c in (nl_res.nl_assertions or [])]}
         except Exception as e:
-            if cache is not None and cache.upstream_failures > fails0:
+            if cache is not None and not _judge_error_keeps_episode(cache, fails0, f500_0):
                 raise _simulator_failure(cache, fails0, f500_0, str(e)) from e
             nl_info = {"error": f"{type(e).__name__}: {str(e)[:200]}"}
     if sim_dir:
