@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Fri 2026-11-13 advisor deck: add the feedback slides (agents, architecture, data, tests, which tasks fail,
-examples, damage preview), rebuild the status slide and the closing questions. Every number is read from a JSON
-file in the repository or from the run-status file, never typed in.
+examples, damage preview), rebuild the status slide and the closing questions. Every result and episode count is read
+from a JSON file in the repository or from the run-status file. Fixed setup facts (model sizes, simulator settings,
+GPU memory, sample sizes, bootstrap resamples) are written in the slide text.
 
     python presentation/update_deck_2026-11-13.py --base <deck as of 2c72ca9> --out presentation/<deck>.pptx \\
         --status results/m3/run_status.json [--figs docs/figs]
@@ -25,7 +26,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 A = "http://schemas.openxmlformats.org/drawingml/2006/main"
 
 
-FACTS = {}            # filled in main() from code, configs and JSON: nothing below types a number in
+FACTS = {}            # filled in main() from code, configs and JSON (results and counts; setup facts are in the text)
 
 
 def J(path):
@@ -271,7 +272,7 @@ def slide_architecture(prs, man, parity, thr):
     p100 = rows.get("p100_n1", {})
     text(s, 5.6, 1.5, 3.2, 4.7, "Hardware text", [
         [("Hardware (CoE HPC, Slurm)", {"b": True})],
-        [(f"A100 40 GB: {a100['episodes_per_hour']:,.0f} episodes/h with 4 GPUs; {a100['episode_wall_s_median']:.1f} s per 0.6B BFCL episode" if a100 else "A100 40 GB", {"color": "tx2", "size": 12})],
+        [(f"A100 40 GB: {a100['episodes_per_hour']:,.0f} episodes/h ({a100['n']} tasks, at most {a100['max_concurrent']} at once); {a100['episode_wall_s_median']:.1f} s per 0.6B BFCL episode" if a100 else "A100 40 GB", {"color": "tx2", "size": 12})],
         [(f"P100 12 GB: {p100['episodes_per_hour']:,.0f} episodes/h on one GPU; {p100['episode_wall_s_median']:.1f} s per episode" if p100 else "P100 12 GB", {"color": "tx2", "size": 12})],
         [("H100 80 GB: QAD training (R3)", {"color": "tx2", "size": 12})],
         [("CPU nodes: the CPU backend arm, KL on CPU, R", {"color": "tx2", "size": 12})],
@@ -337,8 +338,8 @@ def slide_classes(prs, wtf):
               [f"{FACTS['n_classes']} classes, first matching rule wins (format before content). Primary outcome: "
                "failures per step (decision 2).", "Not covered in v0: wrong tool, wrong value, policy violation (need the reference "
                "trajectory); raters note them for v1."])
-    source(s, "docs/codebook_v0.md; results/m3/which_tasks_fail_qwen3-0.6b.json (sampled seeds, mean ± SD over seeds); "
-              "results/m2/evaluator_agreement.json.")
+    source(s, "docs/codebook_v0.md; results/m3/which_tasks_fail_qwen3-0.6b.json (sampled seeds, mean ± SD over seeds; "
+              "development data); results/m2/evaluator_agreement.json.")
     return s
 
 
@@ -389,8 +390,10 @@ def slide_damage(prs, dmg):
         [("Development data from the three complete cells; not the registered test. Fewer exec_error and "
           "tool_error_payload steps under 4-bit can mean fewer calls made at all.", {"color": "accent5", "size": 11})]], 13)
     pairs = ", ".join(f"{c}: {dmg['cells'][c]['pairs']:,} pairs" for c in cells)
+    left = [("any failure" if k == "any_failure" else k) for k in keys[9:]]
     source(s, f"analysis/damage_table.py; results/m3/damage_preview_qwen3-0.6b.json. Ratio = 4-bit rate / BF16 rate per "
-              f"step on paired episodes ({pairs}); task-cluster bootstrap, 10,000 resamples.")
+              f"step on paired episodes ({pairs}); task-cluster bootstrap, 10,000 resamples."
+              + (f" Not shown (lowest rates): {', '.join(left)}; see the JSON." if left else ""))
     return s
 
 
@@ -458,9 +461,9 @@ def slide_questions(slide, qs):
 
 
 class _Runs(dict):
-    """runs[experiment][field] for templates; a missing run reads as 0."""
+    """runs[experiment][field] for templates. A run missing from the status file is an error, not a silent 0."""
     def __missing__(self, k):
-        return {"finished": 0, "specs": 0, "excluded": 0}
+        raise KeyError(f"run {k!r} is not in the run-status file; refresh it or fix the deck text")
 
 
 def main():
