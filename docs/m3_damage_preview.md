@@ -1,6 +1,6 @@
 # H1 damage preview: qwen3-0.6b (development data, preview)
 
-**Development data, preview.** Not confirmatory: the pre-registration is not filed, and the cells may still be running (pair counts below). Method: paired (task, seed); seeds 1-4; cluster bootstrap over tasks, 10,000 resamples; ratio of pooled rates; classifier codebook v0. JSON: `results/m3/damage_preview_qwen3-0.6b.json` (job 112508).
+**Development data, preview.** Not confirmatory: the pre-registration is not filed, and the three cells are complete (Q4_0 2,501 + 4 excluded, Q4_K_M 2,504 + 1, IQ4_XS 2,498 + 7 of 2,505; `results/m3/run_status.json`). Method: paired (task, seed); seeds 1-4; cluster bootstrap over tasks, 10,000 resamples; ratio of pooled rates; classifier codebook v0. JSON: `results/m3/damage_preview_qwen3-0.6b.json` (job 112508).
 
 ## Q4_0-pure vs BF16: 1999 paired episodes, 501 tasks
 
