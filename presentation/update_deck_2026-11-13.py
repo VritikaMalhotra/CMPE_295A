@@ -455,6 +455,9 @@ def slide_questions(slide, qs):
         tf.word_wrap = False                            # "10" must stay on one line in the circle
         tf.margin_left = tf.margin_right = 0
         tf.text = str(i + 1)
+        from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
+        tf.paragraphs[0].alignment = PP_ALIGN.CENTER    # word_wrap off drops the shape's default centring
+        tf.vertical_anchor = MSO_ANCHOR.MIDDLE
         r = tf.paragraphs[0].runs[0]
         r.font.size = Pt(14 if i < 9 else 12)
         r.font.bold = True
