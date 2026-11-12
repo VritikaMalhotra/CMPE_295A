@@ -536,6 +536,12 @@ def main():
     dmg = J("results/m3/damage_preview_qwen3-0.6b.json")
     ex = J("results/m3/worked_examples_qwen3-0.6b.json")
     slides = list(prs.slides)
+    for rt in content.get("retext", []):       # one-run text of a base-deck shape, replaced whole
+        sh = next(s for s in slides[rt["slide"]].shapes if s.name == rt["shape"])
+        para = sh.text_frame.paragraphs[0]
+        if len(sh.text_frame.paragraphs) != 1 or len(para.runs) != 1 or para.runs[0].text != rt["old"]:
+            raise ValueError(f"base slide {rt['slide']} shape {rt['shape']!r} is not the expected text")
+        para.runs[0].text = fill(rt["new"])
     slide_status(slides[1], content["status"], runs)
     slide_questions(slides[11], [fill(q) for q in content["questions"]])   # counts in a question come from run_status
     set_notes(slides[1], fill(content["notes"]["status"]))
