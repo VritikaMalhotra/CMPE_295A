@@ -294,6 +294,9 @@ and what the logs showed.
     not say whether an excluded episode counts as finished:
     - if it does not, SmolLM3 can reach at most 2,459 / 2,505 = 98.2%, below the bar;
     - if it does, the bar is reachable once the pending tasks finish.
+    - Precedent: the 11-09 Qwen3 section below counts excluded episodes as not finished ("Finished: 2,502 /
+      2,502 / 2,504; the rest are the excluded …"), and `scripts/run_status.py` reports `finished` and `excluded`
+      separately. Read that way, SmolLM3 misses the bar.
     - This is for the team and the advisor to decide; nothing here assumes either reading.
   - **SmolLM3 still to run** (pending for an A100): BFCL tasks 0 (0/400), 3 (4/100) and 4 (0/400), which were
     requeued off P100s on 11-10 and 11-11, and telecom task 10 (208 episodes, 112924_10).
@@ -303,7 +306,7 @@ and what the logs showed.
     SmolLM3 report job 111884 now also waits for 112924.
   - **Report header.** Every report and manifest says "M1 walking skeleton … excluded from the study", including
     these references and the Qwen3 ones. The text is hard-coded (`testbed/report.py:82`,
-    `testbed/registry.py:160`); no analysis code reads it. It does not describe the run.
+    `testbed/registry.py:160`), written whatever the experiment; no analysis code reads it.
   - **LFM2.5-1.2B: 11 episodes failed** (by 20:45), all with lone surrogates in the prompt:
     - 10 with `UnicodeEncodeError: surrogates not allowed` while hashing the prompt;
     - 1 with HTTP 400 from llama-server's `/tokenize`, which rejects an unpaired surrogate.
@@ -322,8 +325,17 @@ and what the logs showed.
       SmolLM3 sends token ids too, so this is the only change that reaches SmolLM3, and it changes nothing;
     - the NUL fix (47d41f7);
     - the surrogate fix (ffe8873).
-  - None of the 24,294 completed LFM2.5 steps has a NUL, and none has a lone surrogate. So every episode that
-    completes on `6be0ff7` comes out the same on `8c605a1`; only episodes that used to crash change.
+  - **Old against new parser on every logged step** (`scripts/parser_equivalence.py`, 22:10,
+    `results/m2/parser_equivalence_lfm2p5_20261111.json`). Every tool-call block in `raw_text` was parsed with
+    `lfm2_format.py` from both commits (each file checked byte-equal to `git show <commit>:testbed/lfm2_format.py`):
+    - LFM2.5-1.2B, all 29,527 steps of the 2,484 logged episodes: 14,624 blocks, **0 parse differently**;
+    - LFM2.5-2.6B, 5,695 steps so far (tasks 0–6): 3,766 blocks, 0 differ;
+    - no step has a NUL character, and none has a surrogate escape (`\ud800`–`\udfff` written as text).
+    - A test with one escaped pair and one NUL in a call block finds both differences, so the zero is not a
+      blind check.
+    - So no logged step would have parsed differently on `8c605a1`. Task 0 of LFM2.5-2.6B is still running on
+      `6be0ff7` and is rescanned when it ends. (Replaces an earlier scan of 24,294 steps at about 20:46, which
+      missed the steps logged after it.)
   - The move is at 20:46:43 (`git reflog` in the checkout). Each array task is one Python process, and
     `testbed/run.py` imports `backends` and `prompt_formats` (which imports `lfm2_format`) when it starts, so a task
     runs the commit it found at start:
