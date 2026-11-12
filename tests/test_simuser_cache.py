@@ -211,3 +211,56 @@ def test_permanent_failure_excludes_at_once(tmp_path):
     assert retry_count(str(tmp_path), "r1") == 1
     record_retry(str(tmp_path), "r1", RuntimeError("empty"), permanent=True)
     assert retry_count(str(tmp_path), "r1") == MAX_INFRA_ATTEMPTS
+
+
+def _status_upstream(status: int, text: str):
+    class H(BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def do_POST(self):
+            self.rfile.read(int(self.headers["Content-Length"]))
+            out = text.encode()
+            self.send_response(status)
+            self.send_header("Content-Length", str(len(out)))
+            self.end_headers()
+            self.wfile.write(out)
+
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    return srv, f"http://127.0.0.1:{srv.server_address[1]}"
+
+
+def test_upstream_500_is_counted_apart_from_outages(tmp_path):
+    """An HTTP 500 answer (the simulator is up, one request failed) is counted in upstream_500s; a 503 and an
+    unreachable simulator are outages only. Nothing is stored, so a later attempt asks again."""
+    err = '{"error":{"code":500,"message":"The model produced output that does not match the expected peg-native format"}}'
+    srv, url = _status_upstream(500, err)
+    try:
+        c = SimUserCache(str(tmp_path / "a.sqlite"), SIM, upstream=url)
+        status, body = c.complete(BODY)
+        assert status == 503 and "upstream returned 500" in body["error"]["message"]
+        assert c.upstream_failures == 1 and c.upstream_500s == 1
+        assert c.complete(BODY)[0] == 503 and c.upstream_500s == 2          # not cached: asked again
+    finally:
+        srv.shutdown()
+        srv.server_close()
+    srv, url = _status_upstream(503, '{"error":{"message":"Loading model"}}')
+    try:
+        b = SimUserCache(str(tmp_path / "b.sqlite"), SIM, upstream=url)
+        assert b.complete(BODY)[0] == 503 and b.upstream_failures == 1 and b.upstream_500s == 0
+    finally:
+        srv.shutdown()
+        srv.server_close()
+    d = SimUserCache(str(tmp_path / "d.sqlite"), SIM, upstream="http://127.0.0.1:9", timeout_s=2)
+    assert d.complete(BODY)[0] == 503 and d.upstream_failures == 1 and d.upstream_500s == 0
+
+
+def test_simulator_failure_kind():
+    """Only when every failure of the episode was a 500 answer is it this episode's error; else an outage."""
+    from types import SimpleNamespace
+    from testbed.tau2_bench import SimulatorRequestFailed, SimulatorUnavailable, _simulator_failure
+    c = SimpleNamespace(upstream_failures=5, upstream_500s=3)
+    assert isinstance(_simulator_failure(c, 4, 2, "x"), SimulatorRequestFailed)     # 1 new failure, a 500
+    assert isinstance(_simulator_failure(c, 3, 2, "x"), SimulatorUnavailable)       # 2 new, only 1 a 500
+    assert isinstance(_simulator_failure(c, 5, 3, "x"), SimulatorUnavailable)       # none new

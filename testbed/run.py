@@ -28,6 +28,8 @@ from . import prompt_formats
 from .backends import Backend, LlamaServer, ServerConfig
 from .grammar import grammars_for, task_grammar, task_grammar_free
 from .logger import MAX_INFRA_ATTEMPTS, StepLogger, record_retry, retry_count, to_parquet
+
+MAX_SIM_REQUEST_FAILS = 3   # this many episodes in a row with a simulator HTTP 500: stop as for an outage
 from .profiler import GpuMeter
 from .runner import run_episode
 from .spec import RunSpec
@@ -198,6 +200,7 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
             raise ValueError(f"unknown benchmark {bench!r}")
     sim: SimStack | None = None
     sim_down = False
+    sim_req_fails = 0           # consecutive SimulatorRequestFailed; MAX_SIM_REQUEST_FAILS in a row = an outage
     logs = os.path.join(r.dir, "server_logs")
     os.makedirs(logs, exist_ok=True)
     t_all = time.time()
@@ -267,6 +270,7 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
                     if is_tau2:
                         sim.sync()
                     n_done += 1
+                    sim_req_fails = 0
                     print(f"  {s.task_id} seed={s.seed} valid={ep.valid} steps={ep.n_steps} "
                           f"{ep.wall_s:.1f}s  ({n_done}/{len(pending)})", flush=True)
                 except KeyboardInterrupt:
@@ -277,6 +281,21 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
                         log.abort()
                         record_retry(r.dir, s.run_id, e, permanent=True)
                         print(f"  {s.task_id} seed={s.seed}: excluded, {e}", flush=True)
+                        continue
+                    if type(e).__name__ == "SimulatorRequestFailed":
+                        # the simulator is up but failed on this episode's request: an infrastructure attempt
+                        # of this episode (pre-registration 5), the other episodes go on
+                        log.abort()
+                        record_retry(r.dir, s.run_id, e)
+                        sim_req_fails += 1
+                        print(f"  {s.task_id} seed={s.seed}: simulator error on this request ({str(e)[:200]}); "
+                              f"attempt {retry_count(r.dir, s.run_id)} of {MAX_INFRA_ATTEMPTS}, retried on the next run",
+                              flush=True)
+                        if sim_req_fails >= MAX_SIM_REQUEST_FAILS:
+                            print(f"  {sim_req_fails} episodes in a row hit simulator errors: treated as an outage; "
+                                  "stopping tau2 scheduling, episodes stay pending", flush=True)
+                            sim_down = True
+                            break
                         continue
                     if type(e).__name__ == "SimulatorUnavailable":
                         log.abort()
