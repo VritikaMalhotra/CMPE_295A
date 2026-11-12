@@ -436,8 +436,11 @@ and what the logs showed.
     - no step has a NUL character, and none has a surrogate escape (`\ud800`–`\udfff` written as text).
     - A test with one escaped pair and one NUL in a call block finds both differences, so the zero is not a
       blind check.
-    - So no logged step would have parsed differently on `8c605a1`. Task 0 of LFM2.5-2.6B is still running on
-      `6be0ff7` and is rescanned when it ends. (Replaces an earlier scan of 24,294 steps at about 20:46, which
+    - So no logged step would have parsed differently on `8c605a1`.
+    - **Rescan after 111887_0 ended** (2026-11-12 00:21, 400/400, 0 FAILED; it was the last task on `6be0ff7`):
+      LFM2.5-2.6B tasks 0 and 1, every step that ran the old code: 5,169 steps, 3,310 blocks, **0 differ**, no NUL,
+      no surrogate escape; all 2.6B steps logged by 00:27: 15,832 steps, 9,918 blocks, 0 differ
+      (`results/m2/parser_equivalence_lfm2p5_2p6b_20261112.json`). The code-move evidence is complete. (Replaces an earlier scan of 24,294 steps at about 20:46, which
       missed the steps logged after it.)
   - The move is at 20:46:43 (`git reflog` in the checkout). Each array task is one Python process, and
     `testbed/run.py` imports `backends` and `prompt_formats` (which imports `lfm2_format`) when it starts, so a task
