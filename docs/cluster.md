@@ -304,14 +304,21 @@ and what the logs showed.
       Unreachable, 502/503/504 and the budget ceiling are still an outage, and three such episodes in a row are
       treated as one. Tests: local 254 passed, 13 skipped; cluster suite 113052 on `8417963`: 266 passed, 1
       skipped.
-    - **Run: job 113053** (A100, five passes of config `486579e948da` only) from checkout `CMPE_295A-wk` at
-      `8417963`, so this configuration's remaining episodes run on `8417963`; the other SmolLM3 configurations
-      stay on `CMPE_295A-a2`. Per-host manifests copied first to
+    - **Run: job 113054** (A100, config `486579e948da` only; replaces 113053, cancelled before it started, whose
+      fixed five passes could end with episodes still pending once the three-in-a-row guard cut the later passes
+      short). It repeats the configuration until no pending episode has fewer than four recorded attempts (at
+      most 15 passes; finished episodes are never rerun), and stops at once on a real outage or if pass 1 trips
+      the guard. It runs from checkout `CMPE_295A-wk` at `8417963`, so this configuration's remaining episodes
+      run on `8417963`; the other SmolLM3 configurations ran or run on `CMPE_295A-a2`. Between `6be0ff7` (the
+      first 76 telecom episodes) and `8417963`, the run path differs in `testbed/backends.py` (`parse_special`,
+      the server default), `testbed/lfm2_format.py` (not used by SmolLM3), and `testbed/run.py`,
+      `testbed/simuser_cache.py`, `testbed/tau2_bench.py` (this fix). Per-host manifests copied first to
       `runs/week_outputs/manifest_snapshot_smollm3_20261111_2328/`. The SmolLM3 report job 111884 now waits for
-      111883 and 113053.
-    - **Not covered:** LFM2.5-2.6B tasks 7–11 and SmolLM3 tasks 0, 3 and 4 start from `CMPE_295A-a2` (`8c605a1`),
-      which has no fix; a simulator 500 there would stall a task the same way. Moving that checkout is a
-      separate decision (Yashashav's).
+      111883 and 113054. `CMPE_295A-wk` stays frozen until 113054 ends (each pass is a new process).
+    - **Not covered:** every τ² task that starts from `CMPE_295A-a2` (`8c605a1`, no fix) can stall the same way
+      on a simulator 500: LFM2.5-2.6B tasks 6–11 (6 running, 7–11 pending) and the τ² tasks (6–11) of the six
+      pending H1 arrays (111933, 111935, 111937, 111939, 111941, 111943). SmolLM3 tasks 0, 3 and 4 are BFCL and
+      never call the simulator. Moving that checkout is a separate decision (Yashashav's).
   - **SmolLM3 τ² exclusions** (empty simulated-user reply, the registered rule): 46 by 22:00 (airline 7 + 1,
     retail 7 + 31; `excluded` lines in the task logs).
   - **Ruling on A2's ≥ 99% bar (Yashashav, 2026-11-11 22:56): an excluded episode does not count as finished.**
@@ -354,7 +361,7 @@ and what the logs showed.
       `{'name': 'authenticate_twitter', …}`. Both prompts carry the `<tool_call>` instructions, and the τ² one
       carries the policy. The same holds for every model (τ² tools are wrapped for Qwen3 and LFM2.5 too).
     - The τ² prompt is a faithful rendering: SmolLM3's chat template prints each tool exactly as given
-      (`tool | string`, no unwrapping), the wrapped shape is what Hugging Face's `tools=` argument passes, and the
+      (`tool | string`, no unwrapping), and the
       golden cases, rendered from the template (sha256 `3e0e275a…`), use the wrapped shape. **Untested:** only
       the model's sensitivity to the tool shape (wrapped in τ², bare in BFCL); a small τ² run with bare tools
       would show it.
