@@ -30,10 +30,13 @@ def expand(exp: dict, task_ids: list[str]) -> list[RunSpec]:
                   max_steps_per_turn=int(exp["max_steps_per_turn"]))
     specs = []
     for b in exp["baselines"]:
-        for seed in exp["baseline_seeds"]:
+        # a baseline may set its own decoding (merged over the experiment's, e.g. the greedy pass) and seeds;
+        # without them the spec is exactly as before, so existing run_ids do not change
+        c = dict(common, decoding={**common["decoding"], **dict(b.get("decoding") or {})})
+        for seed in b.get("seeds", exp["baseline_seeds"]):
             for t in task_ids:
                 specs.append(RunSpec(variant=b["variant"], backend=b["backend"], repair="none", constraint="none",
-                                     task_id=t, seed=int(seed), **common))
+                                     task_id=t, seed=int(seed), **c))
     for r in exp.get("repairs", []):
         for seed in exp["repair_seeds"]:
             for t in task_ids:
@@ -102,6 +105,12 @@ def _cmd(args: list[str]) -> str:
         return f"unavailable: {type(e).__name__}"
 
 
+def _task_order(t: str):
+    """BFCL ids first, then by trailing number; ids without one (tau2 telecom) after, by name."""
+    n = t.rsplit("_", 1)[-1]
+    return (not t.startswith("multi_turn"), not n.isdigit(), int(n) if n.isdigit() else 0, t)
+
+
 def build_manifest(specs: list[RunSpec], model_files: dict[str, str], binaries: dict[str, str],
                    expected_sha: dict | None = None, hash_files: bool = True) -> dict:
     try:
@@ -134,8 +143,7 @@ def build_manifest(specs: list[RunSpec], model_files: dict[str, str], binaries: 
         "experiment_hash": experiment_hash(specs),
         "n_specs": len(specs),
         "configs": configs,
-        "task_ids": sorted({s.task_id for s in specs}, key=lambda t: (not t.startswith("multi_turn"),
-                                                                       int(t.rsplit("_", 1)[-1]))),
+        "task_ids": sorted({s.task_id for s in specs}, key=_task_order),
         "benchmarks": sorted({s.benchmark for s in specs}),
         "decoding": specs[0].decoding if specs else {},
         "server": specs[0].server if specs else {},

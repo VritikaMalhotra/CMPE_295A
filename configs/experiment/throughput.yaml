@@ -1,0 +1,24 @@
+# @package _global_
+# NFR-5 throughput pilot (M2): how many concurrent GPU jobs the queue sustains and the episodes per hour
+# they deliver. One fixed configuration (Qwen3-0.6B BF16 on a P100, BFCL multi-turn base, the damage-run
+# decoding); scripts/throughput_submit.sh runs it at 1, 4, 8 and 12 concurrent array tasks, each level under its
+# own experiment name (experiment.name=throughput_n<N>) so levels never share episodes, each task a shard.
+# Development data: these episodes are not part of the study.
+experiment:
+  name: throughput
+  model: qwen3-0.6b
+  benchmark: bfcl_multi_turn_base
+  n_tasks: 200
+  thinking: false
+  max_steps_per_turn: 20
+  baselines:
+    - {variant: bf16, backend: cuda}
+  baseline_seeds: [101]
+  repairs: []
+  repair_seeds: [101]
+  decoding: {temperature: 0.7, top_p: 0.8, top_k: 20, min_p: 0.0, n_predict: 4096, cache_prompt: false}
+  server: {ctx: 40960}
+models:
+  qwen3-0.6b:
+    hf_repo: Qwen/Qwen3-0.6B
+    files: {bf16: Qwen3-0.6B-BF16.gguf}

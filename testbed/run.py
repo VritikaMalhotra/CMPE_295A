@@ -23,10 +23,13 @@ import hydra
 from omegaconf import DictConfig, OmegaConf
 
 from . import registry as reg
-from .adapter import load_bfcl_multi_turn, skeleton_task_ids
+from .adapter import load_bfcl_multi_turn, sample_task_ids, skeleton_task_ids
+from . import prompt_formats
 from .backends import Backend, LlamaServer, ServerConfig
-from .grammar import task_grammar, task_grammar_free
-from .logger import StepLogger, to_parquet
+from .grammar import grammars_for, task_grammar, task_grammar_free
+from .logger import MAX_INFRA_ATTEMPTS, StepLogger, record_retry, retry_count, to_parquet
+
+MAX_SIM_REQUEST_FAILS = 3   # this many episodes in a row with a simulator HTTP 500: stop as for an outage
 from .profiler import GpuMeter
 from .runner import run_episode
 from .spec import RunSpec
@@ -43,15 +46,35 @@ def _plan(cfg: DictConfig):
     exp = OmegaConf.to_container(cfg.experiment, resolve=True)
     model = OmegaConf.to_container(cfg.models[exp["model"]], resolve=True)
     category = exp["benchmark"].removeprefix("bfcl_")
-    task_ids = skeleton_task_ids(int(exp["n_tasks"]), category)
+    # task_sample: the study's fixed-seed sample (adapter.sample_task_ids); otherwise the first n in file order
+    pick = sample_task_ids if exp.get("task_sample") else skeleton_task_ids
+    task_ids = pick(category=category, n=int(exp["n_tasks"]))
     tasks = {exp["benchmark"]: task_ids}
     for extra in exp.get("extra_benchmarks", []) or []:
-        tasks[extra["name"]] = [str(t) for t in extra["task_ids"]]
+        if "task_ids" in extra:
+            tasks[extra["name"]] = [str(t) for t in extra["task_ids"]]
+        elif extra["name"].startswith("bfcl_"):              # another BFCL category, sampled like the main one
+            tasks[extra["name"]] = pick(category=extra["name"].removeprefix("bfcl_"),
+                                        n=int(extra.get("n_tasks", exp["n_tasks"])))
+        elif extra["name"].startswith("tau2_verified_") and extra.get("require_write"):
+            # every task of the domain whose gold actions write to the database (decision 6), in tau2's order
+            from .tau2_bench import load_tau2_verified
+            d = extra["name"].removeprefix("tau2_verified_")
+            wt = {d: list(extra["write_tools"])} if extra.get("write_tools") else None
+            got, _ = load_tau2_verified(extra.get("tau2", {}).get("split", "base"), (d,), True, wt)
+            tasks[extra["name"]] = [t.id for t in got]
+        else:
+            raise ValueError(f"extra benchmark {extra['name']!r} needs task_ids")
+    if exp.get("inclusion"):                            # Stage 1 inclusion set (testbed/inclusion.py)
+        from .inclusion import filter_tasks
+        tasks = filter_tasks(tasks, _abs(exp["inclusion"]))
+        task_ids = tasks[exp["benchmark"]]
     specs = reg.expand_all(exp, tasks)
     model_files = {v: os.path.join(_abs(cfg.paths.models_dir), f) for v, f in model["files"].items()
                    if any(s.variant == v for s in specs)}
     binaries = {"cuda": _abs(cfg.paths.llama_cuda), "cpu": _abs(cfg.paths.llama_cpu)}
-    need = {s.backend for s in specs} | ({"cuda"} if _simuser(specs) else set())   # the simulator runs on CUDA
+    own_sim = _simuser(specs) and (cfg.get("simuser_serve") or not cfg.get("simuser_endpoint"))
+    need = {s.backend for s in specs} | ({"cuda"} if own_sim else set())   # the simulator runs on CUDA
     binaries = {k: v for k, v in binaries.items() if k in need}
     return exp, model, category, task_ids, specs, model_files, binaries
 
@@ -86,22 +109,41 @@ def _preflight(specs, model_files, binaries, model) -> list[str]:
     return problems
 
 
+def cache_file_name(tag: str = "") -> str:
+    return f"simuser_cache.{tag}.sqlite" if tag else "simuser_cache.sqlite"
+
+
+def _cache_tag(cfg) -> str:
+    """Names this job's C4 store: its configuration and/or shard ("" for a plain local run)."""
+    shard = _shard(cfg.get("shard"))
+    parts = [cfg.get("only_config") or "", f"shard{shard[0]}of{shard[1]}" if shard else ""]
+    return ".".join(p for p in parts if p)
+
+
 class SimStack:
     """C4 for one run: the simulator's llama-server (CUDA) + the caching proxy in front of it.
     The SQLite store lives on local disk while running (SQLite on a Drive mount is unsafe) and is copied
     into the experiment directory after every episode."""
 
-    def __init__(self, cfg, r: reg.Registry, sim: dict, binary: str, mode: str = "live"):
+    def __init__(self, cfg, r: reg.Registry, sim: dict, binary: str, mode: str = "live", tag: str = ""):
         from .simuser_cache import CacheProxy, SimUserCache
-        self.dir_copy = os.path.join(r.dir, "simuser_cache.sqlite")
+        # one store per job: concurrent array tasks / shards must not overwrite each other's copy
+        self.dir_copy = os.path.join(r.dir, cache_file_name(tag))
         local = cfg.paths.get("simuser_cache_local") or None
+        if local and tag:
+            root, ext = os.path.splitext(local)
+            local = f"{root}.{tag}{ext}"
         self.db = local or self.dir_copy
         if local and not os.path.exists(local) and os.path.exists(self.dir_copy):
             import shutil
             shutil.copyfile(self.dir_copy, local)
         self.server = None
         upstream = None
-        if mode == "live":
+        endpoint = cfg.get("simuser_endpoint")
+        if mode == "live" and endpoint:                 # the experiment's simulator job (decision 4)
+            from .simuser_service import wait_for_endpoint
+            upstream = wait_for_endpoint(_abs(endpoint), sim, timeout_s=float(cfg.get("simuser_wait_s") or 1800))
+        elif mode == "live":
             scfg = ServerConfig(binary=binary, model_path=_sim_file(cfg, sim), backend="cuda",
                                 ctx=int(sim.get("ctx", 32768)), seed=0, extra_args=("--jinja",))
             logs = os.path.join(r.dir, "server_logs")
@@ -135,27 +177,38 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
         pending = [s for s in pending if s.backend == cfg.backend]
     if cfg.only_benchmark:
         pending = [s for s in pending if s.benchmark == cfg.only_benchmark]
+    shard = _shard(cfg.get("shard"))
+    if shard:                                           # i/n: this job's share of the planned specs
+        mine = shard_members(specs, *shard)
+        pending = sorted((s for s in pending if s.run_id in mine), key=lambda s: s.run_id)
     if cfg.limit:
         pending = pending[: int(cfg.limit)]
     if not pending:
         print("nothing pending")
         return
-    tasks = {(t.benchmark, t.id): t for t in load_bfcl_multi_turn(
-        category, ids=sorted({s.task_id for s in pending if s.benchmark.startswith("bfcl")}))}
-    tau2_ids = sorted({s.task_id for s in pending if s.benchmark.startswith("tau2")}, key=int)
-    if tau2_ids:
-        from .tau2_bench import load_tau2_tasks
-        t2 = next(s.server["tau2"] for s in pending if s.benchmark.startswith("tau2"))
-        tasks.update({(t.benchmark, t.id): t for t in load_tau2_tasks(tau2_ids, t2.get("split", "base"),
-                                                                       t2.get("write_tools"))})
+    tasks = {}
+    for bench in sorted({s.benchmark for s in pending}):   # each BFCL category / tau2 domain loads its own tasks
+        ids = sorted({s.task_id for s in pending if s.benchmark == bench})
+        if bench.startswith("bfcl_"):
+            tasks.update({(t.benchmark, t.id): t for t in load_bfcl_multi_turn(bench.removeprefix("bfcl_"), ids=ids)})
+        elif bench.startswith("tau2_verified_"):
+            from .tau2_bench import load_tau2_tasks
+            t2 = next(s.server["tau2"] for s in pending if s.benchmark == bench)
+            tasks.update({(t.benchmark, t.id): t for t in load_tau2_tasks(
+                ids, t2.get("split", "base"), t2.get("write_tools"), domain=bench.removeprefix("tau2_verified_"))})
+        else:
+            raise ValueError(f"unknown benchmark {bench!r}")
     sim: SimStack | None = None
     sim_down = False
+    sim_req_fails = 0           # consecutive SimulatorRequestFailed; MAX_SIM_REQUEST_FAILS in a row = an outage
     logs = os.path.join(r.dir, "server_logs")
     os.makedirs(logs, exist_ok=True)
     t_all = time.time()
     n_done = 0
     for key, group in _group(pending).items():
-        lock = _try_lock(os.path.join(r.dir, "locks", f"{key}.lock"))
+        # shards of one configuration hold disjoint specs, so each takes its own lock
+        lock_name = f"{key}.shard{shard[0]}of{shard[1]}" if shard else key
+        lock = _try_lock(os.path.join(r.dir, "locks", f"{lock_name}.lock"))
         if lock is None:
             print(f"[{key}] held by another running process; skipping", flush=True)
             continue
@@ -168,7 +221,8 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
         is_tau2 = s0.benchmark.startswith("tau2")
         if is_tau2 and sim is None and not sim_down:
             try:
-                sim = SimStack(cfg, r, dict(s0.server["simuser"]), binaries["cuda"], mode=cfg.simuser_mode)
+                sim = SimStack(cfg, r, dict(s0.server["simuser"]), binaries.get("cuda", ""),
+                               mode=cfg.simuser_mode, tag=_cache_tag(cfg))
                 print(f"simulated user up ({cfg.simuser_mode}): {sim.base_url}", flush=True)
             except Exception as e:
                 print(f"simulated user failed to start: {e}; tau2 episodes stay pending", flush=True)
@@ -181,7 +235,8 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
         scfg = ServerConfig(binary=binaries[s0.backend], model_path=model_files[s0.variant], backend=s0.backend,
                             ctx=int(s0.server.get("ctx", 40960)),
                             threads=cfg.cpu_threads if s0.backend == "cpu" else None)
-        gfn = GRAMMARS[s0.constraint]
+        fmt = prompt_formats.for_model(s0.model)          # R1 grammar in the model's call syntax
+        gfn = grammars_for(fmt.syntax, think_prefix=fmt.raw_prefix == "<think>")[s0.constraint]
         print(f"[{key}] {s0.variant}/{s0.backend} repair={s0.repair} constraint={s0.constraint}: "
               f"{len(group)} episodes", flush=True)
         try:
@@ -191,9 +246,13 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
             lock.close()
             continue
         try:
-            be = Backend(srv, s0.decoding, thinking=s0.thinking)
+            be = Backend(srv, s0.decoding, thinking=s0.thinking, fmt=fmt)
             for s in group:
                 if os.path.exists(os.path.join(r.dir, "episodes", f"{s.run_id}.json")):
+                    continue
+                if retry_count(r.dir, s.run_id) >= MAX_INFRA_ATTEMPTS:
+                    print(f"  {s.task_id} seed={s.seed}: excluded after {MAX_INFRA_ATTEMPTS} infrastructure "
+                          f"failures (retries/{s.run_id}.jsonl)", flush=True)
                     continue
                 log = StepLogger(r.dir, s.run_id)
                 try:
@@ -206,16 +265,38 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
                         else:
                             ep = run_episode(s, tasks[(s.benchmark, s.task_id)], be, gfn, log)
                     ep.energy_j, ep.peak_gpu_mib = m.energy_j, m.peak_mib
+                    ep.infra_retries = retry_count(r.dir, s.run_id)
                     log.finish(ep)
                     if is_tau2:
                         sim.sync()
                     n_done += 1
+                    sim_req_fails = 0
                     print(f"  {s.task_id} seed={s.seed} valid={ep.valid} steps={ep.n_steps} "
                           f"{ep.wall_s:.1f}s  ({n_done}/{len(pending)})", flush=True)
                 except KeyboardInterrupt:
                     log.abort()
                     raise
                 except Exception as e:
+                    if type(e).__name__ == "SimulatorEmptyReply":
+                        log.abort()
+                        record_retry(r.dir, s.run_id, e, permanent=True)
+                        print(f"  {s.task_id} seed={s.seed}: excluded, {e}", flush=True)
+                        continue
+                    if type(e).__name__ == "SimulatorRequestFailed":
+                        # the simulator is up but failed on this episode's request: an infrastructure attempt
+                        # of this episode (pre-registration 5), the other episodes go on
+                        log.abort()
+                        record_retry(r.dir, s.run_id, e)
+                        sim_req_fails += 1
+                        print(f"  {s.task_id} seed={s.seed}: simulator error on this request ({str(e)[:200]}); "
+                              f"attempt {retry_count(r.dir, s.run_id)} of {MAX_INFRA_ATTEMPTS}, retried on the next run",
+                              flush=True)
+                        if sim_req_fails >= MAX_SIM_REQUEST_FAILS:
+                            print(f"  {sim_req_fails} episodes in a row hit simulator errors: treated as an outage; "
+                                  "stopping tau2 scheduling, episodes stay pending", flush=True)
+                            sim_down = True
+                            break
+                        continue
                     if type(e).__name__ == "SimulatorUnavailable":
                         log.abort()
                         print(f"  {s.task_id} seed={s.seed}: simulated user unavailable ({e}); "
@@ -223,6 +304,7 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
                         sim_down = True
                         break
                     log.abort()
+                    record_retry(r.dir, s.run_id, e)
                     print(f"  {s.task_id} seed={s.seed} FAILED (will retry on next run)\n"
                           + traceback.format_exc(limit=3), flush=True)
         finally:
@@ -237,7 +319,7 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
 def replay_one(cfg, r: reg.Registry, specs, category, model_files, binaries, run_id: str) -> dict:
     """FR-E6 check: re-run one finished tau2 episode with the simulated user in replay mode (cache only,
     no simulator process). Passes if every simulator request is a cache hit and the reward matches."""
-    import shutil
+    import glob
     from .simuser_cache import SimUserCache
     spec = next((s for s in specs if s.run_id == run_id), None)
     if spec is None or not spec.benchmark.startswith("tau2"):
@@ -250,8 +332,15 @@ def replay_one(cfg, r: reg.Registry, specs, category, model_files, binaries, run
         p = os.path.join(scratch.dir, d, f"{run_id}.json" + ("l" if d == "steps" else ""))
         if os.path.exists(p):
             os.remove(p)
-    src_db = os.path.join(r.dir, "simuser_cache.sqlite")
-    shutil.copyfile(src_db, os.path.join(scratch.dir, "simuser_cache.sqlite"))
+    from .simuser_cache import merge_stores
+    stores = sorted(glob.glob(os.path.join(r.dir, "simuser_cache*.sqlite")),
+                    key=lambda p: (spec.config_key not in os.path.basename(p), p))   # own configuration first
+    if not stores:
+        sys.exit(f"no simulated-user store in {r.dir}")
+    dst = os.path.join(scratch.dir, "simuser_cache.sqlite")
+    if os.path.exists(dst):
+        os.remove(dst)
+    merge_stores(stores, dst)
     before = SimUserCache(os.path.join(scratch.dir, "simuser_cache.sqlite"), {}, mode="replay").stats()
     sub = OmegaConf.merge(cfg, {"simuser_mode": "replay", "replay": None, "only_config": None, "limit": None,
                                 "backend": None, "only_benchmark": None,
@@ -292,6 +381,30 @@ def _cpu_info(cfg) -> dict:
     except Exception:
         pass
     return {"threads_flag": cfg.cpu_threads, "logical_cpus": os.cpu_count(), "model": model}
+
+
+def _shard(v) -> tuple[int, int] | None:
+    """``"i/n"`` (0 <= i < n) -> (i, n); None/"" -> None. Lets n jobs share one configuration's episodes."""
+    if v in (None, ""):
+        return None
+    i, n = (int(x) for x in str(v).split("/"))
+    if not 0 <= i < n:
+        raise ValueError(f"shard {v!r}: need 0 <= i < n")
+    return i, n
+
+
+def _shard_unit(s: RunSpec):
+    """What a shard holds whole: one spec, or for tau2 every spec of one task, so the simulated user's first
+    turns (the same for all seeds and configurations of a task) are cached in one shard's store only."""
+    return f"{s.benchmark}/{s.task_id}" if s.benchmark.startswith("tau2") else s.run_id
+
+
+def shard_members(specs, i: int, n: int) -> set[str]:
+    """run_ids of shard i of n. Computed over all planned specs, not the pending ones, so a shard keeps the
+    same specs when it restarts while other shards are still running."""
+    units = sorted({_shard_unit(s) for s in specs})
+    pos = {u: k for k, u in enumerate(units)}
+    return {s.run_id for s in specs if pos[_shard_unit(s)] % n == i}
 
 
 def _try_lock(path: str):
@@ -398,10 +511,12 @@ def main(cfg: DictConfig) -> None:
     if cfg.only_benchmark:
         scope = [s for s in scope if s.benchmark == cfg.only_benchmark]
     sim = _simuser(scope)
-    scope_bins = {b: p for b, p in binaries.items() if any(x.backend == b for x in scope) or (sim and b == "cuda")}
+    remote_sim = bool(cfg.get("simuser_endpoint")) and not cfg.get("simuser_serve")
+    scope_bins = {b: p for b, p in binaries.items()
+                  if any(x.backend == b for x in scope) or (sim and not remote_sim and b == "cuda")}
     problems = _preflight(scope, {v: p for v, p in model_files.items() if any(x.variant == v for x in scope)},
                           scope_bins, model)
-    if sim and cfg.simuser_mode == "live" and not os.path.exists(_sim_file(cfg, sim)):
+    if sim and cfg.simuser_mode == "live" and not remote_sim and not os.path.exists(_sim_file(cfg, sim)):
         problems.append(f"missing simulated-user model: {_sim_file(cfg, sim)}")
     for p in problems:
         print("  WARNING:", p)
@@ -409,6 +524,17 @@ def main(cfg: DictConfig) -> None:
     if cfg.import_from and not array_task:
         n = r.import_from(_abs(cfg.import_from))
         print(f"imported {n} finished episodes from {cfg.import_from}")
+    if cfg.get("simuser_serve"):                    # this job is the experiment's simulated user (decision 4)
+        from .simuser_service import serve
+        if not sim:
+            sys.exit("simuser_serve: the experiment has no tau2 benchmark")
+        if not cfg.get("simuser_endpoint"):
+            sys.exit("simuser_serve needs simuser_endpoint=<file> (or TESTBED_SIMUSER_ENDPOINT)")
+        os.makedirs(os.path.join(r.dir, "server_logs"), exist_ok=True)
+        serve(sim, _sim_file(cfg, sim), binaries["cuda"], _abs(cfg.simuser_endpoint),
+              os.path.join(r.dir, "server_logs", f"simuser_service_{os.environ.get('SLURM_JOB_ID', os.getpid())}.log"),
+              parallel=int(cfg.get("simuser_parallel") or 4))
+        return
     if cfg.replay:
         replay_one(cfg, r, specs, category, model_files, binaries, str(cfg.replay))
         return

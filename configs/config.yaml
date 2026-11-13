@@ -6,12 +6,18 @@ local: false
 dry_run: false
 submit: false            # with local=false: also call sbatch (needs a Slurm account association)
 limit: null              # run only the first N pending specs (smoke tests)
+shard: null              # "i/n": this job's share of the planned specs (tau2: whole tasks) so n jobs share the work
 only_config: null        # run one configuration (a config_key); used by each Slurm array task
 backend: null            # run only cuda or cpu configurations (two machines sharing one experiment)
 only_benchmark: null     # run only one benchmark's specs (e.g. bfcl_multi_turn_base on a CPU-only machine)
 import_from: null        # copy finished episodes with the same run_id from another experiment directory
 simuser_mode: live       # C4: live (forward cache misses to the simulator) | replay (misses are errors)
 simuser_max_hours: null  # C4 ceiling on simulator upstream hours; null = no ceiling
+simuser_endpoint: ${oc.env:TESTBED_SIMUSER_ENDPOINT,null}   # endpoint file of the experiment's simulator job
+                         # (decision 4; scripts/tau2_submit.sh); null = each job starts its own simulator
+simuser_wait_s: 1800     # how long an agent job waits for that simulator before leaving tau2 episodes pending
+simuser_serve: false     # run as the simulator job: serve until stopped, announce in simuser_endpoint
+simuser_parallel: 4      # slots of the shared simulator (each gets the simuser ctx)
 replay: null             # a tau2 run_id: re-run it from the C4 cache alone and check zero simulator calls
 report_only: false       # rebuild report.md from finished episodes, run nothing
 report_partial: false    # write the report even when episodes are still pending

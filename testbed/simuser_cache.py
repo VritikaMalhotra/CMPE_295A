@@ -35,6 +35,8 @@ VOLATILE = {"stream", "stream_options", "user", "metadata", "num_retries", "time
             "api_key", "api_base", "extra_headers"}
 
 
+OVERFLOW = "_user_context_overflow"      # key of a stored overflow in the replies table
+
 # gpt-oss can spend its whole turn reasoning and return an empty message; tau2 then rejects the user turn
 # (Oct 25: 3 of 33 episodes). On an empty reply the proxy asks again with more reasoning effort, in this
 # fixed order, and stores the first non-empty reply under the original key, so replays stay identical.
@@ -82,6 +84,10 @@ class SimUserCache:
         """)
         self._db.commit()
         self.upstream_failures = 0          # read by the runner: >0 during an episode = simulator outage
+        self.upstream_500s = 0              # the part of upstream_failures that was an HTTP 500 answer: the
+                                            # simulator is up and failed on one request (see tau2_bench)
+        self.user_overflows = 0             # read by the runner: >0 during an episode = the user's context ran out
+        self.empty_replies = 0              # empty after every escalation step (stored, so replays repeat it)
 
     # ---- store -------------------------------------------------------------------------------------
     def _get(self, key: str) -> Optional[dict]:
@@ -115,6 +121,11 @@ class SimUserCache:
             hit = self._get(key)
             if hit is not None:
                 self._log(key, role, "hit")
+                if OVERFLOW in hit:             # a stored context overflow: replays reproduce it
+                    self.user_overflows += 1
+                    return 400, hit[OVERFLOW]
+                if is_empty_reply(hit):
+                    self.empty_replies += 1
                 return 200, hit
             if self.mode == "replay" or not self.upstream:
                 self._log(key, role, "replay_miss")
@@ -131,9 +142,23 @@ class SimUserCache:
             try:
                 r = requests.post(self.upstream + "/v1/chat/completions", json=fwd, timeout=self.timeout_s)
                 dt += time.time() - t0
+                if r.status_code == 400 and "exceed_context_size" in r.text:
+                    # the conversation outgrew the simulator's context: an outcome of this episode, not an
+                    # outage. Stored like a reply so the episode replays the same way.
+                    err = {"error": {"message": f"upstream returned 400: {r.text[:300]}",
+                                     "type": "exceed_context_size_error"}}
+                    with self._lock:
+                        self.user_overflows += 1
+                        self._db.execute("INSERT OR REPLACE INTO replies VALUES (?,?,?,?,?,?)",
+                                         (key, role, canonical_json(fwd), json.dumps({OVERFLOW: err}),
+                                          time.time(), dt))
+                        self._log(key, role, "user_context_overflow", dt)
+                    return 400, err
                 if r.status_code != 200:
                     with self._lock:
                         self.upstream_failures += 1
+                        if r.status_code == 500:    # the simulator is up and failed on this request
+                            self.upstream_500s += 1
                         self._log(key, role, f"upstream_{r.status_code}", dt)
                     return 503, {"error": {"message": f"upstream returned {r.status_code}: {r.text[:300]}"}}
                 resp = r.json()
@@ -150,6 +175,8 @@ class SimUserCache:
             self._db.execute("INSERT OR REPLACE INTO replies VALUES (?,?,?,?,?,?)",
                              (key, role, canonical_json(fwd), json.dumps(resp), time.time(), dt))
             self._log(key, role, "miss", dt)
+            if is_empty_reply(resp):
+                self.empty_replies += 1
         return 200, resp
 
     def backup_to(self, path: str) -> None:
@@ -230,3 +257,24 @@ def report(db_path: str) -> dict:
         return c.stats()
     finally:
         c.close()
+
+
+def merge_stores(srcs: list[str], dst: str) -> dict:
+    """Copy the replies of several per-job stores into one (``dst``), for replays. On a key present in more
+    than one store the first store wins, so pass the replayed episode's own store first. Ledgers are not
+    copied: the merged store starts with an empty ledger. Returns {src: replies added}."""
+    SimUserCache(dst, {}, mode="replay").close()        # creates the tables
+    db = sqlite3.connect(dst)
+    added = {}
+    try:
+        for i, src in enumerate(srcs):
+            db.execute(f"ATTACH DATABASE ? AS s{i}", (src,))
+            before = db.total_changes
+            db.execute(f"INSERT OR IGNORE INTO replies SELECT key, role, request, response, created, upstream_s "
+                       f"FROM s{i}.replies")
+            db.commit()
+            added[src] = db.total_changes - before
+            db.execute(f"DETACH DATABASE s{i}")
+    finally:
+        db.close()
+    return added

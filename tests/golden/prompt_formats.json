@@ -1,0 +1,304 @@
+{
+ "today": "10 November 2026",
+ "templates": {
+  "smollm3": {
+   "sha256": "3e0e275a527f249670056e0078e474eadbdd007c134b4fdfae5a7b3089702814",
+   "bos_token": ""
+  },
+  "lfm2.5-1.2b": {
+   "sha256": "ba551d58630afa3190b1be3602e28301f3d2e9bbac978dfc49d6d825171648b6",
+   "bos_token": "<|startoftext|>"
+  },
+  "lfm2.5-2.6b": {
+   "sha256": "ea663864491de7ade391839479860ca95541f892f72665c73251fbd4643b1bef",
+   "bos_token": "<|startoftext|>"
+  }
+ },
+ "cases": {
+  "bfcl_two_turns": {
+   "messages": [
+    {
+     "role": "user",
+     "content": "Move final_report.pdf into temp."
+    },
+    {
+     "role": "assistant",
+     "content": "",
+     "tool_calls": [
+      {
+       "name": "ls",
+       "arguments": {
+        "a": true
+       }
+      }
+     ],
+     "reasoning_content": ""
+    },
+    {
+     "role": "tool",
+     "name": "ls(a=True)",
+     "content": "{\"current_directory_content\": [\"final_report.pdf\", \"temp\"]}"
+    },
+    {
+     "role": "assistant",
+     "content": "",
+     "tool_calls": [
+      {
+       "name": "mv",
+       "arguments": {
+        "source": "final_report.pdf",
+        "destination": "temp"
+       }
+      },
+      {
+       "name": "ls",
+       "arguments": {}
+      }
+     ],
+     "reasoning_content": ""
+    },
+    {
+     "role": "tool",
+     "name": "mv(...)",
+     "content": "None"
+    },
+    {
+     "role": "tool",
+     "name": "ls()",
+     "content": "{\"current_directory_content\": [\"temp\"]}"
+    },
+    {
+     "role": "assistant",
+     "content": "I moved the file into temp.",
+     "reasoning_content": ""
+    },
+    {
+     "role": "user",
+     "content": "Now list what's in temp, d'accord?"
+    }
+   ],
+   "tools": [
+    {
+     "type": "function",
+     "function": {
+      "name": "ls",
+      "description": "List the files in the current directory.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "boolean",
+         "description": "Show hidden files."
+        }
+       },
+       "required": []
+      }
+     }
+    },
+    {
+     "type": "function",
+     "function": {
+      "name": "mv",
+      "description": "Move a file to a folder — keeps its name.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "source": {
+         "type": "string"
+        },
+        "destination": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "source",
+        "destination"
+       ]
+      }
+     }
+    }
+   ],
+   "expected": {
+    "smollm3": "<|im_start|>system\n## Metadata\n\nKnowledge Cutoff Date: June 2025\nToday Date: 10 November 2026\nReasoning Mode: /no_think\n\n## Custom Instructions\n\nYou are a helpful AI assistant named SmolLM, trained by Hugging Face.\n\n### Tools\n\nYou may call one or more functions to assist with the user query.\nYou are provided with function signatures within <tools></tools> XML tags:\n\n<tools>\n{'type': 'function', 'function': {'name': 'ls', 'description': 'List the files in the current directory.', 'parameters': {'type': 'object', 'properties': {'a': {'type': 'boolean', 'description': 'Show hidden files.'}}, 'required': []}}}\n{'type': 'function', 'function': {'name': 'mv', 'description': 'Move a file to a folder — keeps its name.', 'parameters': {'type': 'object', 'properties': {'source': {'type': 'string'}, 'destination': {'type': 'string'}}, 'required': ['source', 'destination']}}}\n</tools>\n\nFor each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\n<tool_call>\n{\"name\": <function-name>, \"arguments\": <args-json-object>}\n</tool_call>\n\n<|im_end|>\n<|im_start|>user\nMove final_report.pdf into temp.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n<tool_call>\n{\"name\": \"ls\", \"arguments\": {\"a\": true}}\n</tool_call><|im_end|>\n<|im_start|>user\n{\"current_directory_content\": [\"final_report.pdf\", \"temp\"]}<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n<tool_call>\n{\"name\": \"mv\", \"arguments\": {\"source\": \"final_report.pdf\", \"destination\": \"temp\"}}\n</tool_call>\n<tool_call>\n{\"name\": \"ls\", \"arguments\": {}}\n</tool_call><|im_end|>\n<|im_start|>user\nNone<|im_end|>\n<|im_start|>user\n{\"current_directory_content\": [\"temp\"]}<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\nI moved the file into temp.<|im_end|>\n<|im_start|>user\nNow list what's in temp, d'accord?<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n",
+    "lfm2.5-1.2b": "<|startoftext|><|im_start|>system\nList of tools: [{\"type\": \"function\", \"function\": {\"name\": \"ls\", \"description\": \"List the files in the current directory.\", \"parameters\": {\"type\": \"object\", \"properties\": {\"a\": {\"type\": \"boolean\", \"description\": \"Show hidden files.\"}}, \"required\": []}}}, {\"type\": \"function\", \"function\": {\"name\": \"mv\", \"description\": \"Move a file to a folder — keeps its name.\", \"parameters\": {\"type\": \"object\", \"properties\": {\"source\": {\"type\": \"string\"}, \"destination\": {\"type\": \"string\"}}, \"required\": [\"source\", \"destination\"]}}}]<|im_end|>\n<|im_start|>user\nMove final_report.pdf into temp.<|im_end|>\n<|im_start|>assistant\n<|tool_call_start|>[ls(a=True)]<|tool_call_end|><|im_end|>\n<|im_start|>tool\n{\"current_directory_content\": [\"final_report.pdf\", \"temp\"]}<|im_end|>\n<|im_start|>assistant\n<|tool_call_start|>[mv(source='final_report.pdf', destination='temp'), ls()]<|tool_call_end|><|im_end|>\n<|im_start|>tool\nNone<|im_end|>\n<|im_start|>tool\n{\"current_directory_content\": [\"temp\"]}<|im_end|>\n<|im_start|>assistant\nI moved the file into temp.<|im_end|>\n<|im_start|>user\nNow list what's in temp, d'accord?<|im_end|>\n<|im_start|>assistant\n",
+    "lfm2.5-2.6b": "<|startoftext|><|im_start|>system\nList of tools: [{\"type\": \"function\", \"function\": {\"name\": \"ls\", \"description\": \"List the files in the current directory.\", \"parameters\": {\"type\": \"object\", \"properties\": {\"a\": {\"type\": \"boolean\", \"description\": \"Show hidden files.\"}}, \"required\": []}}}, {\"type\": \"function\", \"function\": {\"name\": \"mv\", \"description\": \"Move a file to a folder — keeps its name.\", \"parameters\": {\"type\": \"object\", \"properties\": {\"source\": {\"type\": \"string\"}, \"destination\": {\"type\": \"string\"}}, \"required\": [\"source\", \"destination\"]}}}]<|im_end|>\n<|im_start|>user\nMove final_report.pdf into temp.<|im_end|>\n<|im_start|>assistant\n<|tool_call_start|>[ls(a=True)]<|tool_call_end|><|im_end|>\n<|im_start|>tool\n{\"current_directory_content\": [\"final_report.pdf\", \"temp\"]}<|im_end|>\n<|im_start|>assistant\n<|tool_call_start|>[mv(source='final_report.pdf', destination='temp'), ls()]<|tool_call_end|><|im_end|>\n<|im_start|>tool\nNone<|im_end|>\n<|im_start|>tool\n{\"current_directory_content\": [\"temp\"]}<|im_end|>\n<|im_start|>assistant\nI moved the file into temp.<|im_end|>\n<|im_start|>user\nNow list what's in temp, d'accord?<|im_end|>\n<|im_start|>assistant\n<think>"
+   }
+  },
+  "tau2_policy": {
+   "messages": [
+    {
+     "role": "system",
+     "content": "# Airline policy\nYou help users change bookings.\n- Be precise."
+    },
+    {
+     "role": "user",
+     "content": "Hi, I want to add a bag."
+    },
+    {
+     "role": "assistant",
+     "content": "Could you give me your reservation id?",
+     "reasoning_content": ""
+    },
+    {
+     "role": "user",
+     "content": "It's ZFA04Y. Pay with \"gift_card_1\".\nThanks"
+    },
+    {
+     "role": "assistant",
+     "content": "",
+     "reasoning_content": "",
+     "tool_calls": [
+      {
+       "name": "update_reservation_baggages",
+       "arguments": {
+        "reservation_id": "ZFA04Y",
+        "total_baggages": 2,
+        "nonfree_baggages": 0,
+        "payment": {
+         "payment_id": "gift_card_1",
+         "amount": 0.0,
+         "refund": false,
+         "note": null
+        },
+        "comment": "it's \"fine\"\nok"
+       }
+      }
+     ]
+    },
+    {
+     "role": "tool",
+     "content": "{\"reservation_id\": \"ZFA04Y\", \"status\": \"updated\"}"
+    }
+   ],
+   "tools": [
+    {
+     "type": "function",
+     "function": {
+      "name": "update_reservation_baggages",
+      "description": "Update bags.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "reservation_id": {
+         "type": "string"
+        },
+        "total_baggages": {
+         "type": "integer"
+        },
+        "nonfree_baggages": {
+         "type": "integer"
+        },
+        "payment": {
+         "type": "object"
+        }
+       },
+       "required": [
+        "reservation_id"
+       ]
+      }
+     }
+    }
+   ],
+   "expected": {
+    "smollm3": "<|im_start|>system\n## Metadata\n\nKnowledge Cutoff Date: June 2025\nToday Date: 10 November 2026\nReasoning Mode: /no_think\n\n## Custom Instructions\n\n# Airline policy\nYou help users change bookings.\n- Be precise.\n\n### Tools\n\nYou may call one or more functions to assist with the user query.\nYou are provided with function signatures within <tools></tools> XML tags:\n\n<tools>\n{'type': 'function', 'function': {'name': 'update_reservation_baggages', 'description': 'Update bags.', 'parameters': {'type': 'object', 'properties': {'reservation_id': {'type': 'string'}, 'total_baggages': {'type': 'integer'}, 'nonfree_baggages': {'type': 'integer'}, 'payment': {'type': 'object'}}, 'required': ['reservation_id']}}}\n</tools>\n\nFor each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\n<tool_call>\n{\"name\": <function-name>, \"arguments\": <args-json-object>}\n</tool_call>\n\n<|im_end|>\n<|im_start|>user\nHi, I want to add a bag.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\nCould you give me your reservation id?<|im_end|>\n<|im_start|>user\nIt's ZFA04Y. Pay with \"gift_card_1\".\nThanks<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n<tool_call>\n{\"name\": \"update_reservation_baggages\", \"arguments\": {\"reservation_id\": \"ZFA04Y\", \"total_baggages\": 2, \"nonfree_baggages\": 0, \"payment\": {\"payment_id\": \"gift_card_1\", \"amount\": 0.0, \"refund\": false, \"note\": null}, \"comment\": \"it's \\\"fine\\\"\\nok\"}}\n</tool_call><|im_end|>\n<|im_start|>user\n{\"reservation_id\": \"ZFA04Y\", \"status\": \"updated\"}<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n",
+    "lfm2.5-1.2b": "<|startoftext|><|im_start|>system\n# Airline policy\nYou help users change bookings.\n- Be precise.\nList of tools: [{\"type\": \"function\", \"function\": {\"name\": \"update_reservation_baggages\", \"description\": \"Update bags.\", \"parameters\": {\"type\": \"object\", \"properties\": {\"reservation_id\": {\"type\": \"string\"}, \"total_baggages\": {\"type\": \"integer\"}, \"nonfree_baggages\": {\"type\": \"integer\"}, \"payment\": {\"type\": \"object\"}}, \"required\": [\"reservation_id\"]}}}]<|im_end|>\n<|im_start|>user\nHi, I want to add a bag.<|im_end|>\n<|im_start|>assistant\nCould you give me your reservation id?<|im_end|>\n<|im_start|>user\nIt's ZFA04Y. Pay with \"gift_card_1\".\nThanks<|im_end|>\n<|im_start|>assistant\n<|tool_call_start|>[update_reservation_baggages(reservation_id='ZFA04Y', total_baggages=2, nonfree_baggages=0, payment={\"payment_id\": \"gift_card_1\", \"amount\": 0.0, \"refund\": false, \"note\": null}, comment='it\\'s \"fine\"\\nok')]<|tool_call_end|><|im_end|>\n<|im_start|>tool\n{\"reservation_id\": \"ZFA04Y\", \"status\": \"updated\"}<|im_end|>\n<|im_start|>assistant\n",
+    "lfm2.5-2.6b": "<|startoftext|><|im_start|>system\n# Airline policy\nYou help users change bookings.\n- Be precise.\nList of tools: [{\"type\": \"function\", \"function\": {\"name\": \"update_reservation_baggages\", \"description\": \"Update bags.\", \"parameters\": {\"type\": \"object\", \"properties\": {\"reservation_id\": {\"type\": \"string\"}, \"total_baggages\": {\"type\": \"integer\"}, \"nonfree_baggages\": {\"type\": \"integer\"}, \"payment\": {\"type\": \"object\"}}, \"required\": [\"reservation_id\"]}}}]<|im_end|>\n<|im_start|>user\nHi, I want to add a bag.<|im_end|>\n<|im_start|>assistant\nCould you give me your reservation id?<|im_end|>\n<|im_start|>user\nIt's ZFA04Y. Pay with \"gift_card_1\".\nThanks<|im_end|>\n<|im_start|>assistant\n<|tool_call_start|>[update_reservation_baggages(reservation_id='ZFA04Y', total_baggages=2, nonfree_baggages=0, payment={\"payment_id\": \"gift_card_1\", \"amount\": 0.0, \"refund\": false, \"note\": null}, comment='it\\'s \"fine\"\\nok')]<|tool_call_end|><|im_end|>\n<|im_start|>tool\n{\"reservation_id\": \"ZFA04Y\", \"status\": \"updated\"}<|im_end|>\n<|im_start|>assistant\n<think>"
+   }
+  },
+  "with_reasoning": {
+   "messages": [
+    {
+     "role": "user",
+     "content": "Show hidden files."
+    },
+    {
+     "role": "assistant",
+     "content": "",
+     "reasoning_content": "The user wants ls -a.",
+     "tool_calls": [
+      {
+       "name": "ls",
+       "arguments": {
+        "a": true
+       }
+      }
+     ]
+    },
+    {
+     "role": "tool",
+     "content": "{\"current_directory_content\": [\".env\"]}"
+    },
+    {
+     "role": "assistant",
+     "content": "There is one hidden file, .env.",
+     "reasoning_content": "One file."
+    },
+    {
+     "role": "user",
+     "content": "Thanks. Anything else?"
+    },
+    {
+     "role": "assistant",
+     "content": "",
+     "reasoning_content": "Check again.",
+     "tool_calls": [
+      {
+       "name": "ls",
+       "arguments": {}
+      }
+     ]
+    },
+    {
+     "role": "tool",
+     "content": "{\"current_directory_content\": []}"
+    }
+   ],
+   "tools": [
+    {
+     "type": "function",
+     "function": {
+      "name": "ls",
+      "description": "List the files in the current directory.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "a": {
+         "type": "boolean",
+         "description": "Show hidden files."
+        }
+       },
+       "required": []
+      }
+     }
+    },
+    {
+     "type": "function",
+     "function": {
+      "name": "mv",
+      "description": "Move a file to a folder — keeps its name.",
+      "parameters": {
+       "type": "object",
+       "properties": {
+        "source": {
+         "type": "string"
+        },
+        "destination": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "source",
+        "destination"
+       ]
+      }
+     }
+    }
+   ],
+   "expected": {
+    "smollm3": "<|im_start|>system\n## Metadata\n\nKnowledge Cutoff Date: June 2025\nToday Date: 10 November 2026\nReasoning Mode: /no_think\n\n## Custom Instructions\n\nYou are a helpful AI assistant named SmolLM, trained by Hugging Face.\n\n### Tools\n\nYou may call one or more functions to assist with the user query.\nYou are provided with function signatures within <tools></tools> XML tags:\n\n<tools>\n{'type': 'function', 'function': {'name': 'ls', 'description': 'List the files in the current directory.', 'parameters': {'type': 'object', 'properties': {'a': {'type': 'boolean', 'description': 'Show hidden files.'}}, 'required': []}}}\n{'type': 'function', 'function': {'name': 'mv', 'description': 'Move a file to a folder — keeps its name.', 'parameters': {'type': 'object', 'properties': {'source': {'type': 'string'}, 'destination': {'type': 'string'}}, 'required': ['source', 'destination']}}}\n</tools>\n\nFor each function call, return a json object with function name and arguments within <tool_call></tool_call> XML tags:\n<tool_call>\n{\"name\": <function-name>, \"arguments\": <args-json-object>}\n</tool_call>\n\n<|im_end|>\n<|im_start|>user\nShow hidden files.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n<tool_call>\n{\"name\": \"ls\", \"arguments\": {\"a\": true}}\n</tool_call><|im_end|>\n<|im_start|>user\n{\"current_directory_content\": [\".env\"]}<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\nThere is one hidden file, .env.<|im_end|>\n<|im_start|>user\nThanks. Anything else?<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n<tool_call>\n{\"name\": \"ls\", \"arguments\": {}}\n</tool_call><|im_end|>\n<|im_start|>user\n{\"current_directory_content\": []}<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n",
+    "lfm2.5-1.2b": "<|startoftext|><|im_start|>system\nList of tools: [{\"type\": \"function\", \"function\": {\"name\": \"ls\", \"description\": \"List the files in the current directory.\", \"parameters\": {\"type\": \"object\", \"properties\": {\"a\": {\"type\": \"boolean\", \"description\": \"Show hidden files.\"}}, \"required\": []}}}, {\"type\": \"function\", \"function\": {\"name\": \"mv\", \"description\": \"Move a file to a folder — keeps its name.\", \"parameters\": {\"type\": \"object\", \"properties\": {\"source\": {\"type\": \"string\"}, \"destination\": {\"type\": \"string\"}}, \"required\": [\"source\", \"destination\"]}}}]<|im_end|>\n<|im_start|>user\nShow hidden files.<|im_end|>\n<|im_start|>assistant\n<|tool_call_start|>[ls(a=True)]<|tool_call_end|><|im_end|>\n<|im_start|>tool\n{\"current_directory_content\": [\".env\"]}<|im_end|>\n<|im_start|>assistant\nThere is one hidden file, .env.<|im_end|>\n<|im_start|>user\nThanks. Anything else?<|im_end|>\n<|im_start|>assistant\n<think>Check again.</think><|tool_call_start|>[ls()]<|tool_call_end|><|im_end|>\n<|im_start|>tool\n{\"current_directory_content\": []}<|im_end|>\n<|im_start|>assistant\n",
+    "lfm2.5-2.6b": "<|startoftext|><|im_start|>system\nList of tools: [{\"type\": \"function\", \"function\": {\"name\": \"ls\", \"description\": \"List the files in the current directory.\", \"parameters\": {\"type\": \"object\", \"properties\": {\"a\": {\"type\": \"boolean\", \"description\": \"Show hidden files.\"}}, \"required\": []}}}, {\"type\": \"function\", \"function\": {\"name\": \"mv\", \"description\": \"Move a file to a folder — keeps its name.\", \"parameters\": {\"type\": \"object\", \"properties\": {\"source\": {\"type\": \"string\"}, \"destination\": {\"type\": \"string\"}}, \"required\": [\"source\", \"destination\"]}}}]<|im_end|>\n<|im_start|>user\nShow hidden files.<|im_end|>\n<|im_start|>assistant\n<|tool_call_start|>[ls(a=True)]<|tool_call_end|><|im_end|>\n<|im_start|>tool\n{\"current_directory_content\": [\".env\"]}<|im_end|>\n<|im_start|>assistant\nThere is one hidden file, .env.<|im_end|>\n<|im_start|>user\nThanks. Anything else?<|im_end|>\n<|im_start|>assistant\n<think>Check again.</think><|tool_call_start|>[ls()]<|tool_call_end|><|im_end|>\n<|im_start|>tool\n{\"current_directory_content\": []}<|im_end|>\n<|im_start|>assistant\n<think>"
+   }
+  }
+ }
+}

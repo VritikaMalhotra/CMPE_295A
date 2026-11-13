@@ -33,12 +33,13 @@ def _executor():
 
 def score_episode(task: Task, decoded: list[list[list[str]]], model_name: str) -> dict:
     """bfcl's multi_turn_runner after inference: turn-count check, then multi_turn_checker.
-    Empty steps are dropped first, as bfcl's eval does (is_empty_execute_response)."""
+    Empty steps are dropped first, as bfcl's eval does (is_empty_execute_response). The task's own category
+    (base / miss_func / miss_param) goes to the checker, as bfcl's eval passes it."""
     from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_checker import multi_turn_checker
     if len(decoded) != len(task.ground_truth):
         return {"valid": False, "error_type": "multi_turn:force_terminated"}
     cleaned = [[step for step in turn if step and not (len(step) == 1 and not step[0])] for turn in decoded]
-    return multi_turn_checker(cleaned, task.ground_truth, task.checker_entry(), "multi_turn_base", model_name)
+    return multi_turn_checker(cleaned, task.ground_truth, task.checker_entry(), task.category, model_name)
 
 
 def _execute_safe(execute, py_calls, calls, task, model_name):
@@ -117,7 +118,8 @@ def run_episode(spec: RunSpec, task: Task, backend, grammar_for: Optional[Callab
                 raw_text=g.raw_text, n_tool_call_blocks=g.tool_call_blocks, decoded_calls=py_calls,
                 execution_results=results, known_tools=all(c["name"] in task.tool_names for c in calls),
                 schema_errors=errs, turn_has_ground_truth=gt_nonempty, is_last_step_of_turn=ends_turn or quit_now,
-                forced_quit=quit_now))
+                forced_quit=quit_now, prompt_sha256=g.prompt_sha256, prompt_tokens_sha256=g.prompt_tokens_sha256,
+                benchmark=spec.benchmark))
             if g.bad_call_blocks:      # bfcl: the bad block crashes the next prompt build -> inference error
                 verdict = {"valid": False, "error_type": "multi_turn:inference_error"}
                 break

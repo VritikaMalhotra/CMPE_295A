@@ -1,0 +1,48 @@
+# @package _global_
+# First end-to-end run of the simulated-user job (decision 4): 1 BFCL task + 2 airline write tasks, greedy only,
+# Qwen3-0.6B BF16, same simulator settings as the reference configs. Pass: both tau2 episodes finish with
+# the agent on another GPU than the simulator, and replay=<run_id> makes zero simulator calls.
+#   bash scripts/tau2_submit.sh tau2_smoke
+experiment:
+  name: tau2_smoke
+  model: qwen3-0.6b
+  benchmark: bfcl_multi_turn_base
+  task_sample: true
+  n_tasks: 1
+  thinking: false
+  max_steps_per_turn: 20
+  baselines:
+    - {variant: bf16, backend: cuda, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}
+  baseline_seeds: [0]
+  repairs: []
+  repair_seeds: [1]
+  decoding: {temperature: 0.7, top_p: 0.8, top_k: 20, min_p: 0.0, n_predict: 4096, cache_prompt: false}
+  server: {ctx: 40960}
+  tau2_settings: &tau2               # tau2-bench-verified, as the skeleton (official evaluator, unmodified)
+    repo: amazon-agi/tau2-bench-verified
+    commit: 864350a8971a8f8ee9e7b8472e2edc380a806b0c
+    split: base
+    max_steps: 200
+    max_errors: 10
+  simuser_settings: &simuser         # C4: served by one A100/H100 job per experiment (decision 4)
+    model: gpt-oss-20b
+    file: gpt-oss-20b-MXFP4.gguf
+    hf_repo: ggml-org/gpt-oss-20b-GGUF
+    hf_revision: ef9b12f2ff56c69cf32153a02784e7a3c88bf524
+    sha256: 27cd6c432c7672cb812a92f611cf3ba7bbc35928262bb1e1253ff4ee6ae35901
+    ctx: 32768
+    temperature: 0.0
+    chat_template_kwargs: {reasoning_effort: low}
+  extra_benchmarks:
+    - name: tau2_verified_airline
+      task_ids: ["7", "8"]
+      require_write: true
+      write_tools: [book_reservation, cancel_reservation, send_certificate, update_reservation_baggages, update_reservation_flights, update_reservation_passengers]
+      tau2: *tau2
+      simuser: *simuser
+slurm:
+  time: "02:00:00"
+models:
+  qwen3-0.6b:
+    hf_repo: Qwen/Qwen3-0.6B
+    files: {bf16: Qwen3-0.6B-BF16.gguf}

@@ -64,7 +64,7 @@ def main() -> int:
     res["n_specs"] = int(re.search(r"(\d+) specs", dry).group(1)) if re.search(r"(\d+) specs", dry) else None
 
     # 2. run part of one configuration
-    run(["local=true", f"only_config={a.config}", f"limit={a.limit}", "allow_sha_mismatch=true"], env)
+    run(["local=true", f"only_config='{a.config}'", f"limit={a.limit}", "allow_sha_mismatch=true"], env)
     d = os.path.join(a.out, "skeleton", res["experiment_hash"] or "")
     eps = [json.load(open(p)) for p in glob.glob(os.path.join(d, "episodes", "*.json"))]
     eps = [e for e in eps if e.get("config_key") == a.config]

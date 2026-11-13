@@ -1,0 +1,14 @@
+{
+ "file": "/scratch/cmpe295-bertin/models/Qwen3-0.6B-R2b-LS5.5.gguf",
+ "bpw_file": 5.564612351774349,
+ "target": 5.5,
+ "within_0.1": true,
+ "predicted_bpw": 5.501264277617927,
+ "n_q8_0_tensors": 78,
+ "share_of_linear_weights_q8_0": 0.4261904761904762,
+ "weights_by_type": {
+  "Q4_0": 563871744,
+  "F32": 65536,
+  "Q8_0": 187695104
+ }
+}

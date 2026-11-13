@@ -1,0 +1,8 @@
+job 111927 on g2.hpc.coe; CUDA_VISIBLE_DEVICES=0
+0, Tesla P100-PCIE-12GB, 12288 MiB, 575.57.08
+Qwen3-0.6B: 311 tensors, 196 candidates (440.4M weights) -> /scratch/cmpe295-bertin/runs/rank/Qwen3-0.6B/tensors.json
+base logits -> /scratch/cmpe295-bertin/runs/rank_probe/Qwen3-0.6B/c1000/BF16.kld {'ctx': 512, 'chunks': 1000, 'text': '/scratch/cmpe295-bertin/data/qad_mix/rank_text_t256.txt', 'text_sha256': 'dc06ce1f93061baccb8088fc96e4673472bacc3884029febea038a9253cfa438'}
+blk.0.ffn_down.weight: KLD 0.00128 ± 0.00002 (204.5 s)
+blk.0.ffn_gate.weight: KLD 0.00077 ± 0.00001 (205.9 s)
+blk.0.ffn_up.weight: KLD 0.00115 ± 0.00002 (200.6 s)
+PROBE chunks=1000 base_s=242 score_s_total=611 tensors=3 candidates=196

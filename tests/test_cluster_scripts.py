@@ -31,6 +31,15 @@ def test_array_template_renders_and_requeues(tmp_path):
     assert "#SBATCH -A coe" in t and "#SBATCH --requeue" in t and "#SBATCH --signal=B:USR1@180" in t
     assert "trap requeue USR1" in t and 'scontrol requeue "$TASK"' in t and "-lt 5" in t
     assert "${CUDA_VISIBLE_DEVICES:-unset}" in t and "$$" not in t
+    # a config key like 2674909851e8 is a float to Hydra unless quoted (4B run, Nov 9: 26 episodes skipped)
+    assert "only_config=\"'$KEY'\"" in t
+
+
+def test_quoted_config_key_stays_a_string():
+    from hydra.core.override_parser.overrides_parser import OverridesParser
+    parse = OverridesParser.create().parse_override
+    assert parse("only_config=2674909851e8").value() != "2674909851e8"
+    assert parse("only_config='2674909851e8'").value() == "2674909851e8"
 
 
 def test_report_template_renders(tmp_path):

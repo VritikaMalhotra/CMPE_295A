@@ -31,3 +31,15 @@ def test_parity_section(tmp_path):
     text = open(write_report(d)).read()
     assert "Aligned steps: 2; identical: 1 (50.0%)" in text
     assert "First step of each episode: 1 of 1 identical" in text
+
+
+def test_report_lists_infrastructure_exclusions(tmp_path):
+    d = str(tmp_path)
+    _write(d, "a1", "cuda", ["same"])
+    os.makedirs(f"{d}/retries", exist_ok=True)
+    with open(f"{d}/retries/gone.jsonl", "w") as f:            # 4 failed attempts, never finished
+        f.write("\n".join(json.dumps({"error": "RuntimeError"}) for _ in range(4)) + "\n")
+    with open(f"{d}/retries/a1.jsonl", "w") as f:              # failed once, then finished
+        f.write(json.dumps({"error": "TimeoutError"}) + "\n")
+    text = open(write_report(d)).read()
+    assert "Excluded after 4 infrastructure failures (1): `gone`" in text

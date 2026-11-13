@@ -1,0 +1,182 @@
+{
+ "generated": "2026-11-11 22:10:09",
+ "old": "lfm2_format_6be0ff7.py",
+ "new": "lfm2_format_8c605a1.py",
+ "runs": {
+  "/scratch/cmpe295-bertin/runs/ref_lfm2p5_1p2b/3018b3dc15": {
+   "baff557601df": {
+    "task": 8,
+    "steps": 5268,
+    "episodes": 410,
+    "blocks": 2459,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "092c7593a4a6": {
+    "task": 2,
+    "steps": 3832,
+    "episodes": 397,
+    "blocks": 2006,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "961720d49b25": {
+    "task": 5,
+    "steps": 1051,
+    "episodes": 100,
+    "blocks": 589,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "f2a524d97038": {
+    "task": 4,
+    "steps": 3935,
+    "episodes": 395,
+    "blocks": 2117,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "8c452deaf07b": {
+    "task": 1,
+    "steps": 838,
+    "episodes": 99,
+    "blocks": 478,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "74dcbc876d9a": {
+    "task": 9,
+    "steps": 1368,
+    "episodes": 102,
+    "blocks": 721,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "f53079eebddd": {
+    "task": 3,
+    "steps": 1025,
+    "episodes": 100,
+    "blocks": 566,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "1920d64c959f": {
+    "task": 10,
+    "steps": 5996,
+    "episodes": 284,
+    "blocks": 2325,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "3bb643fee12b": {
+    "task": 0,
+    "steps": 3265,
+    "episodes": 398,
+    "blocks": 1803,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "d2fd946378b0": {
+    "task": 11,
+    "steps": 1572,
+    "episodes": 71,
+    "blocks": 870,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "a5f6021f7876": {
+    "task": 6,
+    "steps": 1105,
+    "episodes": 103,
+    "blocks": 547,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "8b08b7dc132c": {
+    "task": 7,
+    "steps": 272,
+    "episodes": 25,
+    "blocks": 143,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   }
+  },
+  "/scratch/cmpe295-bertin/runs/ref_lfm2p5_2p6b/86ef1012fd": {
+   "35b8013d178b": {
+    "task": 2,
+    "steps": 973,
+    "episodes": 75,
+    "blocks": 639,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "5f109e3be722": {
+    "task": 0,
+    "steps": 1505,
+    "episodes": 144,
+    "blocks": 992,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "ed32a592d915": {
+    "task": 1,
+    "steps": 1060,
+    "episodes": 100,
+    "blocks": 688,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "b3ef447f7a96": {
+    "task": 5,
+    "steps": 324,
+    "episodes": 23,
+    "blocks": 230,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "929fa15f4f1d": {
+    "task": 3,
+    "steps": 799,
+    "episodes": 58,
+    "blocks": 543,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "fbc8f6adf2d5": {
+    "task": 4,
+    "steps": 868,
+    "episodes": 67,
+    "blocks": 574,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   },
+   "8c87ea95e875": {
+    "task": 6,
+    "steps": 166,
+    "episodes": 14,
+    "blocks": 100,
+    "nul_steps": 0,
+    "surrogate_escape_steps": 0,
+    "differ": []
+   }
+  }
+ }
+}

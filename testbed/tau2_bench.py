@@ -37,10 +37,45 @@ from .spec import EpisodeResult, RunSpec, StepRow
 
 DOMAIN = "airline"
 BENCHMARK = "tau2_verified_airline"
+VERIFIED_DOMAINS = ("airline", "retail", "telecom")   # base split: 50 + 114 + 114 = 278 tasks (Workbook Ch. 3)
+
+
+def benchmark_name(domain: str) -> str:
+    return f"tau2_verified_{domain}"
 
 
 class SimulatorUnavailable(RuntimeError):
     """The simulated user could not be reached (or the C4 budget stopped it): retry, never score."""
+
+
+class SimulatorRequestFailed(RuntimeError):
+    """The simulated user is up but answered one of this episode's requests with HTTP 500 (e.g. gpt-oss output
+    that llama-server cannot parse: "does not match the expected peg-native format"). An infrastructure error
+    of this episode, not an outage: the attempt is recorded and the episode retried on a later run; after
+    MAX_INFRA_ATTEMPTS attempts it is excluded and listed (pre-registration 5). The other episodes go on."""
+
+
+def _simulator_failure(cache, fails0: int, f500_0: int, msg: str) -> RuntimeError:
+    """Every upstream failure since the episode started was an HTTP 500 answer: the simulator is up and failed on
+    a request of this episode (SimulatorRequestFailed). Anything else (unreachable, 502/503/504, the budget
+    ceiling) is an outage (SimulatorUnavailable), which stops tau2 scheduling as before."""
+    n = cache.upstream_failures - fails0
+    if n > 0 and getattr(cache, "upstream_500s", 0) - f500_0 == n:
+        return SimulatorRequestFailed(msg)
+    return SimulatorUnavailable(msg)
+
+
+def _judge_error_keeps_episode(cache, fails0: int, f500_0: int) -> bool:
+    """The NL-assertion judge is diagnostic only and runs after the episode is scored. Its error is recorded in
+    ``nl_judge`` and the episode kept, unless the simulator endpoint is down (an outage still stops scheduling, so
+    the judge can run again later). An HTTP 500 answer on the judge's request is not an outage."""
+    n = cache.upstream_failures - fails0
+    return n == 0 or isinstance(_simulator_failure(cache, fails0, f500_0, ""), SimulatorRequestFailed)
+
+
+class SimulatorEmptyReply(RuntimeError):
+    """The simulated user stayed empty after every escalation step. Deterministic (the empty reply is cached),
+    so retrying cannot help: the episode is excluded at once and listed (decision of Nov 9, 2026)."""
 
 
 class AgentEmptyReply(RuntimeError):
@@ -80,6 +115,7 @@ class Tau2Task:
     tools: list[dict]                   # OpenAI function schemas ({"type": "function", "function": {...}})
     policy: str
     raw: object = field(repr=False, default=None)   # tau2.data_model.tasks.Task
+    domain: str = DOMAIN
 
     @property
     def functions(self) -> list[dict]:
@@ -97,30 +133,68 @@ class Tau2Task:
 
 
 def write_actions(task_raw, write_tools) -> list[str]:
-    """Gold actions of a tau2 task that change the database (empty = a do-nothing agent can pass)."""
+    """Gold *agent* actions of a tau2 task that change the database (empty = a do-nothing agent can pass).
+    Telecom also has gold actions the simulated user performs on its phone (``requestor: user``); those
+    are not the agent's writes and do not count."""
     ec = getattr(task_raw, "evaluation_criteria", None)
     acts = (getattr(ec, "actions", None) or []) if ec is not None else []
-    return [a.name for a in acts if a.name in set(write_tools)]
+    return [a.name for a in acts if a.name in set(write_tools)
+            and getattr(a, "requestor", "assistant") == "assistant"]
 
 
-def load_tau2_tasks(ids: list[str], split: str = "base", write_tools: list[str] | None = None) -> list[Tau2Task]:
+def domain_write_tools(domain: str) -> list[str]:
+    """The agent tools tau2 itself marks ``@is_tool(ToolType.WRITE)`` in a domain (for airline this is the
+    six-tool list in configs/experiment/skeleton.yaml)."""
+    _quiet_litellm()
+    from tau2.environment.toolkit import ToolType
+    from tau2.registry import registry
+    kit = registry.get_env_constructor(domain)().tools
+    return sorted(n for n in kit.get_tools() if kit.tool_type(n) == ToolType.WRITE)
+
+
+def load_tau2_tasks(ids: list[str], split: str = "base", write_tools: list[str] | None = None,
+                    domain: str = DOMAIN) -> list[Tau2Task]:
     """``write_tools`` given: every task must need at least one database write, so that an agent which
     never acts cannot score 1.0 (the trap tasks 0-2 fell into on Oct 25)."""
     _quiet_litellm()
     from tau2.registry import registry
     from tau2.run import load_tasks
-    env = registry.get_env_constructor(DOMAIN)()
+    env = registry.get_env_constructor(domain)()
     tools = [t.openai_schema for t in env.get_tools()]
     policy = env.get_policy()
-    by_id = {t.id: t for t in load_tasks(DOMAIN, split)}
+    by_id = {t.id: t for t in load_tasks(domain, split)}
     missing = [i for i in ids if i not in by_id]
     if missing:
-        raise KeyError(f"tau2 {DOMAIN}/{split} has no tasks {missing}")
+        raise KeyError(f"tau2 {domain}/{split} has no tasks {missing}")
     if write_tools:
         no_write = [i for i in ids if not write_actions(by_id[i], write_tools)]
         if no_write:
             raise ValueError(f"tau2 tasks {no_write} need no database write; a do-nothing agent passes them")
-    return [Tau2Task(id=i, benchmark=BENCHMARK, tools=tools, policy=policy, raw=by_id[i]) for i in ids]
+    return [Tau2Task(id=i, benchmark=benchmark_name(domain), tools=tools, policy=policy, raw=by_id[i],
+                     domain=domain) for i in ids]
+
+
+def load_tau2_verified(split: str = "base", domains: tuple[str, ...] = VERIFIED_DOMAINS,
+                       require_write: bool = True, write_tools: dict[str, list[str]] | None = None
+                       ) -> tuple[list[Tau2Task], dict[str, list[str]]]:
+    """Every task of the split in every verified domain, in tau2's file order.
+
+    ``require_write`` keeps the skeleton's rule: a task whose gold agent actions contain no database write is
+    left out (a do-nothing agent could pass it). Write tools per domain come from ``write_tools`` or, if a
+    domain is missing there, from tau2's own ``ToolType.WRITE`` marks. Returns (tasks, excluded ids per domain)
+    so the exclusions can be reported. At commit 864350a the base split has 278 tasks; the write rule keeps
+    201 (airline 26 of 50, retail 104 of 114, telecom 71 of 114)."""
+    _quiet_litellm()
+    from tau2.run import load_tasks
+    tasks: list[Tau2Task] = []
+    excluded: dict[str, list[str]] = {}
+    for d in domains:
+        raw = {t.id: t for t in load_tasks(d, split)}
+        w = ((write_tools or {}).get(d) or domain_write_tools(d)) if require_write else None
+        excluded[d] = [i for i, t in raw.items() if not write_actions(t, w)] if w else []
+        keep = [i for i in raw if i not in set(excluded[d])]
+        tasks += load_tau2_tasks(keep, split, w, domain=d)
+    return tasks, excluded
 
 
 def _to_testbed_messages(state_msgs) -> list[dict]:
@@ -218,7 +292,9 @@ def make_agent_class():
                 n_tool_call_blocks=g.tool_call_blocks,
                 decoded_calls=[json.dumps(c, sort_keys=True) for c in use_calls], execution_results=[],
                 known_tools=all(c["name"] in self.task.tool_names for c in use_calls), schema_errors=errs,
-                turn_has_ground_truth=False, is_last_step_of_turn=False, forced_quit=False, benchmark=BENCHMARK)
+                turn_has_ground_truth=False, is_last_step_of_turn=False, forced_quit=False,
+                benchmark=self.task.benchmark,
+                prompt_sha256=g.prompt_sha256, prompt_tokens_sha256=g.prompt_tokens_sha256)
             self.step_in_turn += 1
             if use_calls:
                 msg = AssistantMessage(role="assistant", content=None, tool_calls=[
@@ -261,7 +337,7 @@ def run_tau2_episode(spec: RunSpec, task: Tau2Task, backend, grammar_for, log_st
     nl.DEFAULT_LLM_NL_ASSERTIONS = "openai/judge"
     nl.DEFAULT_LLM_NL_ASSERTIONS_ARGS = _litellm_args(api_base, sim.get("temperature", 0.0))
 
-    env = registry.get_env_constructor(DOMAIN)()
+    env = registry.get_env_constructor(task.domain)()
     try:
         user_tools = env.get_user_tools()
     except Exception:
@@ -272,10 +348,13 @@ def run_tau2_episode(spec: RunSpec, task: Tau2Task, backend, grammar_for, log_st
                   grammar=grammar, log_step=log_step)
     user = UserSimulator(tools=user_tools, instructions=str(task.raw.user_scenario), llm="openai/simuser",
                          llm_args=_litellm_args(api_base, sim.get("temperature", 0.0)))
-    orch = Orchestrator(domain=DOMAIN, agent=agent, user=user, environment=env, task=task.raw,
+    orch = Orchestrator(domain=task.domain, agent=agent, user=user, environment=env, task=task.raw,
                         max_steps=int(t2.get("max_steps", 200)), max_errors=int(t2.get("max_errors", 10)),
                         seed=spec.seed, solo_mode=False, validate_communication=False)
     fails0 = cache.upstream_failures if cache is not None else 0
+    f500_0 = getattr(cache, "upstream_500s", 0) if cache is not None else 0
+    over0 = cache.user_overflows if cache is not None else 0
+    empty0 = cache.empty_replies if cache is not None else 0
     t0 = time.time()
     termination, error_type, reward, sim_run, nl_info = "", "", 0.0, None, None
     try:
@@ -287,16 +366,25 @@ def run_tau2_episode(spec: RunSpec, task: Tau2Task, backend, grammar_for, log_st
     except AgentEmptyReply:
         termination, error_type = "agent_error", "tau2:empty_agent_reply"
     except Exception as e:
-        if cache is not None and cache.upstream_failures > fails0:
+        if cache is not None and cache.empty_replies > empty0 and cache.upstream_failures == fails0:
+            raise SimulatorEmptyReply(f"simulated user returned an empty message ({type(e).__name__}: "
+                                      f"{str(e)[:120]})") from e
+        if cache is not None and cache.user_overflows > over0 and cache.upstream_failures == fails0:
+            # the simulated user's context ran out: scored as a failed episode (reward 0), flagged apart
+            termination, error_type = "user_context_overflow", "tau2:user_context_overflow"
+        elif cache is not None and cache.upstream_failures > fails0:
+            raise _simulator_failure(cache, fails0, f500_0, str(e)) from e
+        elif "simulator" in str(e).lower() or "ServiceUnavailable" in type(e).__name__:
             raise SimulatorUnavailable(str(e)) from e
-        if "simulator" in str(e).lower() or "ServiceUnavailable" in type(e).__name__:
-            raise SimulatorUnavailable(str(e)) from e
-        raise
+        else:
+            raise
     if cache is not None and cache.upstream_failures > fails0:
-        raise SimulatorUnavailable("simulator failed during the episode")
-    if sim_run is not None:
+        raise _simulator_failure(cache, fails0, f500_0, "simulator failed during the episode")
+    if cache is not None and cache.user_overflows > over0:   # also when tau2 caught the error itself
+        termination, error_type = "user_context_overflow", "tau2:user_context_overflow"
+    if sim_run is not None and termination != "user_context_overflow":
         info = evaluate_simulation(simulation=sim_run, task=task.raw, evaluation_type=EvaluationType.ALL,
-                                   solo_mode=False, domain=DOMAIN)
+                                   solo_mode=False, domain=task.domain)
         reward = float(info.reward)
         sim_run.reward_info = info
         error_type = "" if reward == 1.0 else f"tau2:{termination}:reward_{reward:g}"
@@ -305,8 +393,8 @@ def run_tau2_episode(spec: RunSpec, task: Tau2Task, backend, grammar_for, log_st
             nl_info = {"reward": nl_res.reward,
                        "checks": [c.model_dump() for c in (nl_res.nl_assertions or [])]}
         except Exception as e:
-            if cache is not None and cache.upstream_failures > fails0:
-                raise SimulatorUnavailable(str(e)) from e
+            if cache is not None and not _judge_error_keeps_episode(cache, fails0, f500_0):
+                raise _simulator_failure(cache, fails0, f500_0, str(e)) from e
             nl_info = {"error": f"{type(e).__name__}: {str(e)[:200]}"}
     if sim_dir:
         os.makedirs(sim_dir, exist_ok=True)

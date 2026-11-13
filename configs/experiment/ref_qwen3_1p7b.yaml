@@ -1,0 +1,64 @@
+# @package _global_
+# M2 Stage 1: BF16 reference for Qwen3-1.7B on CUDA (Workbook 2 Table 38, exit criterion 1).
+# BFCL multi-turn: the study's fixed-seed sample of 100 tasks per category (base, miss_func, miss_param).
+# 4 sampled trials (Qwen3 card, seeds 1-4) + 1 greedy pass (seed 0) per task. Settings follow the open
+# decisions' proposals (docs/m2_decisions.md 1 and 5: ctx 40,960 / 4,096 cap; 4 sampled + 1 greedy).
+# tau2-bench-verified: the 201 write tasks of airline, retail and telecom (decision 6), simulated user served
+# by one A100/H100 job (decision 4): bash scripts/tau2_submit.sh ref_qwen3_1p7b. Inclusion set afterwards:
+#   python -m testbed.inclusion --run-dir $TESTBED_OUT/ref_qwen3_1p7b/<hash> --out results/m2/inclusion_qwen3-1.7b.json
+experiment:
+  name: ref_qwen3_1p7b
+  model: qwen3-1.7b
+  benchmark: bfcl_multi_turn_base
+  task_sample: true
+  n_tasks: 100
+  thinking: false
+  max_steps_per_turn: 20
+  baselines:
+    - {variant: bf16, backend: cuda}
+    - {variant: bf16, backend: cuda, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}   # greedy pass
+  baseline_seeds: [1, 2, 3, 4]
+  repairs: []
+  repair_seeds: [1]
+  decoding: {temperature: 0.7, top_p: 0.8, top_k: 20, min_p: 0.0, n_predict: 4096, cache_prompt: false}
+  server: {ctx: 40960}
+  tau2_settings: &tau2               # tau2-bench-verified, as the skeleton (official evaluator, unmodified)
+    repo: amazon-agi/tau2-bench-verified
+    commit: 864350a8971a8f8ee9e7b8472e2edc380a806b0c
+    split: base
+    max_steps: 200
+    max_errors: 10
+  simuser_settings: &simuser         # C4: served by one A100/H100 job per experiment (decision 4)
+    model: gpt-oss-20b
+    file: gpt-oss-20b-MXFP4.gguf
+    hf_repo: ggml-org/gpt-oss-20b-GGUF
+    hf_revision: ef9b12f2ff56c69cf32153a02784e7a3c88bf524
+    sha256: 27cd6c432c7672cb812a92f611cf3ba7bbc35928262bb1e1253ff4ee6ae35901
+    ctx: 32768
+    temperature: 0.0
+    chat_template_kwargs: {reasoning_effort: low}
+  extra_benchmarks:
+    - {name: bfcl_multi_turn_miss_func}
+    - {name: bfcl_multi_turn_miss_param}
+    - name: tau2_verified_airline               # all 26 write tasks (decision 6)
+      require_write: true
+      write_tools: [book_reservation, cancel_reservation, send_certificate, update_reservation_baggages, update_reservation_flights, update_reservation_passengers]
+      tau2: *tau2
+      simuser: *simuser
+    - name: tau2_verified_retail               # all 104 write tasks (decision 6)
+      require_write: true
+      write_tools: [cancel_pending_order, exchange_delivered_order_items, modify_pending_order_address, modify_pending_order_items, modify_pending_order_payment, modify_user_address, return_delivered_order_items]
+      tau2: *tau2
+      simuser: *simuser
+    - name: tau2_verified_telecom               # all 71 write tasks (decision 6)
+      require_write: true
+      write_tools: [disable_roaming, enable_roaming, refuel_data, resume_line, send_payment_request, suspend_line]
+      tau2: *tau2
+      simuser: *simuser
+slurm:                               # one array task per configuration: up to 416 tau2 or 400 BFCL episodes
+  time: "1-00:00:00"
+  max_requeue: 3
+models:
+  qwen3-1.7b:
+    hf_repo: Qwen/Qwen3-1.7B
+    files: {bf16: Qwen3-1.7B-BF16.gguf}
