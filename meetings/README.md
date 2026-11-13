@@ -18,5 +18,7 @@ Action items carry an owner and a due date; open items roll forward to the next 
 | 2026-09-30 | Team | Ekant, Vritika, Yashashav | Hardware plan change to CoE HPC; workbook consolidation |
 | 2026-10-16 | Advisor | Ekant, Vritika, Yashashav, Dr. Cordova-Diba | Results reporting, analysis plan, architecture and project schedule |
 | 2026-10-17 | Team | Ekant, Vritika, Yashashav | Advisor feedback, workbook revisions and M1 responsibilities |
+| 2026-10-30 | Advisor | Ekant, Vritika, Yashashav, Dr. Cordova-Diba | Presentation guidance, Dec. 11 wrap-up, and CMPE 295B vision-language scope |
+| 2026-11-02 | Team | Ekant, Vritika, Yashashav | M2 closeout, M3 damage-map implementation, presentation and Dec. 4 planning |
 
-Next advisor meeting: to be scheduled after the 2026-10-16 review.
+Next advisor meeting: to be scheduled after the 2026-10-30 review.
