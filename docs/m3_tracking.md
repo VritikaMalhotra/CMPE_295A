@@ -13,9 +13,9 @@ Last refresh: **2026-11-16 18:47 PST** (counts); jobs updated 2026-11-16 19:20 (
 | Qwen3-0.6B | 2,502 | 3 | pass (Qwen3 total 7,506 / 7,506) |
 | Qwen3-1.7B | 2,502 | 3 | pass |
 | Qwen3-4B | 2,504 | 1 | pass |
-| LFM2.5-1.2B | 2,495 | 10 | pass (100%) |
-| LFM2.5-2.6B | 2,504 | 1 | pass (2,504 / 2,504) |
-| SmolLM3-3B | 2,458 (98.1%, under the 99% bar) | 47 | 2,455 / 2,456, decision 17 |
+| LFM2.5-1.2B | 2,495 | 10 | pass, 2,494 / 2,494 (rerun 2026-11-16) |
+| LFM2.5-2.6B | 2,504 | 1 | pass, 2,504 / 2,504 (rerun 2026-11-16) |
+| SmolLM3-3B | 2,458 (98.1%, under the 99% bar) | 47 | pass, 2,456 / 2,456 after decision 17 (2026-11-16) |
 
 ## 2. H1 4-bit damage cells
 
@@ -91,8 +91,8 @@ Last refresh: **2026-11-16 18:47 PST** (counts); jobs updated 2026-11-16 19:20 (
 ## 4. Open issues
 
 - **Advisor decisions** 1–17, S16-1 and S16-4: **confirmed as proposed** (recorded 2026-11-16 in
-  `docs/m2_decisions.md`). Follow-ups: decision 17 (align the FR-E2 replay with the runner, rerun FR-E2 for SmolLM3
-  and LFM2.5); decision 13 (CPU arm on the fixed subset); Nov 13 meeting notes still to be written in `meetings/`.
+  `docs/m2_decisions.md`). Decision 17 done 2026-11-16 (replay aligned, FR-E2 now passes for all six models).
+  Follow-ups: decision 13 (CPU arm on the fixed subset); Nov 13 meeting notes still to be written in `meetings/`.
 - **Qwen3-1.7B Q4_0: 123 exclusions** (BF16: 3), mostly empty simulated-user replies. The deck's count (59) is
   out of date. Bears on decision 16: excluding agent-caused empty replies can hide quantization damage.
 - **Cluster queue (Yashashav to cancel):** `r2b-build` 112007 / 112012 will never start, so the `kl-check`
