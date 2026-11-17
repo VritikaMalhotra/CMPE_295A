@@ -8,6 +8,8 @@
   SmolLM3 and LFM2.5 have no bfcl-eval handler: for them the same path runs with one change, the tool-call
   extraction comes from the testbed's own parser for that model (``testbed.prompt_formats``), so their BFCL
   re-scoring checks the scoring path but not the parser. The JSON records which parser each model used.
+  An episode with a tool-call block that is not a {name, arguments} object goes to bfcl's check as an
+  inference crash, the runner's rule (decision 17); ``bad_call_block_episodes`` counts them.
 * tau2: each saved simulation (``tau2_sims/<run_id>.json``) is re-scored by tau2's ``evaluate_simulation``
   with the task loaded by tau2's ``load_tasks``; verdict = reward 1.0. Episodes with no simulation (the
   agent's or the simulated user's context ran out, or the agent's reply was empty) were scored without the
@@ -120,15 +122,33 @@ def make_handler(QwenFCHandler, model: str):
         f"testbed prompt_formats.{fmt.name} parser (no bfcl-eval handler) + bfcl-eval scoring"
 
 
+INFERENCE_CRASH = ("Error during inference: a tool-call block is not a {name, arguments} object; bfcl's handler "
+                   "raises KeyError: 'name' building the next prompt (decision 17)")
+
+
+def bad_call_blocks(fmt, raw_text: str) -> int:
+    """Blocks that parse but are not {name, arguments} objects: the runner's count (testbed/backends.py
+    parse_completion, ``bad_call_blocks``), from the logged raw text with the same parser."""
+    calls, _ = fmt.extract_tool_calls(fmt.split_think(raw_text or "")[1])
+    return len(calls) - len([c for c in calls if isinstance(c, dict) and "name" in c and "arguments" in c])
+
+
 def check_bfcl(run_dir: str, eps: pd.DataFrame, steps: pd.DataFrame, official, model: str = "qwen3") -> dict:
+    """Decision 17 (confirmed 2026-11-16): an episode with a bad call block is what bfcl's generation stores when
+    its next prompt build crashes, an error string instead of a list of responses; bfcl's own
+    ``_evaluate_single_multi_turn_entry`` then scores it ``multi_turn:inference_error``. The runner applies the
+    same rule (testbed/runner.py, ``g.bad_call_blocks``), so the replay passes that entry to the official check
+    instead of dropping the block and scoring the rest."""
+    from testbed import prompt_formats
     er, QwenFCHandler, load_dataset_entry, load_ground_truth_entry, _ = official
     handler, parser = make_handler(QwenFCHandler, model)
+    fmt = prompt_formats.for_model(model)
     eps = eps[eps.benchmark.str.startswith("bfcl_")]
     by_run = {rid: g.sort_values(["turn", "step"]) for rid, g in steps[steps.run_id.isin(set(eps.run_id))]
               .groupby("run_id")}
     prompts, answers = {}, {}
     out = {"n": 0, "agree": 0, "disagree": [], "by_benchmark": Counter(), "agree_by_benchmark": Counter(),
-           "parser": parser}
+           "parser": parser, "bad_call_block_episodes": 0}
     for e in eps.itertuples():
         cat = e.benchmark[len("bfcl_"):]
         if cat not in prompts:
@@ -136,8 +156,11 @@ def check_bfcl(run_dir: str, eps: pd.DataFrame, steps: pd.DataFrame, official, m
                                                                    include_language_specific_hint=False)}
             answers[cat] = {a["id"]: a["ground_truth"] for a in load_ground_truth_entry(cat)}
         g = by_run.get(e.run_id)
-        turns: list[list[str]] = []
-        if g is not None:
+        turns: list[list[str]] | str = []
+        if g is not None and any(bad_call_blocks(fmt, t) for t in g.raw_text):
+            turns = INFERENCE_CRASH
+            out["bad_call_block_episodes"] += 1
+        elif g is not None:
             for _, tg in g.groupby("turn", sort=True):
                 turns.append([handler._parse_query_response_prompting(SimpleNamespace(
                     choices=[SimpleNamespace(text=t or "")], usage=SimpleNamespace(prompt_tokens=0,
