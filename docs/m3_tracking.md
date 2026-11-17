@@ -77,7 +77,16 @@ Last refresh: **2026-11-16 18:47 PST** (counts); jobs updated 2026-11-16 19:20 (
   (row counts checked; originals kept in `simuser_cache_orig_017856371/`); the 8 one-attempt retry records and
   2 partial step files from the failed tasks removed, so no episode was excluded. Resubmitted: Q4_K_M 121861
   (report 121862), IQ4_XS 122010 (report 122011); simulator stop now 122012 (waits for all 11 arrays).
-- **Risk:** simulator 120510 has a 2-day walltime (ends about 2026-11-18 21:00). If it ends first, τ² episodes stay
+- **2026-11-17 08:29: simulator crash.** After 13.5 h, 120510's llama-server segfaulted (exit -11). No retry records
+  were written after the crash, so no episode was excluded. Recovery (08:40–08:55): every pending τ² array task held
+  (tasks 6–11 of the 12-task arrays, 121861, 122010), a new simulator **130139** started at the same endpoint path,
+  pending BFCL tasks set to `Nice=1000` so τ² uses the simulator first, held tasks released. SmolLM3 Q4_K_M task 6
+  (idle, waiting for an endpoint) cancelled and resubmitted as 130146. Cells whose arrays had ended with τ² episodes
+  pending were attached to 130139: Qwen3-4B Q4_0 (2 pending) 130161, Q4_K_M (1) 130163, IQ4_XS (36) 130165,
+  SmolLM3 Q4_0 (622) 130167. Simulator stop now **130169** (scancels 130139 after all arrays).
+- **Progress 2026-11-17 08:38:** Qwen3-4B Q4_0 2,503 / Q4_K_M 2,501 / IQ4_XS 2,464 finished; SmolLM3 Q4_0 1,860,
+  Q4_K_M 485; SmolLM3 IQ4_XS and all LFM2.5-2.6B cells not started; LFM2.5-1.2B Q4_K_M 2,119 / IQ4_XS 2,111.
+- **Risk:** simulator 130139 has a 2-day walltime (ends about 2026-11-19 09:40). If it ends first, τ² episodes stay
   pending (resumable): resubmit with `scripts/tau2_submit.sh <experiments>` from the same clone.
 
 ## 3. Next phase: plan to M3 (2026-12-04)
