@@ -1,6 +1,82 @@
 {
- "collected": "2026-11-12T12:28-08:00",
+ "collected": "2026-11-16T18:47-08:00",
  "runs": {
+  "ref_lfm2p5_1p2b": {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_lfm2p5_1p2b/3018b3dc15",
+   "experiment": "ref_lfm2p5_1p2b",
+   "model": "lfm2.5-1.2b-instruct",
+   "variants": [
+    "bf16"
+   ],
+   "specs": 2505,
+   "finished": 2495,
+   "excluded": 10,
+   "finished_share": 0.996,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     128,
+     130
+    ],
+    "tau2_verified_retail": [
+     512,
+     520
+    ],
+    "tau2_verified_telecom": [
+     355,
+     355
+    ]
+   }
+  },
+  "ref_lfm2p5_2p6b": {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_lfm2p5_2p6b/86ef1012fd",
+   "experiment": "ref_lfm2p5_2p6b",
+   "model": "lfm2.5-2.6b",
+   "variants": [
+    "bf16"
+   ],
+   "specs": 2505,
+   "finished": 2504,
+   "excluded": 1,
+   "finished_share": 0.9996,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     129,
+     130
+    ],
+    "tau2_verified_retail": [
+     520,
+     520
+    ],
+    "tau2_verified_telecom": [
+     355,
+     355
+    ]
+   }
+  },
   "ref_qwen3_0p6b": {
    "dir": "/scratch/cmpe295-bertin/runs/ref_qwen3_0p6b/cd314594fb",
    "experiment": "ref_qwen3_0p6b",
@@ -153,17 +229,17 @@
     ]
    }
   },
-  "ref_lfm2p5_1p2b": {
-   "dir": "/scratch/cmpe295-bertin/runs/ref_lfm2p5_1p2b/3018b3dc15",
-   "experiment": "ref_lfm2p5_1p2b",
+  "h1_lfm2p5_1p2b_iq4_xs": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_iq4_xs/52af219f58",
+   "experiment": "h1_lfm2p5_1p2b_iq4_xs",
    "model": "lfm2.5-1.2b-instruct",
    "variants": [
-    "bf16"
+    "iq4_xs"
    ],
    "specs": 2505,
-   "finished": 2495,
-   "excluded": 10,
-   "finished_share": 0.996,
+   "finished": 2056,
+   "excluded": 4,
+   "finished_share": 0.8208,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -178,11 +254,11 @@
      500
     ],
     "tau2_verified_airline": [
-     128,
+     127,
      130
     ],
     "tau2_verified_retail": [
-     512,
+     74,
      520
     ],
     "tau2_verified_telecom": [
@@ -191,17 +267,17 @@
     ]
    }
   },
-  "ref_lfm2p5_2p6b": {
-   "dir": "/scratch/cmpe295-bertin/runs/ref_lfm2p5_2p6b/86ef1012fd",
-   "experiment": "ref_lfm2p5_2p6b",
-   "model": "lfm2.5-2.6b",
+  "h1_lfm2p5_1p2b_q4_0": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_q4_0/55a6367d24",
+   "experiment": "h1_lfm2p5_1p2b_q4_0",
+   "model": "lfm2.5-1.2b-instruct",
    "variants": [
-    "bf16"
+    "q4_0"
    ],
    "specs": 2505,
-   "finished": 2504,
-   "excluded": 1,
-   "finished_share": 0.9996,
+   "finished": 2498,
+   "excluded": 7,
+   "finished_share": 0.9972,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -216,11 +292,87 @@
      500
     ],
     "tau2_verified_airline": [
-     129,
+     127,
      130
     ],
     "tau2_verified_retail": [
-     520,
+     516,
+     520
+    ],
+    "tau2_verified_telecom": [
+     355,
+     355
+    ]
+   }
+  },
+  "h1_lfm2p5_1p2b_q4_k_m": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_q4_k_m/dac01ff9a0",
+   "experiment": "h1_lfm2p5_1p2b_q4_k_m",
+   "model": "lfm2.5-1.2b-instruct",
+   "variants": [
+    "q4_k_m"
+   ],
+   "specs": 2505,
+   "finished": 2119,
+   "excluded": 0,
+   "finished_share": 0.8459,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     130,
+     130
+    ],
+    "tau2_verified_retail": [
+     134,
+     520
+    ],
+    "tau2_verified_telecom": [
+     355,
+     355
+    ]
+   }
+  },
+  "h1_qwen3_0p6b_iq4_xs": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_iq4_xs/b7e629273d",
+   "experiment": "h1_qwen3_0p6b_iq4_xs",
+   "model": "qwen3-0.6b",
+   "variants": [
+    "iq4_xs"
+   ],
+   "specs": 2505,
+   "finished": 2498,
+   "excluded": 7,
+   "finished_share": 0.9972,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     125,
+     130
+    ],
+    "tau2_verified_retail": [
+     518,
      520
     ],
     "tau2_verified_telecom": [
@@ -305,17 +457,17 @@
     ]
    }
   },
-  "h1_qwen3_0p6b_iq4_xs": {
-   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_iq4_xs/b7e629273d",
-   "experiment": "h1_qwen3_0p6b_iq4_xs",
-   "model": "qwen3-0.6b",
+  "h1_qwen3_1p7b_iq4_xs": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_1p7b_iq4_xs/bb695f9151",
+   "experiment": "h1_qwen3_1p7b_iq4_xs",
+   "model": "qwen3-1.7b",
    "variants": [
     "iq4_xs"
    ],
    "specs": 2505,
-   "finished": 2498,
-   "excluded": 7,
-   "finished_share": 0.9972,
+   "finished": 2480,
+   "excluded": 25,
+   "finished_share": 0.99,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -330,11 +482,11 @@
      500
     ],
     "tau2_verified_airline": [
-     125,
+     123,
      130
     ],
     "tau2_verified_retail": [
-     518,
+     502,
      520
     ],
     "tau2_verified_telecom": [
@@ -351,9 +503,9 @@
     "q4_0"
    ],
    "specs": 2505,
-   "finished": 2274,
-   "excluded": 91,
-   "finished_share": 0.9078,
+   "finished": 2382,
+   "excluded": 123,
+   "finished_share": 0.9509,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -372,7 +524,7 @@
      130
     ],
     "tau2_verified_retail": [
-     299,
+     407,
      520
     ],
     "tau2_verified_telecom": [
@@ -415,158 +567,6 @@
     ],
     "tau2_verified_telecom": [
      355,
-     355
-    ]
-   }
-  },
-  "h1_qwen3_1p7b_iq4_xs": {
-   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_1p7b_iq4_xs/bb695f9151",
-   "experiment": "h1_qwen3_1p7b_iq4_xs",
-   "model": "qwen3-1.7b",
-   "variants": [
-    "iq4_xs"
-   ],
-   "specs": 2505,
-   "finished": 1630,
-   "excluded": 4,
-   "finished_share": 0.6507,
-   "by_benchmark": {
-    "bfcl_multi_turn_base": [
-     500,
-     500
-    ],
-    "bfcl_multi_turn_miss_func": [
-     500,
-     500
-    ],
-    "bfcl_multi_turn_miss_param": [
-     500,
-     500
-    ],
-    "tau2_verified_airline": [
-     58,
-     130
-    ],
-    "tau2_verified_retail": [
-     72,
-     520
-    ],
-    "tau2_verified_telecom": [
-     0,
-     355
-    ]
-   }
-  },
-  "h1_lfm2p5_1p2b_q4_0": {
-   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_q4_0/55a6367d24",
-   "experiment": "h1_lfm2p5_1p2b_q4_0",
-   "model": "lfm2.5-1.2b-instruct",
-   "variants": [
-    "q4_0"
-   ],
-   "specs": 2505,
-   "finished": 0,
-   "excluded": 0,
-   "finished_share": 0.0,
-   "by_benchmark": {
-    "bfcl_multi_turn_base": [
-     0,
-     500
-    ],
-    "bfcl_multi_turn_miss_func": [
-     0,
-     500
-    ],
-    "bfcl_multi_turn_miss_param": [
-     0,
-     500
-    ],
-    "tau2_verified_airline": [
-     0,
-     130
-    ],
-    "tau2_verified_retail": [
-     0,
-     520
-    ],
-    "tau2_verified_telecom": [
-     0,
-     355
-    ]
-   }
-  },
-  "h1_lfm2p5_1p2b_q4_k_m": {
-   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_q4_k_m/dac01ff9a0",
-   "experiment": "h1_lfm2p5_1p2b_q4_k_m",
-   "model": "lfm2.5-1.2b-instruct",
-   "variants": [
-    "q4_k_m"
-   ],
-   "specs": 2505,
-   "finished": 0,
-   "excluded": 0,
-   "finished_share": 0.0,
-   "by_benchmark": {
-    "bfcl_multi_turn_base": [
-     0,
-     500
-    ],
-    "bfcl_multi_turn_miss_func": [
-     0,
-     500
-    ],
-    "bfcl_multi_turn_miss_param": [
-     0,
-     500
-    ],
-    "tau2_verified_airline": [
-     0,
-     130
-    ],
-    "tau2_verified_retail": [
-     0,
-     520
-    ],
-    "tau2_verified_telecom": [
-     0,
-     355
-    ]
-   }
-  },
-  "h1_lfm2p5_1p2b_iq4_xs": {
-   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_iq4_xs/52af219f58",
-   "experiment": "h1_lfm2p5_1p2b_iq4_xs",
-   "model": "lfm2.5-1.2b-instruct",
-   "variants": [
-    "iq4_xs"
-   ],
-   "specs": 2505,
-   "finished": 0,
-   "excluded": 0,
-   "finished_share": 0.0,
-   "by_benchmark": {
-    "bfcl_multi_turn_base": [
-     0,
-     500
-    ],
-    "bfcl_multi_turn_miss_func": [
-     0,
-     500
-    ],
-    "bfcl_multi_turn_miss_param": [
-     0,
-     500
-    ],
-    "tau2_verified_airline": [
-     0,
-     130
-    ],
-    "tau2_verified_retail": [
-     0,
-     520
-    ],
-    "tau2_verified_telecom": [
-     0,
      355
     ]
    }
