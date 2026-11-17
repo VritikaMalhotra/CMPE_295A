@@ -35,7 +35,7 @@ sim=$(sbatch --parsable --gres="$SIM_GRES" -o "$TESTBED_OUT/simuser/%j.out" \
 echo "simulator $sim ($SIM_GRES, endpoint $ENDPOINT)"
 arrs=()
 for i in "${!dirs[@]}"; do
-  arr=$(sbatch --parsable --dependency=after:"$sim" --gres="$AGENT_GRES" --exclude=cs001,cs002 \
+  arr=$(sbatch --parsable --dependency=after:"$sim" --gres="$AGENT_GRES" --exclude=cs002 \
           --export=ALL,TESTBED_SIMUSER_ENDPOINT="$ENDPOINT",LITELLM_LOCAL_MODEL_COST_MAP=True "${dirs[$i]}/array.sbatch")
   arr=${arr%%;*}
   rep=$(sbatch --parsable --dependency=afterany:"$arr" "${dirs[$i]}/report.sbatch")

@@ -3,7 +3,7 @@
 # Needs the model's BF16 file and the FR-E5-checked calibration text (docs/m3_quant.md, step 1).
 #   sbatch slurm/m3_variants.sbatch Qwen3-0.6B [IQ4_XS Q5_0-pure Q6_K-pure]
 # The imatrix pass runs the BF16 model over 200 x 512 tokens; a P100 (12 GB) holds every model in the grid at
-# BF16 with a 512-token context (as in the M2 KL jobs). A100 instead: sbatch --gres=gpu:a100:1 --exclude=cs001,cs002 ...
+# BF16 with a 512-token context (as in the M2 KL jobs). A100 instead: sbatch --gres=gpu:a100:1 --exclude=cs002 ...
 #SBATCH -J m3-variants
 #SBATCH -A coe
 #SBATCH -p gpuqs

@@ -5,8 +5,8 @@
 #   DEP=<job ids, colon-separated> bash scripts/throughput_submit.sh   # start after other GPU jobs of yours
 #   bash scripts/throughput_submit.sh report        # once all levels finished -> results/m2/throughput.json
 # Why these levels (measured 2026-11-08): every GPU partition has QoS gpu3nodes = at most 2 nodes per user.
-# P100 nodes have 1 GPU, so one account runs at most 2 P100 jobs; A100 nodes have 4 GPUs (cs001 and cs002 are
-# bad), so up to 8 single-GPU jobs fit on two A100 nodes.
+# P100 nodes have 1 GPU, so one account runs at most 2 P100 jobs; A100 nodes have 4 GPUs (cs002 is excluded:
+# GPU 0 is bad), so up to 8 single-GPU jobs fit on two A100 nodes.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 LEVELS=${LEVELS:-"p100:1 p100:4 a100:4 a100:8"}
@@ -26,7 +26,7 @@ for lv in $LEVELS; do
   .venv/bin/python -m testbed.run +experiment=throughput experiment.name="throughput_$label" dry_run=true \
     skip_hash=true | grep -E "specs|dir:"
   jid=$(sbatch --parsable ${dep:+--dependency=afterany:$dep} -J "tp-$label" -p gpuqs --gres="gpu:$gpu:1" \
-          --exclude=cs001,cs002 --array=0-$((n - 1)) --export=ALL,LABEL="$label",N="$n",PER="$PER" \
+          --exclude=cs002 --array=0-$((n - 1)) --export=ALL,LABEL="$label",N="$n",PER="$PER" \
           slurm/throughput.sbatch)
   echo "$label $n $jid" >> "$JOBS"
   echo "level $label: array $jid${dep:+ (after $dep)}"

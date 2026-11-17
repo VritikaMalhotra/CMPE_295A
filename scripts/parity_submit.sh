@@ -31,7 +31,7 @@ for m in $MODELS; do
   fi
   for v in bf16 q4_0; do
     model=$TESTBED_MODELS/${FILE[$m]}-${VAR[$v]}.gguf
-    sbatch -J "par-$m-$v-cuda" -p gpuqs --gres=gpu:p100:1 --exclude=cs001,cs002 \
+    sbatch -J "par-$m-$v-cuda" -p gpuqs --gres=gpu:p100:1 --exclude=cs002 \
       --export=ALL,MODEL="$model",BACKEND=cuda,PROMPTS="$P",OUT="$OUT/$m.$v.cuda.jsonl" slurm/parity.sbatch
     # CPU is slow: one 0.6B Q4_0 episode step took ~80 s on 4 cores (prompts are 3-5k tokens, cache off)
     sbatch -J "par-$m-$v-cpu" -p cpuqs -c 32 --mem=48G -t 72:00:00 \

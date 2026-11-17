@@ -5,7 +5,7 @@
 #SBATCH -J simuser
 #SBATCH -p gpuqs
 #SBATCH --gres=gpu:a100:1
-#SBATCH --exclude=cs001,cs002
+#SBATCH --exclude=cs002
 #SBATCH -c 8
 #SBATCH --mem=48G
 #SBATCH -t 2-01:00:00

@@ -14,7 +14,7 @@
 #SBATCH -A coe
 #SBATCH -p gpuqs
 #SBATCH --gres=gpu:1
-#SBATCH --exclude=cs001,cs002
+#SBATCH --exclude=cs002
 #SBATCH -c 8
 #SBATCH --mem=24G
 #SBATCH -t 1-12:00:00

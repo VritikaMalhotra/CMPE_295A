@@ -14,7 +14,7 @@ M=${1:?usage: rank_submit.sh <ModelName>}
 T=${RANK_TASKS:-2}; G=${RANK_GRES:-gpu:1}; N=${RANK_NICE:-50}
 export RANK_TEXT RANK_CHUNKS
 .venv/bin/python scripts/rank_tensors.py list --model "$M"
-common=(--parsable --nice="$N" --gres="$G" --exclude=cs001,cs002)
+common=(--parsable --nice="$N" --gres="$G" --exclude=cs002)
 B=$(sbatch "${common[@]}" -t 02:00:00 --mem=32G slurm/rank_tensors.sbatch "$M" base)
 A=$(sbatch "${common[@]}" -d afterok:"$B" --array=0-$((T - 1)) -t 08:00:00 --mem=32G slurm/rank_tensors.sbatch "$M" run)
 A=${A%%;*}

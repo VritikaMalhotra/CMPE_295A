@@ -6,7 +6,7 @@
 #SBATCH -A coe
 #SBATCH -p gpuqs
 #SBATCH --gres=gpu:a100:1
-#SBATCH --exclude=cs001,cs002
+#SBATCH --exclude=cs002
 #SBATCH -c 4
 #SBATCH --mem=24G
 #SBATCH -t 01:30:00

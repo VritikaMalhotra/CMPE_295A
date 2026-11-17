@@ -17,7 +17,7 @@ login with the smoke test below and adds a line to "Checked accounts".
 | Storage | home is on a file system at 100%: config only. Group folder `/scratch/cmpe295-bertin` (12 TB free, group `cmpe295-bertin`, setgid): `models/ envs/ src/ runs/ cache/ logs/`. `/data/cmpe295-bertin` (3.8 TB free) for long-lived copies |
 | GPU isolation | Slurm sets `CUDA_VISIBLE_DEVICES`, but `nvidia-smi` in a 1-GPU A100 job lists all four GPUs: use only the assigned device, never explicit IDs; every job logs it (`log_gpu`) |
 
-| Known bad nodes | **cs001** (A100, 2026-11-03): GPUs 1–3 fail CUDA initialisation, GPU 0 works. **cs002** (A100): CUDA context creation fails (`CUDA_ERROR_UNKNOWN` from PyTorch, "device busy or unavailable" from llama.cpp) on 2026-10-26 while nvidia-smi looks normal. Add `--exclude=cs001,cs002` to A100 jobs until the administrator fixes them |
+| Known bad nodes | **cs001** (A100): **fixed** — the administrator reported its GPUs OK on 2026-11-16; GPUs 0–2 passed a llama.cpp smoke test the same day (jobs 121849–121851). **cs002** (A100): CUDA context creation fails (`CUDA_ERROR_UNKNOWN` from PyTorch, "device busy or unavailable" from llama.cpp) on 2026-10-26 while nvidia-smi looks normal. On 2026-11-16 the administrator said to skip cs002's GPU 0 (`CUDA_VISIBLE_DEVICES=1,2,3`); Slurm still hands out physical GPU 0 to single-GPU jobs there (test job 121852), so A100 jobs keep `--exclude=cs002`. All cs00* nodes are out of warranty |
 | CPU pinning | none either: llama.cpp started 28 threads in a 4-CPU job. `hpc_env.sh` sets `TESTBED_CPU_THREADS=$SLURM_CPUS_PER_TASK`, which `cpu_threads` in configs/config.yaml reads |
 
 Consequences for the plan:
@@ -175,7 +175,7 @@ simulator stop 109572. Inclusion sets afterwards with `python -m testbed.inclusi
   - **104/104 episodes, no missing, unplanned or duplicate episodes or step rows.**
     `results/m2/s10_check_rerun.json`. PASS.
 - **Bad node: cs001** (A100). On 2026-11-03 GPUs 1, 2 and 3 failed CUDA initialisation ("No CUDA GPUs are
-  available") in three jobs; GPU 0 works. Until fixed, A100 jobs use `--exclude=cs001,cs002`.
+  available") in three jobs; GPU 0 works. Fixed 2026-11-16 (see the table above); A100 jobs now use `--exclude=cs002` only.
 
 ## M2 results (2026-11-08, development data; JSON in `results/m2/`)
 - **Clean-clone check, Ekant's account** (job 109482, P100 g2, commit 893fd70): fresh clone, `setup_env.sh`,

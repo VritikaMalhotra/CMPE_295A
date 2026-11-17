@@ -2,7 +2,7 @@
 # D-1 timing probe for the R2b ranking: on one GPU, BF16 base logits and a few one-tensor-at-Q4_0 scores at two
 # chunk counts, so RANK_CHUNKS can be set to the largest value at which one model's ranking takes <= 6 h on
 # 2 GPUs. Uses RANK_TEXT (the truncated ranking text) and writes to $TESTBED_OUT/rank_probe/<model>/c<chunks>.
-#   sbatch --gres=gpu:a100:1 --exclude=cs001,cs002 --export=ALL,RANK_TEXT=<file> slurm/rank_probe.sbatch Qwen3-0.6B
+#   sbatch --gres=gpu:a100:1 --exclude=cs002 --export=ALL,RANK_TEXT=<file> slurm/rank_probe.sbatch Qwen3-0.6B
 #SBATCH -J rank-probe
 #SBATCH -A coe
 #SBATCH -p gpuqs

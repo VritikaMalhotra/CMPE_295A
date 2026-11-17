@@ -67,7 +67,16 @@ Last refresh: **2026-11-16 18:47 PST** (counts); jobs updated 2026-11-16 19:20 (
 | LFM2.5-2.6B Q4_K_M | `h1_lfm2p5_2p6b_q4_k_m/01063262a7` | 120561 | 120562 |
 | LFM2.5-2.6B IQ4_XS | `h1_lfm2p5_2p6b_iq4_xs/dbae64a12c` | 120563 | 120564 |
 
-- **Simulator stop:** 120515 replaced by 120566, which waits for all 11 arrays.
+- **Simulator stop:** 120515 → 120566 → 121863 → **122012**, which waits for all 11 arrays.
+- **2026-11-16 22:15 restart.** No agent task had started (cs003 and cs004 full; cs001 and cs002 excluded). The
+  administrator reported cs001 fixed and cs002 usable without GPU 0. cs001 GPUs 0–2 passed a llama.cpp smoke test
+  (jobs 121849–121851), so every pending array now excludes only cs002 (Slurm still hands out cs002's GPU 0).
+  The first LFM2.5-1.2B tasks on cs001 then failed: the simulated-user SQLite caches in Yash's run directories were
+  `rw-r-----` (written via his `gpusafe` wrappers, not `scripts/hpc_env.sh`, which sets `umask 0007`), so the cache
+  layer crashed and the agent saw "Connection error". Fix: the 12 cache files replaced by group-writable copies
+  (row counts checked; originals kept in `simuser_cache_orig_017856371/`); the 8 one-attempt retry records and
+  2 partial step files from the failed tasks removed, so no episode was excluded. Resubmitted: Q4_K_M 121861
+  (report 121862), IQ4_XS 122010 (report 122011); simulator stop now 122012 (waits for all 11 arrays).
 - **Risk:** simulator 120510 has a 2-day walltime (ends about 2026-11-18 21:00). If it ends first, τ² episodes stay
   pending (resumable): resubmit with `scripts/tau2_submit.sh <experiments>` from the same clone.
 
@@ -75,7 +84,7 @@ Last refresh: **2026-11-16 18:47 PST** (counts); jobs updated 2026-11-16 19:20 (
 
 | Item | Owner (WB2) | Target | Status |
 |---|---|---|---|
-| Finish LFM2.5-1.2B Q4_K_M / IQ4_XS | Ekant | 2026-11-18 | queued (120511, 120513) |
+| Finish LFM2.5-1.2B Q4_K_M / IQ4_XS | Ekant | 2026-11-18 | queued (121861, 122010) |
 | Run H1 cells for Qwen3-4B, SmolLM3-3B, LFM2.5-2.6B | Ekant | ~2026-11-20 | submitted 2026-11-16 (120547–120564) |
 | Damage preview for Qwen3-1.7B and LFM2.5-1.2B (as for 0.6B) | Vritika | after cells finish | not started |
 | R1 grammars per tool-call format | Ekant | – | built (B2) |

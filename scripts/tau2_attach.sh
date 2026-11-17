@@ -21,7 +21,7 @@ for EXP in "$@"; do
   echo "$out" | grep -E "specs|dir:|wrote|WARNING" || true
   dir=$(echo "$out" | sed -n 's/^ *dir: //p')
   [ -f "$dir/array.sbatch" ] || { echo "no array.sbatch in $dir (nothing pending?)"; exit 1; }
-  arr=$(sbatch --parsable --dependency=after:"$SIM" --gres="$AGENT_GRES" --mem="$AGENT_MEM" --exclude=cs001,cs002 \
+  arr=$(sbatch --parsable --dependency=after:"$SIM" --gres="$AGENT_GRES" --mem="$AGENT_MEM" --exclude=cs002 \
           --export=ALL,TESTBED_SIMUSER_ENDPOINT="$ENDPOINT",LITELLM_LOCAL_MODEL_COST_MAP=True "$dir/array.sbatch")
   arr=${arr%%;*}
   rep=$(sbatch --parsable --dependency=afterany:"$arr" "$dir/report.sbatch")
