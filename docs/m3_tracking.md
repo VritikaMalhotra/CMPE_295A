@@ -4,7 +4,7 @@ Living tracker for the damage-map phase (M3, due 2026-12-04). Counts come from `
 the cluster against `/scratch/cmpe295-bertin/runs/` (`results/m3/run_status.json`), never typed in.
 Development data only: the registered test runs after the pre-registration is filed.
 
-Last refresh: **2026-11-16 18:47 PST** (Ekant's account, read-only over the group folder).
+Last refresh: **2026-11-16 18:47 PST** (counts); jobs updated 2026-11-16 19:20 (Ekant's account, read-only over the group folder).
 
 ## 1. BF16 references (M2): complete
 
@@ -30,9 +30,9 @@ Last refresh: **2026-11-16 18:47 PST** (Ekant's account, read-only over the grou
 | LFM2.5-1.2B Q4_0 | 2,498 | 7 | 0 | done (Nov 12) |
 | LFM2.5-1.2B Q4_K_M | 2,119 | 0 | 386 (τ² retail) | **resubmitted 2026-11-16** |
 | LFM2.5-1.2B IQ4_XS | 2,056 | 4 | 445 (τ² retail) | **resubmitted 2026-11-16** |
-| Qwen3-4B × 3 formats | – | – | 7,515 | not submitted |
-| SmolLM3-3B × 3 formats | – | – | 7,515 | not submitted |
-| LFM2.5-2.6B × 3 formats | – | – | 7,515 | not submitted |
+| Qwen3-4B × 3 formats | 0 | 0 | 7,515 | **submitted 2026-11-16** |
+| SmolLM3-3B × 3 formats | 0 | 0 | 7,515 | **submitted 2026-11-16** |
+| LFM2.5-2.6B × 3 formats | 0 | 0 | 7,515 | **submitted 2026-11-16** |
 
 ### 2026-11-16 resubmission (LFM2.5-1.2B Q4_K_M and IQ4_XS)
 
@@ -46,27 +46,53 @@ Last refresh: **2026-11-16 18:47 PST** (Ekant's account, read-only over the grou
   (IQ4_XS, 3 tasks); reports 120512, 120514; simulator stop 120515.
 - **Next:** refresh `run_status.json` when the reports finish; check the exclusion counts.
 
+### 2026-11-16 submission: the 9 remaining H1 cells
+
+- **Configs:** `configs/experiment/h1_{qwen3_4b,smollm3_3b,lfm2p5_2p6b}_{q4_0,q4_k_m,iq4_xs}.yaml`, derived from each
+  BF16 reference exactly as the existing H1 configs (only name, variant and model file differ).
+- **How:** clone of `m3-damage-runs` at `7476c23` (`/scratch/cmpe295-bertin/src/015945761/m3-damage-runs`; runner
+  code identical to `8d94524`), `scripts/tau2_attach.sh` onto simulator 120510, so all 11 arrays share one
+  simulated user and stay within the 2-node QoS.
+- **Jobs (Ekant's account), agents / report:**
+
+| Cell | Run dir | Agents | Report |
+|---|---|---|---|
+| Qwen3-4B Q4_0 | `h1_qwen3_4b_q4_0/12141ac1a9` | 120547 | 120548 |
+| Qwen3-4B Q4_K_M | `h1_qwen3_4b_q4_k_m/828a67648f` | 120549 | 120550 |
+| Qwen3-4B IQ4_XS | `h1_qwen3_4b_iq4_xs/494b882fbb` | 120551 | 120552 |
+| SmolLM3-3B Q4_0 | `h1_smollm3_3b_q4_0/6002a19027` | 120553 | 120554 |
+| SmolLM3-3B Q4_K_M | `h1_smollm3_3b_q4_k_m/4d7c2962b3` | 120555 | 120556 |
+| SmolLM3-3B IQ4_XS | `h1_smollm3_3b_iq4_xs/f27453f6dd` | 120557 | 120558 |
+| LFM2.5-2.6B Q4_0 | `h1_lfm2p5_2p6b_q4_0/3aa6ba0c98` | 120559 | 120560 |
+| LFM2.5-2.6B Q4_K_M | `h1_lfm2p5_2p6b_q4_k_m/01063262a7` | 120561 | 120562 |
+| LFM2.5-2.6B IQ4_XS | `h1_lfm2p5_2p6b_iq4_xs/dbae64a12c` | 120563 | 120564 |
+
+- **Simulator stop:** 120515 replaced by 120566, which waits for all 11 arrays.
+- **Risk:** simulator 120510 has a 2-day walltime (ends about 2026-11-18 21:00). If it ends first, τ² episodes stay
+  pending (resumable): resubmit with `scripts/tau2_submit.sh <experiments>` from the same clone.
+
 ## 3. Next phase: plan to M3 (2026-12-04)
 
 | Item | Owner (WB2) | Target | Status |
 |---|---|---|---|
-| Finish LFM2.5-1.2B Q4_K_M / IQ4_XS | Ekant | 2026-11-18 | running |
-| Submit H1 cells for Qwen3-4B, SmolLM3-3B, LFM2.5-2.6B | Ekant | start 2026-11-17 | not started; 2-node QoS limit (decision 14) |
+| Finish LFM2.5-1.2B Q4_K_M / IQ4_XS | Ekant | 2026-11-18 | queued (120511, 120513) |
+| Run H1 cells for Qwen3-4B, SmolLM3-3B, LFM2.5-2.6B | Ekant | ~2026-11-20 | submitted 2026-11-16 (120547–120564) |
 | Damage preview for Qwen3-1.7B and LFM2.5-1.2B (as for 0.6B) | Vritika | after cells finish | not started |
 | R1 grammars per tool-call format | Ekant | – | built (B2) |
 | R2 variants (R2b layer-selective beyond 0.6B) | Yashashav | 2026-11-22 | 0.6B built (5.56 bpw); `r2b-build` jobs 112007 / 112012 stuck (DependencyNeverSatisfied) |
 | QAD data (critical path) | Yashashav | – | mix manifest done |
 | Label 300 pilot steps, second labeler, kappa → codebook v1 | Vritika, Ekant | – | label kit ready |
 | Damage map v1 | Vritika | 2026-12-04 | not started |
-| File OSF pre-registration | Vritika | after advisor decisions | draft; blocked |
+| File OSF pre-registration | Vritika | this week | unblocked: decisions confirmed |
 | Report Ch. 1–2 draft to advisor | team | **2026-11-24** | outline done |
 | Demo recording | team | 2026-12-03 | storyboard done |
 | Canvas submission / Project Expo | team | 2026-12-04 / 2026-12-11 | – |
 
 ## 4. Open issues
 
-- **Advisor decisions** 1–17 and S16-1, S16-4 are still "advisor to confirm" in `docs/m2_decisions.md`;
-  Nov 13 review outcomes are not recorded in `meetings/` yet.
+- **Advisor decisions** 1–17, S16-1 and S16-4: **confirmed as proposed** (recorded 2026-11-16 in
+  `docs/m2_decisions.md`). Follow-ups: decision 17 (align the FR-E2 replay with the runner, rerun FR-E2 for SmolLM3
+  and LFM2.5); decision 13 (CPU arm on the fixed subset); Nov 13 meeting notes still to be written in `meetings/`.
 - **Qwen3-1.7B Q4_0: 123 exclusions** (BF16: 3), mostly empty simulated-user replies. The deck's count (59) is
   out of date. Bears on decision 16: excluding agent-caused empty replies can hide quantization damage.
 - **Cluster queue (Yashashav to cancel):** `r2b-build` 112007 / 112012 will never start, so the `kl-check`
