@@ -1,5 +1,5 @@
 {
- "collected": "2026-11-16T18:47-08:00",
+ "collected": "2026-11-18T12:14-08:00",
  "runs": {
   "ref_lfm2p5_1p2b": {
    "dir": "/scratch/cmpe295-bertin/runs/ref_lfm2p5_1p2b/3018b3dc15",
@@ -237,9 +237,9 @@
     "iq4_xs"
    ],
    "specs": 2505,
-   "finished": 2056,
+   "finished": 2111,
    "excluded": 4,
-   "finished_share": 0.8208,
+   "finished_share": 0.8427,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -258,7 +258,7 @@
      130
     ],
     "tau2_verified_retail": [
-     74,
+     129,
      520
     ],
     "tau2_verified_telecom": [
@@ -339,6 +339,120 @@
     ],
     "tau2_verified_telecom": [
      355,
+     355
+    ]
+   }
+  },
+  "h1_lfm2p5_2p6b_iq4_xs": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_iq4_xs/dbae64a12c",
+   "experiment": "h1_lfm2p5_2p6b_iq4_xs",
+   "model": "lfm2.5-2.6b",
+   "variants": [
+    "iq4_xs"
+   ],
+   "specs": 2505,
+   "finished": 1731,
+   "excluded": 0,
+   "finished_share": 0.691,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     103,
+     130
+    ],
+    "tau2_verified_retail": [
+     113,
+     520
+    ],
+    "tau2_verified_telecom": [
+     15,
+     355
+    ]
+   }
+  },
+  "h1_lfm2p5_2p6b_q4_0": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_q4_0/3aa6ba0c98",
+   "experiment": "h1_lfm2p5_2p6b_q4_0",
+   "model": "lfm2.5-2.6b",
+   "variants": [
+    "q4_0"
+   ],
+   "specs": 2505,
+   "finished": 2429,
+   "excluded": 3,
+   "finished_share": 0.9697,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     127,
+     130
+    ],
+    "tau2_verified_retail": [
+     520,
+     520
+    ],
+    "tau2_verified_telecom": [
+     282,
+     355
+    ]
+   }
+  },
+  "h1_lfm2p5_2p6b_q4_k_m": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_q4_k_m/01063262a7",
+   "experiment": "h1_lfm2p5_2p6b_q4_k_m",
+   "model": "lfm2.5-2.6b",
+   "variants": [
+    "q4_k_m"
+   ],
+   "specs": 2505,
+   "finished": 2223,
+   "excluded": 0,
+   "finished_share": 0.8874,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     130,
+     130
+    ],
+    "tau2_verified_retail": [
+     426,
+     520
+    ],
+    "tau2_verified_telecom": [
+     167,
      355
     ]
    }
@@ -571,8 +685,236 @@
     ]
    }
   },
+  "h1_qwen3_4b_iq4_xs": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_4b_iq4_xs/494b882fbb",
+   "experiment": "h1_qwen3_4b_iq4_xs",
+   "model": "qwen3-4b",
+   "variants": [
+    "iq4_xs"
+   ],
+   "specs": 2505,
+   "finished": 2464,
+   "excluded": 5,
+   "finished_share": 0.9836,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     129,
+     130
+    ],
+    "tau2_verified_retail": [
+     516,
+     520
+    ],
+    "tau2_verified_telecom": [
+     319,
+     355
+    ]
+   }
+  },
+  "h1_qwen3_4b_q4_0": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_4b_q4_0/12141ac1a9",
+   "experiment": "h1_qwen3_4b_q4_0",
+   "model": "qwen3-4b",
+   "variants": [
+    "q4_0"
+   ],
+   "specs": 2505,
+   "finished": 2503,
+   "excluded": 0,
+   "finished_share": 0.9992,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     130,
+     130
+    ],
+    "tau2_verified_retail": [
+     520,
+     520
+    ],
+    "tau2_verified_telecom": [
+     353,
+     355
+    ]
+   }
+  },
+  "h1_qwen3_4b_q4_k_m": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_4b_q4_k_m/828a67648f",
+   "experiment": "h1_qwen3_4b_q4_k_m",
+   "model": "qwen3-4b",
+   "variants": [
+    "q4_k_m"
+   ],
+   "specs": 2505,
+   "finished": 2501,
+   "excluded": 3,
+   "finished_share": 0.9984,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     128,
+     130
+    ],
+    "tau2_verified_retail": [
+     519,
+     520
+    ],
+    "tau2_verified_telecom": [
+     354,
+     355
+    ]
+   }
+  },
+  "h1_smollm3_3b_iq4_xs": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_smollm3_3b_iq4_xs/f27453f6dd",
+   "experiment": "h1_smollm3_3b_iq4_xs",
+   "model": "smollm3-3b",
+   "variants": [
+    "iq4_xs"
+   ],
+   "specs": 2505,
+   "finished": 2449,
+   "excluded": 36,
+   "finished_share": 0.9776,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     108,
+     130
+    ],
+    "tau2_verified_retail": [
+     493,
+     520
+    ],
+    "tau2_verified_telecom": [
+     348,
+     355
+    ]
+   }
+  },
+  "h1_smollm3_3b_q4_0": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_smollm3_3b_q4_0/6002a19027",
+   "experiment": "h1_smollm3_3b_q4_0",
+   "model": "smollm3-3b",
+   "variants": [
+    "q4_0"
+   ],
+   "specs": 2505,
+   "finished": 1860,
+   "excluded": 23,
+   "finished_share": 0.7425,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     119,
+     130
+    ],
+    "tau2_verified_retail": [
+     175,
+     520
+    ],
+    "tau2_verified_telecom": [
+     66,
+     355
+    ]
+   }
+  },
+  "h1_smollm3_3b_q4_k_m": {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_smollm3_3b_q4_k_m/4d7c2962b3",
+   "experiment": "h1_smollm3_3b_q4_k_m",
+   "model": "smollm3-3b",
+   "variants": [
+    "q4_k_m"
+   ],
+   "specs": 2505,
+   "finished": 2363,
+   "excluded": 21,
+   "finished_share": 0.9433,
+   "by_benchmark": {
+    "bfcl_multi_turn_base": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_func": [
+     500,
+     500
+    ],
+    "bfcl_multi_turn_miss_param": [
+     500,
+     500
+    ],
+    "tau2_verified_airline": [
+     25,
+     130
+    ],
+    "tau2_verified_retail": [
+     490,
+     520
+    ],
+    "tau2_verified_telecom": [
+     348,
+     355
+    ]
+   }
+  },
   "s10_requeue": {
-   "dir": "/scratch/cmpe295-bertin/runs/s10_rerun_20261110/s10_requeue/4375dbd0be",
+   "dir": "/scratch/cmpe295-bertin/runs/s10_requeue/4375dbd0be",
    "experiment": "s10_requeue",
    "model": "qwen3-0.6b",
    "variants": [
@@ -689,6 +1031,93 @@
   "2026-11-12 09:18:44 EVENT cs002 DRAIN by root 2026-11-12T08:40:23 (Reason=hw). Running jobs continue (simuser 112691 to Fri 13:49, park 112689, 111935_8); new GPU jobs only on cs004 under the 2-node cap. ACTION 113224 ExcNodeList=cs001,cs002; simuser successor 112692 unpinned (was -w cs002): ReqNodeList cleared, ExcNodeList=cs001,cs002. Note: 112691 has --requeue and ReqNodeList=cs002; if cs002 reboots, check its state (a requeued 112691 pending on cs002 blocks afterany).",
   "2026-11-12 09:49:36 SUBMIT 113236 a2-lfm26b-out (cpuqs, CMPE_295A-ekant 8d94524, shadow parquet): LFM2.5-2.6B inclusion + FR-E2 (R-3). 113224 ended 09:45: telecom 3/3 finished in pass 1; report 113225: 2504/2505 finished, 1 excluded",
   "2026-11-12 11:55:48 SUBMIT 113286 tb-rerun Qwen3-1.7B Q4_K_M retail config 3e887613d1be (111935_8 ended 11:03 409/416 + 6 excluded; d3a6609728d8 task 20 seed 3 pending, 1 of 4 simulator attempts), retry loop from CMPE_295A-a2, shared endpoint, nice 0, exclude cs001,cs002 (R-1); SUBMIT 113287 report_only afterany:113286 (R-2; 111936 ran 11:31: 2495/2505). Note: Mac slept ~10:2x-11:35 (lid closed), job-end watcher paused; events audited on wake",
-  "2026-11-12 11:56:01 ACTION nice: H1 arrays 111937/111939/111941/111943 70->100 (aged above retry 113286), B3 GPU 150->180 (R-5)"
+  "2026-11-12 11:56:01 ACTION nice: H1 arrays 111937/111939/111941/111943 70->100 (aged above retry 113286), B3 GPU 150->180 (R-5)",
+  "2026-11-12 16:21 slot-monitor ALERT: job ended badly: 111934 tb-h1_qwen3_1p7b_q4_0-r+ FAILED 00:00:00 c18",
+  "2026-11-12 16:31 slot-monitor ALERT: job ended badly: 111938 tb-h1_qwen3_1p7b_iq4_xs+ FAILED 00:00:00 c18",
+  "2026-11-12 18:18:39 SUBMIT 113457 tb-rerun Qwen3-1.7B Q4_0 retail sampled config 844cbb5cf2b0 (111933_8 ended 16:20: 326/416 + 89 excluded, 1 pending after a simulator HTTP 500), retry loop, shared endpoint, nice 0, exclude cs001,cs002 (R-1); SUBMIT 113458 report_only afterany:113457 --exclude=c18 (R-2; 111934 FAILED 16:20 at start on c18); SUBMIT 113459 IQ4_XS report_only --exclude=c18 (111938 FAILED 16:30 on c18; 111937 complete). Cluster was unreachable ~16:14-18:17 (Mac sleep, VPN)",
+  "2026-11-12 18:18:57 ACTION ExcNodeList=c18 on pending report jobs 111940/111942/111944 and simuser-stop 112693 (c18 failed 111934/111938 at start)",
+  "2026-11-12 18:19:54 ACTION CMPE_295A-ekant moved 8d94524 -> aff0987 (final week; idle: no job running from it); SUBMIT 113461 test-suite (Done 11)",
+  "2026-11-12 19:22 slot-monitor ACTION: requeued 112006_1 (B3 ranking, resumable) on g4 so agents can take cs003 ([1, 2] healthy free) ",
+  "2026-11-12 19:24:21 ACTION nice: H1 arrays 111939/111941/111943 100->130 (aged above retry 113457: 10814 vs 10804); 111939_5/_6 took the cs003 slots freed by the monitor requeue of 112006_1 at 19:22 (R-5)",
+  "2026-11-12 19:24:32 ACTION nice: H1 111939/111941/111943 130->160, B3 112006/112011/112008/112013 180->220 (margin for overnight aging; retry 113457 first)",
+  "2026-11-12 20:12 slot-monitor INFO: time limit near; resubmitted as 113501",
+  "2026-11-12 20:13 slot-monitor INFO: slot-monitor started (job 113501)",
+  "2026-11-12 21:23 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_q4_k_m/dac01ff9a0/slurm_logs/111941_6.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-12 21:23 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_q4_0/55a6367d24/slurm_logs/111939_10.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-12 21:23:22 EVENT cs002 NODE FAILURE 21:19:28: simuser 112691 cancelled+requeued (pinned to cs002, IDLE+DRAIN), park 112689 requeued, endpoint file removed; tau2 tasks 111939_10 (92/284) and 111941_6 (2/104) stopped with simulated user unavailable. ACTION unpinned 112691 (ReqNodeList cleared, ExcNodeList=cs001,cs002) so it restarts on a healthy A100; successor 112692 still afterany:112691",
+  "2026-11-12 21:28:34 SIM UP 112691 on cs003 21:26:31 (endpoint rewritten). SUBMIT 113536 tb-rerun LFM2.5-1.2B Q4_0 telecom 6872087ca29e (111939_10 stopped 21:19 at 92/284, simulator outage) and 113537 tb-rerun LFM2.5-1.2B Q4_K_M airline f4c5c5691785 (111941_6 stopped at 2/104); nice 0, exclude cs001,cs002, shared endpoint (R-1). SUBMIT 113538 Q4_0 report_only afterany:113536 --exclude=c18 (111940 ran 21:19); 111942 dependency += afterany:113537 (R-2)",
+  "2026-11-12 21:58 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_q4_k_m/dac01ff9a0/slurm_logs/111941_8.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-12 23:08 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_iq4_xs/52af219f58/slurm_logs/111943_8.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-12 23:18 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_iq4_xs/52af219f58/slurm_logs/111943_9.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-13 01:03 slot-monitor ALERT: job ended badly: 112011_0 rank-tensors FAILED 00:00:25 g4",
+  "2026-11-13 01:03 slot-monitor ALERT: job ended badly: 112011_1 rank-tensors FAILED 00:00:10 g7",
+  "2026-11-13 01:03 slot-monitor ALERT: job ended badly: 112692 simuser CANCELLED by + 00:00:00 None assi+",
+  "2026-11-13 01:03 slot-monitor ALERT: job ended badly: 112689 park-bad-gpu CANCELLED by + 00:00:00 cs002",
+  "2026-11-13 01:03 slot-monitor ALERT: job ended badly: 112691 simuser CANCELLED by + 03:34:29 cs003",
+  "2026-11-13 01:08 slot-monitor ALERT: simulated user unhealthy twice in a row (endpoint error FileNotFoundError)",
+  "2026-11-13 09:05 slot-monitor ALERT: job ended badly: 112006_0 rank-tensors TIMEOUT 08:00:20 g7",
+  "2026-11-13 09:05 slot-monitor ALERT: job ended badly: 112006_1 rank-tensors TIMEOUT 08:00:06 g4",
+  "2026-11-13 20:02 slot-monitor INFO: time limit near; resubmitted as 114077",
+  "2026-11-13 20:02 slot-monitor INFO: slot-monitor started (job 114077)",
+  "2026-11-14 19:51 slot-monitor INFO: time limit near; resubmitted as 115718",
+  "2026-11-14 19:51 slot-monitor INFO: slot-monitor started (job 115718)",
+  "2026-11-15 19:40 slot-monitor INFO: time limit near; resubmitted as 116501",
+  "2026-11-15 19:40 slot-monitor INFO: slot-monitor started (job 116501)",
+  "2026-11-15 21:30 slot-monitor ALERT: job ended badly: 116600 pa3-flow FAILED 00:00:03 cs003",
+  "2026-11-15 21:30 slot-monitor ALERT: job ended badly: 116601 pa3-flow FAILED 00:00:07 cs003",
+  "h1_lfm2p5_1p2b_q4_k_m sim=120510 array=120511 report=120512 2026-11-16T18:57:00-08:00",
+  "h1_lfm2p5_1p2b_iq4_xs sim=120510 array=120513 report=120514 2026-11-16T18:57:00-08:00",
+  "h1_qwen3_4b_q4_0 sim=120510 array=120547 report=120548 attached 2026-11-16T19:17:36-08:00",
+  "h1_qwen3_4b_q4_k_m sim=120510 array=120549 report=120550 attached 2026-11-16T19:17:43-08:00",
+  "h1_qwen3_4b_iq4_xs sim=120510 array=120551 report=120552 attached 2026-11-16T19:17:49-08:00",
+  "h1_smollm3_3b_q4_0 sim=120510 array=120553 report=120554 attached 2026-11-16T19:17:56-08:00",
+  "h1_smollm3_3b_q4_k_m sim=120510 array=120555 report=120556 attached 2026-11-16T19:18:02-08:00",
+  "h1_smollm3_3b_iq4_xs sim=120510 array=120557 report=120558 attached 2026-11-16T19:18:09-08:00",
+  "h1_lfm2p5_2p6b_q4_0 sim=120510 array=120559 report=120560 attached 2026-11-16T19:18:15-08:00",
+  "h1_lfm2p5_2p6b_q4_k_m sim=120510 array=120561 report=120562 attached 2026-11-16T19:18:21-08:00",
+  "h1_lfm2p5_2p6b_iq4_xs sim=120510 array=120563 report=120564 attached 2026-11-16T19:18:28-08:00",
+  "simuser-stop 120515 replaced by 120566 (waits for 11 arrays) 2026-11-16T19:18:36-08:00",
+  "2026-11-16 19:28 slot-monitor INFO: time limit near; resubmitted as 120675",
+  "2026-11-16 19:28 slot-monitor INFO: slot-monitor started (job 120675)",
+  "h1_lfm2p5_1p2b_q4_k_m sim=120510 array=121861 report=121862 attached 2026-11-16T22:20:19-08:00",
+  "simuser-stop 120566 replaced by 121863; Q4_K_M rerun 121861 (cache perms fixed) 2026-11-16T22:20:30-08:00",
+  "h1_lfm2p5_1p2b_iq4_xs sim=120510 array=122010 report=122011 attached 2026-11-16T22:32:24-08:00",
+  "simuser-stop 121863 replaced by 122012; IQ4_XS rerun 122010 2026-11-16T22:32:24-08:00",
+  "2026-11-17 08:31 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_qwen3_4b_iq4_xs/494b882fbb/slurm_logs/120551_10.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-17 08:31 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_smollm3_3b_q4_0/6002a19027/slurm_logs/120553_8.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-17 08:31 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_smollm3_3b_q4_0/6002a19027/slurm_logs/120553_9.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-17 08:31 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_smollm3_3b_q4_0/6002a19027/slurm_logs/120553_10.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-17 08:31 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_smollm3_3b_q4_0/6002a19027/slurm_logs/120553_11.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "new simulator 130139 after 120510 segfault (llama-server -11, 2026-11-17 08:29) 2026-11-17T08:39:58-08:00",
+  "SmolLM3 Q4_K_M task 6 rerun 130146; simuser-stop 122012 replaced by 130147 (stops 130139) 2026-11-17T08:40:50-08:00",
+  "h1_qwen3_4b_q4_0 sim=130139 array=130161 report=130162 attached 2026-11-17T08:41:50-08:00",
+  "h1_qwen3_4b_q4_k_m sim=130139 array=130163 report=130164 attached 2026-11-17T08:41:56-08:00",
+  "h1_qwen3_4b_iq4_xs sim=130139 array=130165 report=130166 attached 2026-11-17T08:42:02-08:00",
+  "h1_smollm3_3b_q4_0 sim=130139 array=130167 report=130168 attached 2026-11-17T08:42:08-08:00",
+  "post-crash reruns 130161:130163:130165:130167: (Qwen3-4B x3, SmolLM3 Q4_0); simuser-stop 130147 replaced by 130169 2026-11-17T08:42:08-08:00",
+  "2026-11-17 10:41 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_smollm3_3b_q4_k_m/4d7c2962b3/slurm_logs/120555_9.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-17 11:16 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_smollm3_3b_iq4_xs/f27453f6dd/slurm_logs/120557_6.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-17 15:37 slot-monitor ALERT: job ended badly: 132336 wf4-probe-p100 FAILED 00:00:11 g4",
+  "2026-11-17 18:38 slot-monitor ALERT: job ended badly: 132422 wf4-c2 FAILED 00:00:02 g19",
+  "2026-11-17 18:43 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_q4_k_m/01063262a7/slurm_logs/120561_10.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-17 18:43 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_q4_k_m/01063262a7/slurm_logs/120561_8.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-17 18:43 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_q4_0/3aa6ba0c98/slurm_logs/120559_10.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-17 18:43 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_iq4_xs/dbae64a12c/slurm_logs/120563_10.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-17 18:43 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_iq4_xs/dbae64a12c/slurm_logs/120563_8.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-17 18:43 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_iq4_xs/dbae64a12c/slurm_logs/120563_6.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-17 18:43 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_iq4_xs/dbae64a12c/slurm_logs/120563_9.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-17 19:18 slot-monitor INFO: time limit near; resubmitted as 132890",
+  "2026-11-17 19:18 slot-monitor INFO: slot-monitor started (job 132890)",
+  "h1_lfm2p5_1p2b_q4_k_m sim=149848 array=149849 report=149850 2026-11-18T12:14:28-08:00",
+  "h1_lfm2p5_1p2b_iq4_xs sim=149848 array=149851 report=149852 2026-11-18T12:14:28-08:00",
+  "h1_lfm2p5_2p6b_q4_0 sim=149848 array=149853 report=149854 2026-11-18T12:14:28-08:00",
+  "h1_lfm2p5_2p6b_q4_k_m sim=149848 array=149855 report=149856 2026-11-18T12:14:28-08:00",
+  "h1_lfm2p5_2p6b_iq4_xs sim=149848 array=149857 report=149858 2026-11-18T12:14:28-08:00",
+  "h1_qwen3_4b_q4_0 sim=149848 array=149859 report=149860 2026-11-18T12:14:28-08:00",
+  "h1_qwen3_4b_q4_k_m sim=149848 array=149861 report=149862 2026-11-18T12:14:28-08:00",
+  "h1_qwen3_4b_iq4_xs sim=149848 array=149863 report=149864 2026-11-18T12:14:28-08:00",
+  "h1_smollm3_3b_q4_0 sim=149848 array=149865 report=149866 2026-11-18T12:14:28-08:00",
+  "h1_smollm3_3b_q4_k_m sim=149848 array=149867 report=149868 2026-11-18T12:14:28-08:00",
+  "h1_smollm3_3b_iq4_xs sim=149848 array=149869 report=149870 2026-11-18T12:14:28-08:00"
  ]
 }

@@ -4,7 +4,7 @@ Living tracker for the damage-map phase (M3, due 2026-12-04). Counts come from `
 the cluster against `/scratch/cmpe295-bertin/runs/` (`results/m3/run_status.json`), never typed in.
 Development data only: the registered test runs after the pre-registration is filed.
 
-Last refresh: **2026-11-16 18:47 PST** (counts); jobs updated 2026-11-16 19:20 (Ekant's account, read-only over the group folder).
+Last refresh: **2026-11-18 12:14 PST** (Ekant's account, read-only over the group folder).
 
 ## 1. BF16 references (M2): complete
 
@@ -86,7 +86,13 @@ Last refresh: **2026-11-16 18:47 PST** (counts); jobs updated 2026-11-16 19:20 (
   SmolLM3 Q4_0 (622) 130167. Simulator stop now **130169** (scancels 130139 after all arrays).
 - **Progress 2026-11-17 08:38:** Qwen3-4B Q4_0 2,503 / Q4_K_M 2,501 / IQ4_XS 2,464 finished; SmolLM3 Q4_0 1,860,
   Q4_K_M 485; SmolLM3 IQ4_XS and all LFM2.5-2.6B cells not started; LFM2.5-1.2B Q4_K_M 2,119 / IQ4_XS 2,111.
-- **Risk:** simulator 130139 has a 2-day walltime (ends about 2026-11-19 09:40). If it ends first, τ² episodes stay
+- **2026-11-17 18:42: second simulator crash.** 130139's llama-server segfaulted (exit -11) after 10 h, like 120510
+  after 13.5 h. No retry records after the crash; no episode excluded. By 2026-11-18 12:12 every BFCL episode of all
+  18 H1 cells was finished; 2,707 τ² episodes were pending in 11 cells (`results/m3/run_status.json`, 12:14).
+  Resubmitted with `scripts/tau2_submit.sh` (all 11 experiments, existing run directories): simulator **149848**
+  (cs001), arrays 149849–149869 (odd), reports 149850–149870 (even), stop 149871.
+- **Risk:** gpt-oss llama-server has segfaulted twice (after 13.5 h and 10 h). If 149848 crashes, τ² stops and the
+  episodes stay pending: check for retry records after the crash time, then rerun the same `tau2_submit.sh` command. If it ends first, τ² episodes stay
   pending (resumable): resubmit with `scripts/tau2_submit.sh <experiments>` from the same clone.
 
 ## 3. Next phase: plan to M3 (2026-12-04)
