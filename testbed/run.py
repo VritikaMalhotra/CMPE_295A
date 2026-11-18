@@ -18,6 +18,7 @@ import sys
 import time
 import traceback
 from collections import OrderedDict
+from typing import Optional
 
 import hydra
 from omegaconf import DictConfig, OmegaConf
@@ -30,6 +31,7 @@ from .grammar import grammars_for, task_grammar, task_grammar_free
 from .logger import MAX_INFRA_ATTEMPTS, StepLogger, record_retry, retry_count, to_parquet
 
 MAX_SIM_REQUEST_FAILS = 3   # this many episodes in a row with a simulator HTTP 500: stop as for an outage
+MAX_OUTAGE_REQUEUES = 3     # per episode: re-run it after the simulator came back (an outage is never an attempt)
 from .profiler import GpuMeter
 from .runner import run_episode
 from .spec import RunSpec
@@ -140,9 +142,12 @@ class SimStack:
         self.server = None
         upstream = None
         endpoint = cfg.get("simuser_endpoint")
-        if mode == "live" and endpoint:                 # the experiment's simulator job (decision 4)
+        self.endpoint = _abs(endpoint) if (mode == "live" and endpoint) else None
+        self.sim = sim
+        self.wait_s = float(cfg.get("simuser_wait_s") or 1800)
+        if self.endpoint:                               # the experiment's simulator job (decision 4)
             from .simuser_service import wait_for_endpoint
-            upstream = wait_for_endpoint(_abs(endpoint), sim, timeout_s=float(cfg.get("simuser_wait_s") or 1800))
+            upstream = wait_for_endpoint(self.endpoint, sim, timeout_s=self.wait_s)
         elif mode == "live":
             scfg = ServerConfig(binary=binary, model_path=_sim_file(cfg, sim), backend="cuda",
                                 ctx=int(sim.get("ctx", 32768)), seed=0, extra_args=("--jinja",))
@@ -156,6 +161,13 @@ class SimStack:
                                   max_upstream_hours=cfg.get("simuser_max_hours"))
         self.proxy = CacheProxy(self.cache).__enter__()
         self.base_url = self.proxy.base_url
+
+    def reconnect(self) -> Optional[str]:
+        """After an outage: the restarted simulator job's URL (cache upstream switched to it), or None."""
+        if not self.endpoint:
+            return None
+        from .simuser_service import reconnect
+        return reconnect(self.cache, self.endpoint, self.sim, timeout_s=self.wait_s)
 
     def sync(self) -> None:
         if self.db != self.dir_copy:
@@ -201,6 +213,7 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
     sim: SimStack | None = None
     sim_down = False
     sim_req_fails = 0           # consecutive SimulatorRequestFailed; MAX_SIM_REQUEST_FAILS in a row = an outage
+    outages: dict[str, int] = {}  # run_id -> times re-queued after a simulator outage
     logs = os.path.join(r.dir, "server_logs")
     os.makedirs(logs, exist_ok=True)
     t_all = time.time()
@@ -299,6 +312,17 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
                         continue
                     if type(e).__name__ == "SimulatorUnavailable":
                         log.abort()
+                        # the simulator job restarts a crashed llama-server (slurm/simuser.sbatch): wait for it,
+                        # then run this episode again at the end of the group; an outage is never an attempt
+                        outages[s.run_id] = outages.get(s.run_id, 0) + 1
+                        url = sim.reconnect() if outages[s.run_id] <= MAX_OUTAGE_REQUEUES else None
+                        if url:
+                            print(f"  {s.task_id} seed={s.seed}: simulated user unavailable ({e}); reconnected to "
+                                  f"{url}, episode queued again ({outages[s.run_id]} of {MAX_OUTAGE_REQUEUES})",
+                                  flush=True)
+                            sim_req_fails = 0
+                            group.append(s)             # the for loop below reaches appended items
+                            continue
                         print(f"  {s.task_id} seed={s.seed}: simulated user unavailable ({e}); "
                               "stopping tau2 scheduling, episodes stay pending", flush=True)
                         sim_down = True

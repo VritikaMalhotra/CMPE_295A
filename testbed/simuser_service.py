@@ -9,6 +9,8 @@ need this job.
                           alive; the file is removed when the job stops.
 * ``wait_for_endpoint`` - agent side: wait for the file, check it serves the experiment's simulator (model
                           file, SHA-256, context), check /health, return the URL.
+* ``reconnect``         - agent side, after an outage: wait for the restarted simulator and switch the cache's
+                          upstream to its new URL (the job restarts a crashed llama-server, 2026-11-18).
 
     python -m testbed.run +experiment=<exp> simuser_serve=true simuser_endpoint=<file>   # the simulator job
     TESTBED_SIMUSER_ENDPOINT=<file> python -m testbed.run +experiment=<exp> local=true  # an agent job
@@ -85,6 +87,18 @@ def wait_for_endpoint(path: str, sim: dict, timeout_s: float = 1800, poll_s: flo
         if time.time() >= deadline:
             raise RuntimeError(f"no simulated user at {path} after {timeout_s:.0f}s: {last}")
         time.sleep(poll_s)
+
+
+def reconnect(cache, path: str, sim: dict, timeout_s: float = 1800, poll_s: float = 10) -> Optional[str]:
+    """Agent side, after an outage: wait for the simulator job to announce itself again (slurm/simuser.sbatch
+    restarts a crashed llama-server on a new port and rewrites ``path``), point ``cache`` at it and return its
+    URL; None if none comes back within ``timeout_s`` (the runner then leaves the tau2 episodes pending)."""
+    try:
+        url = wait_for_endpoint(path, sim, timeout_s=timeout_s, poll_s=poll_s)
+    except RuntimeError:
+        return None
+    cache.upstream = url.rstrip("/")
+    return url
 
 
 def serve(sim: dict, model_path: str, binary: str, endpoint: str, log_path: str, parallel: int = 4,

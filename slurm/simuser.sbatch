@@ -11,9 +11,28 @@
 #SBATCH -t 2-01:00:00
 #SBATCH -A coe
 #SBATCH -o simuser_%j.out
+#
+# Restart: gpt-oss's llama-server segfaulted twice after 10-13 h (jobs 120510 and 130139, 2026-11-17). When the
+# service exits with an error it is started again on a new port and rewrites $ENDPOINT; agent jobs wait for the
+# new endpoint (testbed.simuser_service.reconnect) and re-run the interrupted episode. At most
+# SIMUSER_MAX_RESTARTS restarts (default 20). scancel (the cleanup job) stops the loop.
 set -euo pipefail
 source scripts/hpc_env.sh
 log_gpu
 source .venv/bin/activate
 export LITELLM_LOCAL_MODEL_COST_MAP=True
-exec python -m testbed.run +experiment="$EXP" simuser_serve=true simuser_endpoint="$ENDPOINT" skip_hash=true
+MAX_RESTARTS=${SIMUSER_MAX_RESTARTS:-20}
+stop=""; child=""
+trap 'stop=1; [ -n "$child" ] && kill -TERM "$child" 2>/dev/null' TERM INT
+set +e
+for ((i = 0; i <= MAX_RESTARTS; i++)); do
+  python -m testbed.run +experiment="$EXP" simuser_serve=true simuser_endpoint="$ENDPOINT" skip_hash=true &
+  child=$!
+  wait "$child"; rc=$?
+  [ -n "$stop" ] && { wait "$child" 2>/dev/null; echo "simuser: stopped"; exit 0; }
+  [ "$rc" -eq 0 ] && exit 0
+  echo "simuser: service exited with $rc at $(date -Iseconds) (start $((i + 1))); restart $((i + 1)) of $MAX_RESTARTS in 15 s" >&2
+  sleep 15
+done
+echo "simuser: gave up after $MAX_RESTARTS restarts" >&2
+exit 1

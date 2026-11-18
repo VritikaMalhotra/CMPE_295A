@@ -11,7 +11,7 @@ import pytest
 from testbed.backends import ServerConfig
 from testbed.run import _cache_tag, cache_file_name, shard_members
 from testbed.simuser_cache import SimUserCache, merge_stores
-from testbed.simuser_service import (check_record, endpoint_record, remove_endpoint, wait_for_endpoint,
+from testbed.simuser_service import (check_record, endpoint_record, reconnect, remove_endpoint, wait_for_endpoint,
                                      write_endpoint)
 
 SIM = {"model": "gpt-oss-20b", "file": "gpt-oss-20b-MXFP4.gguf", "sha256": "a" * 64, "ctx": 32768}
@@ -61,6 +61,23 @@ def test_wait_for_endpoint(tmp_path):
             wait_for_endpoint(path, {**SIM, "file": "other.gguf"}, timeout_s=3600)
     with pytest.raises(RuntimeError, match="unreachable"):                   # the job died without cleanup
         wait_for_endpoint(path, SIM, timeout_s=0)
+
+
+def test_reconnect_switches_to_the_restarted_simulator(tmp_path):
+    """After a crash the simulator job restarts on a new port and rewrites the endpoint file (simuser.sbatch)."""
+    path = str(tmp_path / "ep.json")
+    cache = SimpleNamespace(upstream="http://old-host:1")
+    assert reconnect(cache, path, SIM, timeout_s=0) is None                # nothing came back: runner stops tau2
+    assert cache.upstream == "http://old-host:1"
+    with Health() as h:
+        def restart():                                                     # the new service appears later
+            write_endpoint(path, endpoint_record(SIM, h.url + "/", 32768, 4))
+        t = threading.Timer(0.3, restart)
+        t.start()
+        assert reconnect(cache, path, SIM, timeout_s=10, poll_s=0.1) == h.url + "/"
+        t.join()
+        assert cache.upstream == h.url                                     # no trailing slash, as SimUserCache
+    assert reconnect(cache, path, {**SIM, "sha256": "b" * 64}, timeout_s=0) is None   # a different simulator
 
 
 def test_remove_endpoint_only_own_file(tmp_path):
