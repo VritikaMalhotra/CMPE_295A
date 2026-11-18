@@ -5,7 +5,7 @@
 #SBATCH -J simuser
 #SBATCH -p gpuqs
 #SBATCH --gres=gpu:a100:1
-#SBATCH --exclude=cs002
+#SBATCH --exclude=cs001,cs002
 #SBATCH -c 8
 #SBATCH --mem=48G
 #SBATCH -t 2-01:00:00
@@ -16,6 +16,8 @@
 # service exits with an error it is started again on a new port and rewrites $ENDPOINT; agent jobs wait for the
 # new endpoint (testbed.simuser_service.reconnect) and re-run the interrupted episode. At most
 # SIMUSER_MAX_RESTARTS restarts (default 20). scancel (the cleanup job) stops the loop.
+# cs001 is excluded for the simulator only: on its GPU 0 llama-server crashed after 2 and 6 min (149848, 149942,
+# 2026-11-18), against 10-13 h on cs004 GPU 2. Agent jobs still use cs001.
 set -euo pipefail
 source scripts/hpc_env.sh
 log_gpu

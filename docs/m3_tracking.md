@@ -91,8 +91,17 @@ Last refresh: **2026-11-18 12:14 PST** (Ekant's account, read-only over the grou
   18 H1 cells was finished; 2,707 τ² episodes were pending in 11 cells (`results/m3/run_status.json`, 12:14).
   Resubmitted with `scripts/tau2_submit.sh` (all 11 experiments, existing run directories): simulator **149848**
   (cs001), arrays 149849–149869 (odd), reports 149850–149870 (even), stop 149871.
-- **Risk:** gpt-oss llama-server has segfaulted twice (after 13.5 h and 10 h). If 149848 crashes, τ² stops and the
-  episodes stay pending: check for retry records after the crash time, then rerun the same `tau2_submit.sh` command. If it ends first, τ² episodes stay
+- **2026-11-18: simulated-user auto-restart** (commit 8a9b02e). `slurm/simuser.sbatch` restarts a crashed service on a
+  new port and rewrites the endpoint; agents (`SimStack.reconnect`) wait for it, switch over and re-run the
+  interrupted episode (at most 3 times; an outage is never an attempt). Rolled out by cancelling the 12:14 batch
+  (simulator 149848 crashed after 2 min) and resubmitting all 11 cells: simulator 149942, arrays 149943–149963 (odd),
+  reports 149944–149964 (even). In production: 149942 crashed at 12:22:10 and served again at 12:22:35; agents
+  reconnected. Both quick crashes were on cs001 GPU 0, so the simulator moved to **150003 on cs003** (same endpoint;
+  agents reconnected); simulator jobs now exclude cs001. By 12:45: 0 agents stopped τ² scheduling, 13 reconnects.
+  Simulator stop **150067** (cancels 150003 after all 11 arrays). Leftovers after this batch (e.g. Qwen3-4B Q4_0,
+  1 episode with 2 HTTP-500 attempts) need one more `tau2_submit.sh` pass.
+- **Risk:** gpt-oss llama-server crashes (13.5 h and 10 h on cs004; minutes on cs001 GPU 0). Now handled by the
+  restart loop; if the simulator job itself ends (20 restarts or walltime), rerun the same `tau2_submit.sh` command. If it ends first, τ² episodes stay
   pending (resumable): resubmit with `scripts/tau2_submit.sh <experiments>` from the same clone.
 
 ## 3. Next phase: plan to M3 (2026-12-04)
