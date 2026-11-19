@@ -112,19 +112,23 @@ def write_report(run_dir: str) -> str:
               "episodes (retries/<run_id>.jsonl has each error).", ""]
     from .logger import MAX_INFRA_ATTEMPTS, retry_count
     finished = set(eps["run_id"]) if not eps.empty else set()
-    excluded, empty_user = [], []
+    excluded, empty_user, sim_crash = [], [], []
     for p in sorted(glob.glob(os.path.join(run_dir, "retries", "*.jsonl"))):
         rid = os.path.basename(p)[:-len(".jsonl")]
         if rid in finished or retry_count(run_dir, rid) < MAX_INFRA_ATTEMPTS:
             continue
         rows = [json.loads(line) for line in open(p) if line.strip()]
-        (empty_user if rows and rows[-1].get("error") == "SimulatorEmptyReply" else excluded).append(rid)
+        last = rows[-1].get("error") if rows else None
+        {"SimulatorEmptyReply": empty_user, "SimulatorCrash": sim_crash}.get(last, excluded).append(rid)
     if excluded:
         L += [f"Excluded after {MAX_INFRA_ATTEMPTS} infrastructure failures ({len(excluded)}): "
               + ", ".join(f"`{x}`" for x in excluded), ""]
     if empty_user:
         L += [f"Excluded, simulated user returned an empty message after every escalation step "
               f"({len(empty_user)}): " + ", ".join(f"`{x}`" for x in empty_user), ""]
+    if sim_crash:
+        L += [f"Excluded, the simulated user's llama-server crashes on this episode every time (decision 18) "
+              f"({len(sim_crash)}): " + ", ".join(f"`{x}`" for x in sim_crash), ""]
 
     # 2. failure mix
     L += ["## 2. Failure-class mix per configuration (C6, per step)", ""]
