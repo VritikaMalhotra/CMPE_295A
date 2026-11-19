@@ -121,6 +121,13 @@ Last refresh: **2026-11-18T22:27-08:00** (Ekant's account, read-only over the gr
   for one episode on 3 attempts) ran with no simulator crashes; all 8 episodes failed a 4th time with HTTP 500
   (decision 15) and are excluded under the registered rule. Final SmolLM3 exclusions: Q4_0 47, Q4_K_M 34,
   IQ4_XS 40. Reports rerun for every touched cell. Next: damage previews for damage map v1 (Dec 4).
+- **2026-11-19 10:03: damage map v1 (preview).** `scripts/damage_previews.sh` (job 155749, 788f179) built the
+  step-level damage table, which-tasks-fail (mean ± 1 SD over seeds) and worked examples for all six models
+  (`docs/damage_previews/`), plus the cross-model map `docs/m3_damage_map_v1.md` / `docs/figs/damage_map_v1.png`.
+  Any-failure amplification with 95% CI excluding 1, more failures: SmolLM3 Q4_0 1.33, Qwen3-0.6B IQ4_XS 1.25,
+  Qwen3-1.7B Q4_0 1.22, LFM2.5-1.2B Q4_0 1.16, Qwen3-1.7B Q4_K_M 1.08, SmolLM3 IQ4_XS 1.05. Fewer: LFM2.5-1.2B
+  Q4_K_M 0.86, LFM2.5-2.6B Q4_K_M 0.91. Qwen3-4B shows no step-rate damage in any format, but success still drops
+  (8.6% BF16 to 6.5–7.9%). Q4_0-pure lowers success in every model. Development data, not confirmatory.
 - **Risk:** gpt-oss llama-server crashes (13.5 h and 10 h on cs004; minutes on cs001 GPU 0). Now handled by the
   restart loop; if the simulator job itself ends (200 restarts or walltime), rerun the same `tau2_submit.sh` command. If it ends first, τ² episodes stay
   pending (resumable): resubmit with `scripts/tau2_submit.sh <experiments>` from the same clone.
