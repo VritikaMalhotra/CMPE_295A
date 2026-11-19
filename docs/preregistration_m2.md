@@ -1,5 +1,7 @@
 # Pre-registration draft (M2): quantization damage and repairs in small LLM agents
 
+> **Superseded by `docs/preregistration_osf.md` (2026-11-19)**, which moves the H1 test to a held-out BFCL task set because the H1 grid on the development tasks was run before filing.
+
 **Status: DRAFT for team and advisor review. Not filed.** Every decision it cites is proposed, not yet
 confirmed by the advisor (`docs/m2_decisions.md`). Filing on OSF is done by the team/advisor; the
 registration ID then goes into the Experiment entity (C11 manifest). Items marked _[pending]_ depend on

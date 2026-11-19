@@ -144,7 +144,7 @@ Last refresh: **2026-11-18T22:27-08:00** (Ekant's account, read-only over the gr
 | QAD data (critical path) | Yashashav | – | mix manifest done |
 | Label 300 pilot steps, second labeler, kappa → codebook v1 | Vritika, Ekant | – | label kit ready |
 | Damage map v1 | Vritika | 2026-12-04 | not started |
-| File OSF pre-registration | Vritika | this week | unblocked: decisions confirmed |
+| File OSF pre-registration | Vritika | this week | filing version drafted (`docs/preregistration_osf.md`, 2026-11-19): H1 moved to a 300-task BFCL holdout with seeds 5–8; team/advisor review, then the §9 checklist |
 | Report Ch. 1–2 draft to advisor | team | **2026-11-24** | full draft v1 (2026-11-19): `docs/dec4/CMPE295A_Report_Ch1-2_draft_2026-11-19.docx`, built by `docs/dec4/report/build_report.py`; team review, then send |
 | Demo recording | team | 2026-12-03 | storyboard done |
 | Canvas submission / Project Expo | team | 2026-12-04 / 2026-12-11 | – |
