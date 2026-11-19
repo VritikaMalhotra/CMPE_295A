@@ -117,6 +117,10 @@ Last refresh: **2026-11-18T22:27-08:00** (Ekant's account, read-only over the gr
   agent logs). The other **8** (SmolLM3 Q4_0 3, Q4_K_M 3, IQ4_XS 2; 3 of 4 attempts used, 0–2 outages) get one more
   ordinary attempt: simulator **154052**, agents 154053/154055/154057, stop 154059. Reports rerun for the 3 now
   complete cells (154066–154068). Advisor to confirm decision 18.
+- **2026-11-19 00:22: H1 grid complete (18/18 cells, 0 pending).** The final ordinary attempt (154052, then 154087
+  for one episode on 3 attempts) ran with no simulator crashes; all 8 episodes failed a 4th time with HTTP 500
+  (decision 15) and are excluded under the registered rule. Final SmolLM3 exclusions: Q4_0 47, Q4_K_M 34,
+  IQ4_XS 40. Reports rerun for every touched cell. Next: damage previews for damage map v1 (Dec 4).
 - **Risk:** gpt-oss llama-server crashes (13.5 h and 10 h on cs004; minutes on cs001 GPU 0). Now handled by the
   restart loop; if the simulator job itself ends (200 restarts or walltime), rerun the same `tau2_submit.sh` command. If it ends first, τ² episodes stay
   pending (resumable): resubmit with `scripts/tau2_submit.sh <experiments>` from the same clone.
