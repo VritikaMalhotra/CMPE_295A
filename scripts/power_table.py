@@ -14,6 +14,8 @@ effect D for clustering. Here D, the base rate per step and the steps per episod
 * events per FP/4-bit episode pair = p m (1 + 1.5); episodes needed = events x D / events per pair.
 
     python scripts/power_table.py <ref_run_dir> [<ref_run_dir> ...] --out results/m2/power_table.json
+    python scripts/power_table.py <ref_run_dir> ... --benchmark-prefix bfcl_ --planned-episodes 1200 \
+        --out results/m3/power_table_bfcl_holdout.json     # the H1 holdout (300 BFCL tasks x 4 seeds)
 """
 from __future__ import annotations
 
@@ -44,15 +46,16 @@ def design_effect(y: pd.Series, n: pd.Series, p: float) -> float:
     return float(((y - p * n) ** 2).sum() / (n * p * (1 - p)).sum())
 
 
-def table(run_dir: str, n_events: float) -> dict:
+def table(run_dir: str, n_events: float, prefix: str = "", planned: int | None = None) -> dict:
     specs = [json.loads(line) for line in open(os.path.join(run_dir, "specs.jsonl")) if line.strip()]
     sampled = {s["run_id"] for s in specs if float(s.get("decoding", {}).get("temperature", 0)) > 0
                and s["variant"] == "bf16" and s["repair"] == "none"}
     steps = pd.read_parquet(os.path.join(run_dir, "steps.parquet"),
                             columns=["run_id", "task_id", "benchmark", "failure_class"])
-    steps = steps[steps.run_id.isin(sampled)]
+    steps = steps[steps.run_id.isin(sampled) & steps.benchmark.str.startswith(prefix)]
     eps = steps.groupby("run_id").size()
     n_eps, m = len(eps), float(eps.mean())
+    target = planned or n_eps                  # detectable at the planned size (default: the reference's own)
     tasks_per_cell = steps[["benchmark", "task_id"]].drop_duplicates().shape[0]
     rows = []
     types = sorted(set(steps.failure_class) & FAILURES) + ["any_failure"]
@@ -68,9 +71,9 @@ def table(run_dir: str, n_events: float) -> dict:
         need_ep = n_events * d_ep / per_pair if per_pair > 0 else float("inf")
         rows.append({"failure_type": ft, "events_fp": int(hit.sum()), "rate_per_step": round(p, 4),
                      "events_per_pair": round(per_pair, 3), "D_task": round(d_task, 2), "D_episode": round(d_ep, 2),
-                     "episodes_needed": round(need), "detectable_at_n_eps": bool(need <= n_eps),
-                     "episodes_needed_D_episode": round(need_ep), "detectable_D_episode": bool(need_ep <= n_eps)})
-    return {"run_dir": run_dir, "sampled_episodes": n_eps, "tasks": tasks_per_cell, "steps_per_episode": round(m, 2),
+                     "episodes_needed": round(need), "detectable_at_n_eps": bool(need <= target),
+                     "episodes_needed_D_episode": round(need_ep), "detectable_D_episode": bool(need_ep <= target)})
+    return {"run_dir": run_dir, "benchmarks": prefix or "all", "planned_episodes": target, "sampled_episodes": n_eps, "tasks": tasks_per_cell, "steps_per_episode": round(m, 2),
             "rows": rows}
 
 
@@ -78,6 +81,8 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("run_dirs", nargs="+")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--benchmark-prefix", default="", help="only these benchmarks, e.g. bfcl_ (holdout plan)")
+    ap.add_argument("--planned-episodes", type=int, help="judge detectability at this many sampled episodes")
     a = ap.parse_args()
     n_events = events_needed()
     out = {"test": f"binomial share of 4-bit events, 0.5 vs {RATIO / (1 + RATIO):.1f}; two-sided alpha "
@@ -85,7 +90,7 @@ def main() -> None:
            "models": {}}
     for d in a.run_dirs:
         m = json.load(open(os.path.join(d, "manifest.json"))).get("experiment", os.path.basename(os.path.dirname(d)))
-        t = table(d, n_events)
+        t = table(d, n_events, a.benchmark_prefix, a.planned_episodes)
         out["models"][m] = t
         print(f"\n{m}: {t['sampled_episodes']} sampled episodes over {t['tasks']} tasks, "
               f"{t['steps_per_episode']} steps/episode")
@@ -98,7 +103,7 @@ def main() -> None:
                   f"{str(r['episodes_needed_D_episode']) + ('' if r['detectable_D_episode'] else '*'):>11}")
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     json.dump(out, open(a.out, "w"), indent=1)
-    print("  * more episodes than the reference cell has (not detectable at this size)")
+    print("  * more episodes than planned (not detectable at this size)")
     print(f"\nevents needed at D = 1: {n_events:.0f}; wrote {a.out}")
 
 
