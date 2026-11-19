@@ -105,6 +105,14 @@ Last refresh: **2026-11-18T22:27-08:00** (Ekant's account, read-only over the gr
   at the 20-restart cap: the crashes follow load, not cs001. 87 agent reconnects, 4 stops (after the simulator gave
   up). All 34 exclusions in the batch were empty simulated-user replies (decision 16). Restart cap raised to 200
   (9034904). Final pass: simulator **153714**, arrays 153715–153725 (odd), stop 153727.
+- **2026-11-19 00:05: final pass left 19 τ² episodes.** It finished 4 of the 23 (now pending: SmolLM3 Q4_0 10,
+  Q4_K_M 3, IQ4_XS 3; LFM2.5-2.6B Q4_0 1, Q4_K_M 1; Qwen3-4B Q4_0 1; 16 of 19 are telecom). Simulator 153714
+  segfaulted (-11) **16 times in 26 min** with only ~6 agents. Several crashes came within a minute of a restart
+  with no request logged, so the same episodes appear to crash it every time: seeded agents replay the same
+  conversation to the same simulator request. The agents gave up after 3 reconnects per episode (6 stops,
+  36 reconnects). The log also shows 56 HTTP-500 peg-native parse failures (decision 15 attempts). **Open:** reproduce
+  one crash with a single-slot simulator (parallel=1 / no prompt cache) or record these as simulator-crash exclusions
+  (needs an advisor decision).
 - **Risk:** gpt-oss llama-server crashes (13.5 h and 10 h on cs004; minutes on cs001 GPU 0). Now handled by the
   restart loop; if the simulator job itself ends (20 restarts or walltime), rerun the same `tau2_submit.sh` command. If it ends first, τ² episodes stay
   pending (resumable): resubmit with `scripts/tau2_submit.sh <experiments>` from the same clone.

@@ -1,5 +1,5 @@
 {
- "collected": "2026-11-18T22:27-08:00",
+ "collected": "2026-11-19T00:06-08:00",
  "runs": {
   "ref_lfm2p5_1p2b": {
    "dir": "/scratch/cmpe295-bertin/runs/ref_lfm2p5_1p2b/3018b3dc15",
@@ -807,9 +807,9 @@
     "iq4_xs"
    ],
    "specs": 2505,
-   "finished": 2464,
+   "finished": 2465,
    "excluded": 37,
-   "finished_share": 0.9836,
+   "finished_share": 0.984,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -832,7 +832,7 @@
      520
     ],
     "tau2_verified_telecom": [
-     351,
+     352,
      355
     ]
    }
@@ -845,9 +845,9 @@
     "q4_0"
    ],
    "specs": 2505,
-   "finished": 2456,
+   "finished": 2458,
    "excluded": 37,
-   "finished_share": 0.9804,
+   "finished_share": 0.9812,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -866,11 +866,11 @@
      130
     ],
     "tau2_verified_retail": [
-     490,
+     491,
      520
     ],
     "tau2_verified_telecom": [
-     347,
+     348,
      355
     ]
    }
@@ -1156,6 +1156,14 @@
   "h1_qwen3_4b_q4_0 sim=153714 array=153719 report=153720 2026-11-18T22:26:59-08:00",
   "h1_smollm3_3b_q4_0 sim=153714 array=153721 report=153722 2026-11-18T22:26:59-08:00",
   "h1_smollm3_3b_q4_k_m sim=153714 array=153723 report=153724 2026-11-18T22:26:59-08:00",
-  "h1_smollm3_3b_iq4_xs sim=153714 array=153725 report=153726 2026-11-18T22:26:59-08:00"
+  "h1_smollm3_3b_iq4_xs sim=153714 array=153725 report=153726 2026-11-18T22:26:59-08:00",
+  "2026-11-18 22:33 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_qwen3_4b_q4_0/12141ac1a9/slurm_logs/153719_0.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 22:33 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_q4_k_m/01063262a7/slurm_logs/153717_0.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 22:33 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_q4_0/3aa6ba0c98/slurm_logs/153715_2.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 22:33 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_smollm3_3b_q4_0/6002a19027/slurm_logs/153721_2.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 22:38 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_smollm3_3b_q4_0/6002a19027/slurm_logs/153721_5.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 22:38 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_smollm3_3b_q4_0/6002a19027/slurm_logs/153721_3.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 22:38 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_smollm3_3b_q4_0/6002a19027/slurm_logs/153721_4.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 22:43 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_smollm3_3b_iq4_xs/f27453f6dd/slurm_logs/153725_4.out: episodes left pending; resubmit that array index once a simulated user is up"
  ]
 }
