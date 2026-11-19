@@ -5,7 +5,7 @@
 #SBATCH -J simuser
 #SBATCH -p gpuqs
 #SBATCH --gres=gpu:a100:1
-#SBATCH --exclude=cs001,cs002
+#SBATCH --exclude=cs002
 #SBATCH -c 8
 #SBATCH --mem=48G
 #SBATCH -t 2-01:00:00
@@ -15,15 +15,14 @@
 # Restart: gpt-oss's llama-server segfaulted twice after 10-13 h (jobs 120510 and 130139, 2026-11-17). When the
 # service exits with an error it is started again on a new port and rewrites $ENDPOINT; agent jobs wait for the
 # new endpoint (testbed.simuser_service.reconnect) and re-run the interrupted episode. At most
-# SIMUSER_MAX_RESTARTS restarts (default 20). scancel (the cleanup job) stops the loop.
-# cs001 is excluded for the simulator only: on its GPU 0 llama-server crashed after 2 and 6 min (149848, 149942,
-# 2026-11-18), against 10-13 h on cs004 GPU 2. Agent jobs still use cs001.
+# SIMUSER_MAX_RESTARTS restarts (default 200). scancel (the cleanup job) stops the loop.
+# The crashes follow load, not one node: 150003 on cs003 crashed 21 times in 9 h (2026-11-18) under ~7 agents.
 set -euo pipefail
 source scripts/hpc_env.sh
 log_gpu
 source .venv/bin/activate
 export LITELLM_LOCAL_MODEL_COST_MAP=True
-MAX_RESTARTS=${SIMUSER_MAX_RESTARTS:-20}
+MAX_RESTARTS=${SIMUSER_MAX_RESTARTS:-200}
 stop=""; child=""
 trap 'stop=1; [ -n "$child" ] && kill -TERM "$child" 2>/dev/null' TERM INT
 set +e
