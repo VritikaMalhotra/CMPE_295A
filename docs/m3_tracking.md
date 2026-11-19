@@ -136,16 +136,18 @@ Last refresh: **2026-11-18T22:27-08:00** (Ekant's account, read-only over the gr
 
 | Item | Owner (WB2) | Target | Status |
 |---|---|---|---|
-| Finish LFM2.5-1.2B Q4_K_M / IQ4_XS | Ekant | 2026-11-18 | queued (121861, 122010) |
-| Run H1 cells for Qwen3-4B, SmolLM3-3B, LFM2.5-2.6B | Ekant | ~2026-11-20 | submitted 2026-11-16 (120547–120564) |
-| Damage preview for Qwen3-1.7B and LFM2.5-1.2B (as for 0.6B) | Vritika | after cells finish | not started |
+| Finish LFM2.5-1.2B Q4_K_M / IQ4_XS | Ekant | 2026-11-18 | done |
+| Run H1 cells for Qwen3-4B, SmolLM3-3B, LFM2.5-2.6B | Ekant | ~2026-11-20 | done: H1 grid 18/18, 0 pending (2026-11-19) |
+| Damage previews, all six models | Ekant | – | done (job 155749) |
 | R1 grammars per tool-call format | Ekant | – | built (B2) |
 | R2 variants (R2b layer-selective beyond 0.6B) | Yashashav | 2026-11-22 | 0.6B built (5.56 bpw); `r2b-build` jobs 112007 / 112012 stuck (DependencyNeverSatisfied) |
 | QAD data (critical path) | Yashashav | – | mix manifest done |
 | Label 300 pilot steps, second labeler, kappa → codebook v1 | Vritika, Ekant | – | label kit ready |
-| Damage map v1 | Vritika | 2026-12-04 | not started |
+| Damage map v1 | Vritika | 2026-12-04 | preview done (`docs/m3_damage_map_v1.md`); panel B scale fix before the deck |
 | File OSF pre-registration | Vritika | this week | filing version drafted (`docs/preregistration_osf.md`, 2026-11-19): H1 moved to a 300-task BFCL holdout with seeds 5–8; team/advisor review, then the §9 checklist |
 | Report Ch. 1–2 draft to advisor | team | **2026-11-24** | full draft v1 (2026-11-19): `docs/dec4/CMPE295A_Report_Ch1-2_draft_2026-11-19.docx`, built by `docs/dec4/report/build_report.py`; team review, then send |
+| Holdout configs (C1, C2) | Ekant | – | done (`01e4272`); submit after filing |
+| Stage C3 repair configs | Ekant, Yashashav | before C3 | need R2b files (1.7B, LFM2.5-1.2B) and R3 checkpoints |
 | Demo recording | team | 2026-12-03 | storyboard done |
 | Canvas submission / Project Expo | team | 2026-12-04 / 2026-12-11 | – |
 
@@ -158,5 +160,5 @@ Last refresh: **2026-11-18T22:27-08:00** (Ekant's account, read-only over the gr
   out of date. Bears on decision 16: excluding agent-caused empty replies can hide quantization damage.
 - **Cluster queue (Yashashav to cancel):** `r2b-build` 112007 / 112012 will never start, so the `kl-check`
   jobs 112008, 112009, 112013, 112014 behind them won't either.
-- **Throughput:** 9 cells (≈ 22,500 episodes) remain; at two GPU nodes per user, each member submitting a share
-  (`shard=i/n`) is the fastest path pending decision 14.
+- **Throughput:** the H1 grid is done; for the holdout (36,000 BFCL episodes, no simulator) each member submitting a
+  share (`shard=i/n`) is still the fastest path under the two-node QoS.
