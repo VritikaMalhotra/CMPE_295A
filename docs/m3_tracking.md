@@ -4,7 +4,7 @@ Living tracker for the damage-map phase (M3, due 2026-12-04). Counts come from `
 the cluster against `/scratch/cmpe295-bertin/runs/` (`results/m3/run_status.json`), never typed in.
 Development data only: the registered test runs after the pre-registration is filed.
 
-Last refresh: **2026-11-18 12:14 PST** (Ekant's account, read-only over the group folder).
+Last refresh: **2026-11-18T22:27-08:00** (Ekant's account, read-only over the group folder).
 
 ## 1. BF16 references (M2): complete
 
@@ -100,6 +100,11 @@ Last refresh: **2026-11-18 12:14 PST** (Ekant's account, read-only over the grou
   agents reconnected); simulator jobs now exclude cs001. By 12:45: 0 agents stopped τ² scheduling, 13 reconnects.
   Simulator stop **150067** (cancels 150003 after all 11 arrays). Leftovers after this batch (e.g. Qwen3-4B Q4_0,
   1 episode with 2 HTTP-500 attempts) need one more `tau2_submit.sh` pass.
+- **2026-11-18 22:25: grid nearly complete.** The 12:14 batch finished all but **23 τ² episodes** in 6 cells (each with
+  1–2 recorded HTTP-500 / decode attempts, decision 15). Simulator 150003 crashed 21 times in 9 h on cs003 and stopped
+  at the 20-restart cap: the crashes follow load, not cs001. 87 agent reconnects, 4 stops (after the simulator gave
+  up). All 34 exclusions in the batch were empty simulated-user replies (decision 16). Restart cap raised to 200
+  (9034904). Final pass: simulator **153714**, arrays 153715–153725 (odd), stop 153727.
 - **Risk:** gpt-oss llama-server crashes (13.5 h and 10 h on cs004; minutes on cs001 GPU 0). Now handled by the
   restart loop; if the simulator job itself ends (20 restarts or walltime), rerun the same `tau2_submit.sh` command. If it ends first, τ² episodes stay
   pending (resumable): resubmit with `scripts/tau2_submit.sh <experiments>` from the same clone.

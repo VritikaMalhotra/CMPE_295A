@@ -1,5 +1,5 @@
 {
- "collected": "2026-11-18T12:14-08:00",
+ "collected": "2026-11-18T22:27-08:00",
  "runs": {
   "ref_lfm2p5_1p2b": {
    "dir": "/scratch/cmpe295-bertin/runs/ref_lfm2p5_1p2b/3018b3dc15",
@@ -237,9 +237,9 @@
     "iq4_xs"
    ],
    "specs": 2505,
-   "finished": 2111,
-   "excluded": 4,
-   "finished_share": 0.8427,
+   "finished": 2496,
+   "excluded": 9,
+   "finished_share": 0.9964,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -258,7 +258,7 @@
      130
     ],
     "tau2_verified_retail": [
-     129,
+     514,
      520
     ],
     "tau2_verified_telecom": [
@@ -313,9 +313,9 @@
     "q4_k_m"
    ],
    "specs": 2505,
-   "finished": 2119,
-   "excluded": 0,
-   "finished_share": 0.8459,
+   "finished": 2501,
+   "excluded": 4,
+   "finished_share": 0.9984,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -334,7 +334,7 @@
      130
     ],
     "tau2_verified_retail": [
-     134,
+     516,
      520
     ],
     "tau2_verified_telecom": [
@@ -351,9 +351,9 @@
     "iq4_xs"
    ],
    "specs": 2505,
-   "finished": 1731,
+   "finished": 2505,
    "excluded": 0,
-   "finished_share": 0.691,
+   "finished_share": 1.0,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -368,15 +368,15 @@
      500
     ],
     "tau2_verified_airline": [
-     103,
+     130,
      130
     ],
     "tau2_verified_retail": [
-     113,
+     520,
      520
     ],
     "tau2_verified_telecom": [
-     15,
+     355,
      355
     ]
    }
@@ -389,9 +389,9 @@
     "q4_0"
    ],
    "specs": 2505,
-   "finished": 2429,
+   "finished": 2501,
    "excluded": 3,
-   "finished_share": 0.9697,
+   "finished_share": 0.9984,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -414,7 +414,7 @@
      520
     ],
     "tau2_verified_telecom": [
-     282,
+     354,
      355
     ]
    }
@@ -427,9 +427,9 @@
     "q4_k_m"
    ],
    "specs": 2505,
-   "finished": 2223,
+   "finished": 2504,
    "excluded": 0,
-   "finished_share": 0.8874,
+   "finished_share": 0.9996,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -448,11 +448,11 @@
      130
     ],
     "tau2_verified_retail": [
-     426,
+     519,
      520
     ],
     "tau2_verified_telecom": [
-     167,
+     355,
      355
     ]
    }
@@ -693,9 +693,9 @@
     "iq4_xs"
    ],
    "specs": 2505,
-   "finished": 2464,
+   "finished": 2500,
    "excluded": 5,
-   "finished_share": 0.9836,
+   "finished_share": 0.998,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -718,7 +718,7 @@
      520
     ],
     "tau2_verified_telecom": [
-     319,
+     355,
      355
     ]
    }
@@ -731,9 +731,9 @@
     "q4_0"
    ],
    "specs": 2505,
-   "finished": 2503,
+   "finished": 2504,
    "excluded": 0,
-   "finished_share": 0.9992,
+   "finished_share": 0.9996,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -756,7 +756,7 @@
      520
     ],
     "tau2_verified_telecom": [
-     353,
+     354,
      355
     ]
    }
@@ -769,9 +769,9 @@
     "q4_k_m"
    ],
    "specs": 2505,
-   "finished": 2501,
+   "finished": 2502,
    "excluded": 3,
-   "finished_share": 0.9984,
+   "finished_share": 0.9988,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -794,7 +794,7 @@
      520
     ],
     "tau2_verified_telecom": [
-     354,
+     355,
      355
     ]
    }
@@ -807,9 +807,9 @@
     "iq4_xs"
    ],
    "specs": 2505,
-   "finished": 2449,
-   "excluded": 36,
-   "finished_share": 0.9776,
+   "finished": 2464,
+   "excluded": 37,
+   "finished_share": 0.9836,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -824,7 +824,7 @@
      500
     ],
     "tau2_verified_airline": [
-     108,
+     120,
      130
     ],
     "tau2_verified_retail": [
@@ -832,7 +832,7 @@
      520
     ],
     "tau2_verified_telecom": [
-     348,
+     351,
      355
     ]
    }
@@ -845,9 +845,9 @@
     "q4_0"
    ],
    "specs": 2505,
-   "finished": 1860,
-   "excluded": 23,
-   "finished_share": 0.7425,
+   "finished": 2456,
+   "excluded": 37,
+   "finished_share": 0.9804,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -866,11 +866,11 @@
      130
     ],
     "tau2_verified_retail": [
-     175,
+     490,
      520
     ],
     "tau2_verified_telecom": [
-     66,
+     347,
      355
     ]
    }
@@ -883,9 +883,9 @@
     "q4_k_m"
    ],
    "specs": 2505,
-   "finished": 2363,
-   "excluded": 21,
-   "finished_share": 0.9433,
+   "finished": 2471,
+   "excluded": 31,
+   "finished_share": 0.9864,
    "by_benchmark": {
     "bfcl_multi_turn_base": [
      500,
@@ -900,15 +900,15 @@
      500
     ],
     "tau2_verified_airline": [
-     25,
+     120,
      130
     ],
     "tau2_verified_retail": [
-     490,
+     499,
      520
     ],
     "tau2_verified_telecom": [
-     348,
+     352,
      355
     ]
    }
@@ -1118,6 +1118,44 @@
   "h1_qwen3_4b_iq4_xs sim=149848 array=149863 report=149864 2026-11-18T12:14:28-08:00",
   "h1_smollm3_3b_q4_0 sim=149848 array=149865 report=149866 2026-11-18T12:14:28-08:00",
   "h1_smollm3_3b_q4_k_m sim=149848 array=149867 report=149868 2026-11-18T12:14:28-08:00",
-  "h1_smollm3_3b_iq4_xs sim=149848 array=149869 report=149870 2026-11-18T12:14:28-08:00"
+  "h1_smollm3_3b_iq4_xs sim=149848 array=149869 report=149870 2026-11-18T12:14:28-08:00",
+  "h1_lfm2p5_1p2b_q4_k_m sim=149942 array=149943 report=149944 2026-11-18T12:20:25-08:00",
+  "h1_lfm2p5_1p2b_iq4_xs sim=149942 array=149945 report=149946 2026-11-18T12:20:26-08:00",
+  "h1_lfm2p5_2p6b_q4_0 sim=149942 array=149947 report=149948 2026-11-18T12:20:26-08:00",
+  "h1_lfm2p5_2p6b_q4_k_m sim=149942 array=149949 report=149950 2026-11-18T12:20:26-08:00",
+  "h1_lfm2p5_2p6b_iq4_xs sim=149942 array=149951 report=149952 2026-11-18T12:20:26-08:00",
+  "h1_qwen3_4b_q4_0 sim=149942 array=149953 report=149954 2026-11-18T12:20:26-08:00",
+  "h1_qwen3_4b_q4_k_m sim=149942 array=149955 report=149956 2026-11-18T12:20:26-08:00",
+  "h1_qwen3_4b_iq4_xs sim=149942 array=149957 report=149958 2026-11-18T12:20:26-08:00",
+  "h1_smollm3_3b_q4_0 sim=149942 array=149959 report=149960 2026-11-18T12:20:26-08:00",
+  "h1_smollm3_3b_q4_k_m sim=149942 array=149961 report=149962 2026-11-18T12:20:26-08:00",
+  "h1_smollm3_3b_iq4_xs sim=149942 array=149963 report=149964 2026-11-18T12:20:26-08:00",
+  "2026-11-18 12:21 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_q4_k_m/01063262a7/slurm_logs/149855_0.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 12:21 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_q4_k_m/01063262a7/slurm_logs/149855_1.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 12:21 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_q4_0/3aa6ba0c98/slurm_logs/149853_2.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 12:21 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_q4_k_m/dac01ff9a0/slurm_logs/149849_0.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 12:21 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_iq4_xs/52af219f58/slurm_logs/149851_1.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 12:21 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_iq4_xs/dbae64a12c/slurm_logs/149857_0.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 12:26 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_q4_k_m/01063262a7/slurm_logs/149949_0.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 12:26 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_q4_k_m/01063262a7/slurm_logs/149949_1.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 12:26 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_q4_0/3aa6ba0c98/slurm_logs/149947_2.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 12:26 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_q4_k_m/dac01ff9a0/slurm_logs/149943_0.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 12:26 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_iq4_xs/52af219f58/slurm_logs/149945_1.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 12:26 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_iq4_xs/dbae64a12c/slurm_logs/149951_0.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 12:26 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_iq4_xs/dbae64a12c/slurm_logs/149951_1.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "simulator moved off cs001 GPU0 (149942, 2 crashes in 8 min) to 150003 on cs003; stop 149965 replaced by 150067 2026-11-18T12:30:04-08:00",
+  "2026-11-18 13:36 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_iq4_xs/dbae64a12c/slurm_logs/149951_3.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 15:22 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_iq4_xs/dbae64a12c/slurm_logs/149951_4.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 15:22 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_smollm3_3b_q4_0/6002a19027/slurm_logs/149959_3.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 15:22 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_smollm3_3b_q4_0/6002a19027/slurm_logs/149959_2.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 16:02 slot-monitor ALERT: simulator outage stopped tau2 scheduling in /scratch/cmpe295-bertin/runs/h1_smollm3_3b_q4_0/6002a19027/slurm_logs/149959_4.out: episodes left pending; resubmit that array index once a simulated user is up",
+  "2026-11-18 19:07 slot-monitor INFO: time limit near; resubmitted as 152947",
+  "2026-11-18 19:08 slot-monitor INFO: slot-monitor started (job 152947)",
+  "h1_lfm2p5_2p6b_q4_0 sim=153714 array=153715 report=153716 2026-11-18T22:26:59-08:00",
+  "h1_lfm2p5_2p6b_q4_k_m sim=153714 array=153717 report=153718 2026-11-18T22:26:59-08:00",
+  "h1_qwen3_4b_q4_0 sim=153714 array=153719 report=153720 2026-11-18T22:26:59-08:00",
+  "h1_smollm3_3b_q4_0 sim=153714 array=153721 report=153722 2026-11-18T22:26:59-08:00",
+  "h1_smollm3_3b_q4_k_m sim=153714 array=153723 report=153724 2026-11-18T22:26:59-08:00",
+  "h1_smollm3_3b_iq4_xs sim=153714 array=153725 report=153726 2026-11-18T22:26:59-08:00"
  ]
 }
