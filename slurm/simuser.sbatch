@@ -23,11 +23,13 @@ log_gpu
 source .venv/bin/activate
 export LITELLM_LOCAL_MODEL_COST_MAP=True
 MAX_RESTARTS=${SIMUSER_MAX_RESTARTS:-200}
+# SIMUSER_OVERRIDES: extra Hydra overrides (word-split), e.g. 'simuser_parallel=1 simuser_extra_args=[--no-cache-prompt]'
+SIMUSER_OVERRIDES=${SIMUSER_OVERRIDES:-}
 stop=""; child=""
 trap 'stop=1; [ -n "$child" ] && kill -TERM "$child" 2>/dev/null' TERM INT
 set +e
 for ((i = 0; i <= MAX_RESTARTS; i++)); do
-  python -m testbed.run +experiment="$EXP" simuser_serve=true simuser_endpoint="$ENDPOINT" skip_hash=true &
+  python -m testbed.run +experiment="$EXP" simuser_serve=true simuser_endpoint="$ENDPOINT" skip_hash=true $SIMUSER_OVERRIDES &
   child=$!
   wait "$child"; rc=$?
   [ -n "$stop" ] && { wait "$child" 2>/dev/null; echo "simuser: stopped"; exit 0; }

@@ -18,6 +18,7 @@ simuser_endpoint: ${oc.env:TESTBED_SIMUSER_ENDPOINT,null}   # endpoint file of t
 simuser_wait_s: 1800     # how long an agent job waits for that simulator before leaving tau2 episodes pending
 simuser_serve: false     # run as the simulator job: serve until stopped, announce in simuser_endpoint
 simuser_parallel: 4      # slots of the shared simulator (each gets the simuser ctx)
+simuser_extra_args: []   # extra llama-server flags for the shared simulator, e.g. [--no-cache-prompt] (crash repro, 2026-11-19)
 replay: null             # a tau2 run_id: re-run it from the C4 cache alone and check zero simulator calls
 report_only: false       # rebuild report.md from finished episodes, run nothing
 report_partial: false    # write the report even when episodes are still pending

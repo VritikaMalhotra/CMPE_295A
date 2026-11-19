@@ -557,7 +557,8 @@ def main(cfg: DictConfig) -> None:
         os.makedirs(os.path.join(r.dir, "server_logs"), exist_ok=True)
         serve(sim, _sim_file(cfg, sim), binaries["cuda"], _abs(cfg.simuser_endpoint),
               os.path.join(r.dir, "server_logs", f"simuser_service_{os.environ.get('SLURM_JOB_ID', os.getpid())}.log"),
-              parallel=int(cfg.get("simuser_parallel") or 4))
+              parallel=int(cfg.get("simuser_parallel") or 4),
+              extra_args=tuple(str(a) for a in (cfg.get("simuser_extra_args") or ())))
         return
     if cfg.replay:
         replay_one(cfg, r, specs, category, model_files, binaries, str(cfg.replay))

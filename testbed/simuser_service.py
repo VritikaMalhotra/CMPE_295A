@@ -102,12 +102,12 @@ def reconnect(cache, path: str, sim: dict, timeout_s: float = 1800, poll_s: floa
 
 
 def serve(sim: dict, model_path: str, binary: str, endpoint: str, log_path: str, parallel: int = 4,
-          check_s: float = 30) -> None:
+          check_s: float = 30, extra_args: tuple = ()) -> None:
     """Run until the job is stopped (SIGTERM -> SystemExit in testbed.run.main) or llama-server dies."""
     from .backends import LlamaServer, ServerConfig
     ctx = int(sim.get("ctx", 32768))
     scfg = ServerConfig(binary=binary, model_path=model_path, backend="cuda", ctx=ctx * parallel, seed=0,
-                        host="0.0.0.0", parallel=parallel, extra_args=("--jinja",))
+                        host="0.0.0.0", parallel=parallel, extra_args=("--jinja", *extra_args))
     with LlamaServer(scfg, log_path=log_path, startup_timeout_s=900) as server:
         rec = endpoint_record(sim, f"http://{socket.gethostname()}:{server.port}", ctx, parallel)
         write_endpoint(endpoint, rec)
