@@ -140,7 +140,7 @@ Last refresh: **2026-11-18T22:27-08:00** (Ekant's account, read-only over the gr
 | Run H1 cells for Qwen3-4B, SmolLM3-3B, LFM2.5-2.6B | Ekant | ~2026-11-20 | done: H1 grid 18/18, 0 pending (2026-11-19) |
 | Damage previews, all six models | Ekant | – | done (job 155749) |
 | R1 grammars per tool-call format | Ekant | – | built (B2) |
-| R2 variants (R2b layer-selective beyond 0.6B) | Yashashav | 2026-11-22 | 0.6B built (5.56 bpw); `r2b-build` jobs 112007 / 112012 stuck (DependencyNeverSatisfied) |
+| R2 variants (R2b layer-selective beyond 0.6B) | Yashashav (resumed by Ekant) | 2026-11-22 | 0.6B built (5.56 bpw). 2026-11-19: the Nov 10 arrays failed (1.7B: 8 h limit at 179/196 tensors; LFM2.5-1.2B: non-UTF-8 llama.cpp output crashed the parser, fixed in 4c23d1a). Resumed from Ekant's account on P100s: 1.7B ranking 156550 → build 156551 → KL 156552/156553; LFM ranking 156555 → build 156556 → KL 156557/156558. Yashashav's 112007–112014 can be cancelled |
 | QAD data (critical path) | Yashashav | – | mix manifest done |
 | Label 300 pilot steps, second labeler, kappa → codebook v1 | Vritika, Ekant | – | label kit ready |
 | Damage map v1 | Vritika | 2026-12-04 | preview done (`docs/m3_damage_map_v1.md`); panel B scale fix before the deck |
@@ -159,6 +159,6 @@ Last refresh: **2026-11-18T22:27-08:00** (Ekant's account, read-only over the gr
 - **Qwen3-1.7B Q4_0: 123 exclusions** (BF16: 3), mostly empty simulated-user replies. The deck's count (59) is
   out of date. Bears on decision 16: excluding agent-caused empty replies can hide quantization damage.
 - **Cluster queue (Yashashav to cancel):** `r2b-build` 112007 / 112012 will never start, so the `kl-check`
-  jobs 112008, 112009, 112013, 112014 behind them won't either.
+  jobs 112008, 112009, 112013, 112014 behind them won't either. Superseded by the 2026-11-19 resume (156550–156558).
 - **Throughput:** the H1 grid is done; for the holdout (36,000 BFCL episodes, no simulator) each member submitting a
   share (`shard=i/n`) is still the fastest path under the two-node QoS.
