@@ -7,8 +7,8 @@ single slot and no prompt cache (simulator 154012), so it is not load or slot re
 so these episodes would stay pending forever; this script excludes them with a permanent ``SimulatorCrash`` retry
 record (testbed.logger.record_retry), reported as its own group.
 
-Only pending tau2 episodes that already have at least one recorded attempt are excluded (each of the 19 had 1-2
-HTTP-500 / decode attempts before the crashes); anything else is listed and left pending.
+Evidence is per episode: only a pending tau2 episode that the agent logs (slurm_logs/*.out) show losing the
+simulator at least MIN_OUTAGES times is excluded; anything else is listed and left pending.
 
     python scripts/exclude_sim_crash.py <run_dir>... [--apply]
 """
@@ -18,6 +18,7 @@ import argparse
 import glob
 import json
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -27,14 +28,30 @@ REASON = ("simulated user (gpt-oss-20b, llama.cpp d812350) segfaults on this epi
           "reproduced 16x in job 153714 and with 1 slot, no prompt cache in job 154012 (decision 18)")
 
 
+MIN_OUTAGES = 3
+
+
 class SimulatorCrash(RuntimeError):
     pass
 
 
-def pending_tau2(run_dir: str) -> list[str]:
+def outages(run_dir: str) -> dict[tuple[str, int], int]:
+    """(task_id, seed) -> number of 'simulated user unavailable' lines in the experiment's agent logs."""
+    pat = re.compile(r"^\s*(.+?) seed=(\d+): simulated user unavailable")
+    n: dict[tuple[str, int], int] = {}
+    for p in glob.glob(os.path.join(run_dir, "slurm_logs", "*.out")):
+        for line in open(p, errors="replace"):
+            m = pat.match(line)
+            if m:
+                k = (m.group(1), int(m.group(2)))
+                n[k] = n.get(k, 0) + 1
+    return n
+
+
+def pending_tau2(run_dir: str) -> list[dict]:
     specs = [json.loads(line) for line in open(os.path.join(run_dir, "specs.jsonl")) if line.strip()]
     done = {os.path.basename(p)[:-5] for p in glob.glob(os.path.join(run_dir, "episodes", "*.json"))}
-    return [s["run_id"] for s in specs if s["benchmark"].startswith("tau2") and s["run_id"] not in done
+    return [s for s in specs if s["benchmark"].startswith("tau2") and s["run_id"] not in done
             and retry_count(run_dir, s["run_id"]) < MAX_INFRA_ATTEMPTS]
 
 
@@ -44,12 +61,14 @@ def main() -> None:
     ap.add_argument("--apply", action="store_true", help="write the records (default: list only)")
     a = ap.parse_args()
     for d in a.run_dirs:
-        for rid in pending_tau2(d):
-            n = retry_count(d, rid)
-            act = "exclude" if n >= 1 else "skip (no recorded attempt)"
-            print(f"{d.rstrip('/').split('/')[-2]}\t{rid}\tattempts={n}\t{act}")
-            if a.apply and n >= 1:
-                record_retry(d, rid, SimulatorCrash(REASON), permanent=True)
+        out = outages(d)
+        for s in pending_tau2(d):
+            n = out.get((str(s["task_id"]), int(s["seed"])), 0)
+            ok = n >= MIN_OUTAGES
+            print(f"{d.rstrip('/').split('/')[-2]}\t{s['run_id']}\tattempts={retry_count(d, s['run_id'])}"
+                  f"\toutages={n}\t{'exclude' if ok else 'skip'}")
+            if a.apply and ok:
+                record_retry(d, s["run_id"], SimulatorCrash(REASON), permanent=True)
 
 
 if __name__ == "__main__":
