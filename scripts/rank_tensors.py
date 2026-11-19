@@ -196,11 +196,12 @@ def cmd_run(a) -> None:
         gg = os.path.join(scratch, f"{a.model}-{t['name']}-Q4_0only.gguf")
         t0 = time.time()
         q = subprocess.run([p["quantize"], "--pure", "--tensor-type", f"^{re.escape(t['name'])}$=q4_0",
-                            "--tensor-type", ".=bf16", p["bf16"], gg, "Q4_0"], capture_output=True, text=True)
+                            "--tensor-type", ".=bf16", p["bf16"], gg, "Q4_0"], capture_output=True, text=True,
+                           errors="replace")   # llama.cpp may print non-UTF-8 bytes (LFM2.5 vocabulary)
         if q.returncode != 0:
             sys.exit(f"llama-quantize failed for {t['name']}:\n{q.stdout[-2000:]}{q.stderr[-2000:]}")
         r = subprocess.run([p["perplexity"], "-m", gg, *ppl_args(), "--kl-divergence-base", p["base"],
-                            "--kl-divergence"], capture_output=True, text=True)
+                            "--kl-divergence"], capture_output=True, text=True, errors="replace")
         os.remove(gg)
         if r.returncode != 0:
             sys.exit(f"llama-perplexity failed for {t['name']}:\n{r.stdout[-2000:]}{r.stderr[-2000:]}")

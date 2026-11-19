@@ -6,6 +6,8 @@
 #   4. KL of the R2b file against BF16 on CUDA and on CPU
 #   source scripts/hpc_env.sh
 #   RANK_TEXT=<file> RANK_CHUNKS=<n> [RANK_TASKS=2] [RANK_GRES=gpu:1] [RANK_NICE=50] bash scripts/rank_submit.sh <ModelName>
+# Resume after a timed-out or failed ranking array: RANK_SKIP_BASE=1 reuses the existing BF16 base logits (finished
+# tensors have score files and are skipped); RANK_TIME sets the array walltime (default 08:00:00).
 # Every score file records ctx, chunks and the text's SHA-256; rank_tensors.py refuses to mix settings.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -15,8 +17,12 @@ T=${RANK_TASKS:-2}; G=${RANK_GRES:-gpu:1}; N=${RANK_NICE:-50}
 export RANK_TEXT RANK_CHUNKS
 .venv/bin/python scripts/rank_tensors.py list --model "$M"
 common=(--parsable --nice="$N" --gres="$G" --exclude=cs002)
-B=$(sbatch "${common[@]}" -t 02:00:00 --mem=32G slurm/rank_tensors.sbatch "$M" base)
-A=$(sbatch "${common[@]}" -d afterok:"$B" --array=0-$((T - 1)) -t 08:00:00 --mem=32G slurm/rank_tensors.sbatch "$M" run)
+if [ -n "${RANK_SKIP_BASE:-}" ]; then
+  B=reused; dep=()
+else
+  B=$(sbatch "${common[@]}" -t 02:00:00 --mem=32G slurm/rank_tensors.sbatch "$M" base); dep=(-d afterok:"$B")
+fi
+A=$(sbatch "${common[@]}" "${dep[@]}" --array=0-$((T - 1)) -t "${RANK_TIME:-08:00:00}" --mem=32G slurm/rank_tensors.sbatch "$M" run)
 A=${A%%;*}
 S=$(sbatch --parsable --nice="$N" -d afterok:"$A" -A coe -p cpuqs -c 8 --mem=32G -t 02:00:00 -J r2b-build \
       -o "$CMPE295_GROUP/logs/r2b-build_%j.out" \
