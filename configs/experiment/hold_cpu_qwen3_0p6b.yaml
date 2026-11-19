@@ -1,0 +1,30 @@
+# @package _global_
+# Confirmatory (docs/preregistration_osf.md). Do not submit before the registration is filed (§9).
+# Stage C2 (decision 13): qwen3-0.6b on the CPU backend, BF16 and three 4-bit formats, greedy only,
+# multi_turn_base holdout (100 tasks). 400 specs. Run on cpuqs (about 11 min per episode on 4 cores).
+experiment:
+  name: hold_cpu_qwen3_0p6b
+  model: qwen3-0.6b
+  benchmark: bfcl_multi_turn_base
+  task_ids_file: results/m3/holdout_tasks_bfcl.json   # registered holdout, SHA-256 checked
+  n_tasks: 100
+  thinking: false
+  max_steps_per_turn: 20
+  baselines:
+    - {variant: bf16, backend: cpu, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}
+    - {variant: q4_0, backend: cpu, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}
+    - {variant: q4_k_m, backend: cpu, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}
+    - {variant: iq4_xs, backend: cpu, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}
+  baseline_seeds: [5, 6, 7, 8]
+  repairs: []
+  repair_seeds: [5]
+  decoding: {temperature: 0.7, top_p: 0.8, top_k: 20, min_p: 0.0, n_predict: 4096, cache_prompt: false}
+  server: {ctx: 40960}
+  extra_benchmarks: []
+slurm:
+  time: "5-00:00:00"
+  max_requeue: 3
+models:
+  qwen3-0.6b:
+    hf_repo: Qwen/Qwen3-0.6B
+    files: {bf16: Qwen3-0.6B-BF16.gguf, q4_0: Qwen3-0.6B-Q4_0-pure.gguf, q4_k_m: Qwen3-0.6B-Q4_K_M.gguf, iq4_xs: Qwen3-0.6B-IQ4_XS.gguf}

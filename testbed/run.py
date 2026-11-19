@@ -40,6 +40,19 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GRAMMARS = {"none": None, "free": task_grammar_free, "forced": task_grammar}   # spec.Constraint values
 
 
+def load_task_ids_file(path: str) -> dict[str, list[str]]:
+    """A registered task list (``results/m3/holdout_tasks_bfcl.json``): benchmark -> task ids, checked against
+    the SHA-256 of its newline-joined ids so an edited list cannot run under the registered name."""
+    import hashlib
+    import json
+    d = json.load(open(path))
+    cats = {k: [str(t) for t in v] for k, v in d["categories"].items()}
+    got = hashlib.sha256("\n".join(t for v in cats.values() for t in v).encode()).hexdigest()
+    if d.get("sha256_of_ids") and got != d["sha256_of_ids"]:
+        raise ValueError(f"{path}: task ids do not match their recorded SHA-256 ({got} != {d['sha256_of_ids']})")
+    return cats
+
+
 def _abs(p: str) -> str:
     return p if os.path.isabs(p) else os.path.join(REPO, p)
 
@@ -50,10 +63,13 @@ def _plan(cfg: DictConfig):
     category = exp["benchmark"].removeprefix("bfcl_")
     # task_sample: the study's fixed-seed sample (adapter.sample_task_ids); otherwise the first n in file order
     pick = sample_task_ids if exp.get("task_sample") else skeleton_task_ids
-    task_ids = pick(category=category, n=int(exp["n_tasks"]))
+    listed = load_task_ids_file(_abs(exp["task_ids_file"])) if exp.get("task_ids_file") else {}
+    task_ids = listed[exp["benchmark"]] if listed else pick(category=category, n=int(exp["n_tasks"]))
     tasks = {exp["benchmark"]: task_ids}
     for extra in exp.get("extra_benchmarks", []) or []:
-        if "task_ids" in extra:
+        if extra["name"] in listed:                          # a registered task list (H1 holdout)
+            tasks[extra["name"]] = listed[extra["name"]]
+        elif "task_ids" in extra:
             tasks[extra["name"]] = [str(t) for t in extra["task_ids"]]
         elif extra["name"].startswith("bfcl_"):              # another BFCL category, sampled like the main one
             tasks[extra["name"]] = pick(category=extra["name"].removeprefix("bfcl_"),
@@ -473,7 +489,10 @@ def write_slurm(cfg, r: reg.Registry, exp_name: str) -> str:
     with open(cfg_list, "w") as f:
         f.write("\n".join(keys) + "\n")
     sb = cfg.slurm
-    common = dict(job=f"tb-{exp_name}", partition=sb.partition_gpu, gres=sb.gres_gpu, time=sb.time,
+    cpu_only = all(s.backend == "cpu" for s in r.pending())     # CPU-backend arrays need no GPU (stage C2)
+    common = dict(job=f"tb-{exp_name}", time=sb.time,
+                  partition=sb.get("partition_cpu_long", "cpuqs") if cpu_only else sb.partition_gpu,
+                  gres_line="" if cpu_only else f"#SBATCH --gres={sb.gres_gpu}",
                   account_line=f"#SBATCH -A {sb.account}" if sb.account else "",
                   logdir=os.path.join(r.dir, "slurm_logs"), repo=REPO, experiment=exp_name)
     os.makedirs(common["logdir"], exist_ok=True)

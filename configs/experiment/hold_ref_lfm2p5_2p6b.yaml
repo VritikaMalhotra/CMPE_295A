@@ -1,0 +1,30 @@
+# @package _global_
+# Confirmatory (docs/preregistration_osf.md). Do not submit before the registration is filed (§9).
+# Stage C1: BF16 reference for lfm2.5-2.6b on the 300-task BFCL holdout, CUDA; seeds 5-8 + greedy (seed 0).
+# 1,500 specs. Inclusion set for the secondary success analysis afterwards (§5).
+experiment:
+  name: hold_ref_lfm2p5_2p6b
+  model: lfm2.5-2.6b
+  benchmark: bfcl_multi_turn_base
+  task_ids_file: results/m3/holdout_tasks_bfcl.json   # registered holdout, SHA-256 checked
+  n_tasks: 100
+  thinking: false
+  max_steps_per_turn: 20
+  baselines:
+    - {variant: bf16, backend: cuda}
+    - {variant: bf16, backend: cuda, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}   # greedy pass
+  baseline_seeds: [5, 6, 7, 8]
+  repairs: []
+  repair_seeds: [5]
+  decoding: {temperature: 0.7, top_p: 0.8, top_k: 20, min_p: 0.0, n_predict: 4096, cache_prompt: false}
+  server: {ctx: 40960}
+  extra_benchmarks:
+    - {name: bfcl_multi_turn_miss_func}
+    - {name: bfcl_multi_turn_miss_param}
+slurm:
+  time: "1-00:00:00"
+  max_requeue: 3
+models:
+  lfm2.5-2.6b:
+    hf_repo: LiquidAI/LFM2.5-2.6B
+    files: {bf16: LFM2.5-2.6B-BF16.gguf}

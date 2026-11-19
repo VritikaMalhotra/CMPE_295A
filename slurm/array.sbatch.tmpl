@@ -6,7 +6,7 @@
 # already on disk), requeues itself and resumes where it stopped (spike S10). At most {max_requeue} requeues.
 #SBATCH -J {job}
 #SBATCH -p {partition}
-#SBATCH --gres={gres}
+{gres_line}
 #SBATCH -c 4
 #SBATCH --mem=24G
 #SBATCH -t {time}

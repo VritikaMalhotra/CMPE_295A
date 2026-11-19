@@ -40,6 +40,7 @@ cpu_threads: ${oc.decode:${oc.env:TESTBED_CPU_THREADS,null}}   # llama-server -t
 slurm:
   partition_gpu: gpuqs
   partition_cpu: defq
+  partition_cpu_long: cpuqs   # CPU-backend agent arrays (5-day limit; defq allows 6 h)
   gres_gpu: "gpu:p100:1"
   time: "02:00:00"
   account: coe           # -A coe: the CoE HPC Slurm account (association fixed 2026-10-26)
