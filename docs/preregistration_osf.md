@@ -221,8 +221,22 @@ are not used; the direction is checked on the estimate).
   primary.
 - **Tasks:** `results/m3/holdout_tasks_bfcl.json`. **Models:** `results/m3/models_manifest.json`.
 - **Runtime:** llama.cpp `d812350`; simulator not used in the confirmatory set.
-- **Configs:** the holdout experiment files and their experiment hashes are added to this section before filing
-  (§9).
+- **Configs** (`configs/experiment/hold_*.yaml`, written by `scripts/make_holdout_configs.py`, commit `01e4272`;
+  model files identical to the development configs). Experiment hashes from a dry run on 2026-11-19 (no episode
+  run):
+
+  | Model | C1 reference (`hold_ref_*`, 1,500 specs) | C1 damage (`hold_h1_*`, 4,500 specs) | C2 CPU (`hold_cpu_*`, 400 specs) |
+  |---|---|---|---|
+  | Qwen3-0.6B | f0d5c6bc24 | 972b0eee83 | 1c3d26ff22 |
+  | Qwen3-1.7B | 8301d88c51 | 29717480e3 | 55534ce544 |
+  | Qwen3-4B | 5f7ef89998 | d94749b2e9 | – |
+  | SmolLM3-3B | fd67d053ee | 9df3e80d3a | – |
+  | LFM2.5-1.2B-Instruct | 52714d278f | 596aa47141 | – |
+  | LFM2.5-2.6B | 1aafc04549 | d939176fda | – |
+
+  The runner refuses a task list whose IDs do not match the recorded SHA-256 (`testbed.run.load_task_ids_file`,
+  `tests/test_task_ids_file.py`). Stage C3 (repair) configs are added by amendment before C3 starts, once the R2b
+  files and R3 checkpoints exist; their design is fixed in §2 and §6.
 
 ## 8. Data already seen (disclosure)
 
@@ -246,8 +260,7 @@ confirmatory classes (through the power table), and the choice of a held-out tas
 ## 9. Before filing (checklist)
 
 1. Team and advisor approve this version, including the holdout design and decision 18.
-2. Write the holdout experiment configs (`configs/experiment/hold_*.yaml`: holdout task list, seeds 5–8 + greedy
-   seed 0), record their experiment hashes in §7, and commit.
+2. ~~Write the holdout experiment configs and record their hashes in §7.~~ Done 2026-11-19 (`01e4272`).
 3. Re-check that the analysis files in §7 are unchanged since `1e13897` (or update the commit).
 4. File on OSF (Preregistration template), add the registration ID to the C11 manifest and to this file, and
    only then submit stage C1.
