@@ -100,6 +100,12 @@
      "file_bytes": 1673007424,
      "n_weights": 2031739904,
      "bpw_file": 6.5875
+    },
+    "R2b-LS5.5": {
+     "sha256": "f6903fb2dd04e838839c68689c5bf1b0a68a77b6e5a7c0e1354d400d594dbb9f",
+     "file_bytes": 1402986816,
+     "n_weights": 2031739904,
+     "bpw_file": 5.5243
     }
    }
   },
@@ -196,6 +202,12 @@
      "file_bytes": 962847424,
      "n_weights": 1170340608,
      "bpw_file": 6.5817
+    },
+    "R2b-LS5.5": {
+     "sha256": "4585181bd70b64483c5386a4152083854eeea78c3e6a34847473bb460c207afb",
+     "file_bytes": 815293120,
+     "n_weights": 1170340608,
+     "bpw_file": 5.573
     }
    }
   },

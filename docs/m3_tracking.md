@@ -140,14 +140,14 @@ Last refresh: **2026-11-18T22:27-08:00** (Ekant's account, read-only over the gr
 | Run H1 cells for Qwen3-4B, SmolLM3-3B, LFM2.5-2.6B | Ekant | ~2026-11-20 | done: H1 grid 18/18, 0 pending (2026-11-19) |
 | Damage previews, all six models | Ekant | – | done (job 155749) |
 | R1 grammars per tool-call format | Ekant | – | built (B2) |
-| R2 variants (R2b layer-selective beyond 0.6B) | Yashashav (resumed by Ekant) | 2026-11-22 | 0.6B built (5.56 bpw). 2026-11-19: the Nov 10 arrays failed (1.7B: 8 h limit at 179/196 tensors; LFM2.5-1.2B: non-UTF-8 llama.cpp output crashed the parser, fixed in 4c23d1a). Resumed from Ekant's account on P100s: 1.7B ranking 156550 → build 156551 → KL 156552/156553; LFM ranking 156555 → build 156556 → KL 156557/156558. Yashashav's 112007–112014 can be cancelled |
+| R2 variants (R2b layer-selective) | Yashashav (resumed by Ekant) | 2026-11-22 | **done for all three core models** (2026-11-20): Qwen3-1.7B 5.52 bpw, LFM2.5-1.2B 5.57 bpw, both FR-E10 pass and KL-checked on both backends (`docs/m3_results.md`). Yashashav's 112007–112014 can be cancelled |
 | QAD data (critical path) | Yashashav | – | mix manifest done |
 | Label 300 pilot steps, second labeler, kappa → codebook v1 | Vritika, Ekant | – | label kit ready |
 | Damage map v1 | Vritika | 2026-12-04 | preview done (`docs/m3_damage_map_v1.md`); panel B scale fix before the deck |
 | File OSF pre-registration | Vritika | this week | filing version drafted (`docs/preregistration_osf.md`, 2026-11-19): H1 moved to a 300-task BFCL holdout with seeds 5–8; team/advisor review, then the §9 checklist |
 | Report Ch. 1–2 draft to advisor | team | **2026-11-24** | full draft v1 (2026-11-19): `docs/dec4/CMPE295A_Report_Ch1-2_draft_2026-11-19.docx`, built by `docs/dec4/report/build_report.py`; team review, then send |
 | Holdout configs (C1, C2) | Ekant | – | done (`01e4272`); submit after filing |
-| Stage C3 repair configs | Ekant, Yashashav | before C3 | need R2b files (1.7B, LFM2.5-1.2B) and R3 checkpoints |
+| Stage C3 repair configs | Ekant, Yashashav | before C3 | R2b files ready; waiting for R3 QAD checkpoints |
 | Demo recording | team | 2026-12-03 | storyboard done |
 | Canvas submission / Project Expo | team | 2026-12-04 / 2026-12-11 | – |
 

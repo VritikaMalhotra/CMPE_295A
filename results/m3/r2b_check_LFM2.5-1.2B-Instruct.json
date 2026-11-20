@@ -1,0 +1,14 @@
+{
+ "file": "/scratch/cmpe295-bertin/models/LFM2.5-1.2B-Instruct-R2b-LS5.5.gguf",
+ "bpw_file": 5.5730314024957766,
+ "target": 5.5,
+ "within_0.1": true,
+ "predicted_bpw": 5.555252673929264,
+ "n_q8_0_tensors": 29,
+ "share_of_linear_weights_q8_0": 0.29755320368620597,
+ "weights_by_type": {
+  "Q4_0": 861929472,
+  "F32": 129792,
+  "Q8_0": 308281344
+ }
+}

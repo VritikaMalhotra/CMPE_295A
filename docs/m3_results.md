@@ -204,3 +204,37 @@ its ids are disjoint from the training set.
   - Ranking task 112006_0 (1.7B) started 18:03 on g2.
   - Every P100 node has one GPU, and the 2-node cap is taken by cs002 (agents) and one P100. So the ranking tasks
     run one at a time (112006_1 and 112011 wait), not two in parallel as the 6 h budget assumed.
+
+## R2b for Qwen3-1.7B and LFM2.5-1.2B-Instruct (resumed 2026-11-19, Ekant's account)
+
+The Nov 10 arrays had failed: Qwen3-1.7B hit the 8 h limit at 179 of 196 tensors, and LFM2.5-1.2B crashed on its
+first tensor (llama.cpp printed a non-UTF-8 byte; fixed in `4c23d1a`). Resumed on P100s with the existing BF16
+base logits and score files (`RANK_SKIP_BASE=1`, `RANK_TIME=12:00:00`): ranking 156550 / 156555, select + build
+156551 / 156556, KL 156552–156553 / 156557–158. Same settings as 0.6B (ctx 512, 1,000 chunks, text SHA-256
+`dc06ce1f…`; KL on WikiText-2 test, 50 chunks).
+
+- **Selection and FR-E10** (`results/m3/r2b_selection_*.json`, `r2b_check_*.json`, `r2b_tensor_types_*.txt`):
+  - Qwen3-1.7B: 59 tensors to Q8_0, 36.0% of linear weights, predicted 5.501, measured **5.524** bits per weight.
+  - LFM2.5-1.2B: 29 tensors to Q8_0, 29.8% of linear weights, predicted 5.555, measured **5.573** bits per weight.
+  - Both pass 5.5 ± 0.1. Added to `results/m3/models_manifest.json` as `R2b-LS5.5` (SHA-256 `f6903fb2…`,
+    `4585181b…`).
+  - LFM2.5's ten `shortconv.conv.weight` kernels score KL 0 exactly: llama-quantize leaves them unquantized, so they
+    cost ranking time (about 9 min each) but cannot be selected. Drop them from `rank_tensors.py list` before the
+    next ranking.
+- **KL against BF16** (merged into `results/m3/kl_{cuda,cpu}_<model>.json`):
+
+  | Model | File | Bits per weight | KLD CUDA | KLD CPU |
+  |---|---|---|---|---|
+  | Qwen3-1.7B | IQ4_XS | 4.63 | 0.0787 | 0.0831 |
+  | | Q4_K_M | 5.05 | 0.1069 | 0.1086 |
+  | | **R2b-LS5.5** | **5.52** | **0.0920** | **0.0900** |
+  | | Q5_0-pure | 5.53 | 0.0592 | 0.0572 |
+  | LFM2.5-1.2B | IQ4_XS | 4.53 | 0.0958 | 0.0951 |
+  | | Q4_K_M | 5.00 | 0.1020 | 0.1058 |
+  | | **R2b-LS5.5** | **5.57** | **0.0975** | **0.0943** |
+  | | Q5_0-pure | 5.52 | 0.0472 | 0.0459 |
+
+- **Reading.** The 0.6B pattern repeats: at the same file size, R2b's WikiText KL is 1.6× (1.7B) and 2.1× (LFM)
+  that of uniform Q5_0-pure, and no better than IQ4_XS at about 0.9–1.0 fewer bits per weight. This check is
+  outside R2b's ranking domain (agent conversations); contrast 5 of the registered RQ2 family (R2b vs Q5_0, two
+  sided) is the real test.
