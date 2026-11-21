@@ -238,3 +238,29 @@ base logits and score files (`RANK_SKIP_BASE=1`, `RANK_TIME=12:00:00`): ranking 
   that of uniform Q5_0-pure, and no better than IQ4_XS at about 0.9–1.0 fewer bits per weight. This check is
   outside R2b's ranking domain (agent conversations); contrast 5 of the registered RQ2 family (R2b vs Q5_0, two
   sided) is the real test.
+
+## R3 trainer and pilot (2026-11-21, Ekant; R3 owner Yashashav)
+
+No production QAD trainer existed (only the 50-step S7 toy), so `train/qad.py` was written: the three arms on
+identical data order, exact Q4_0 fake quantization of every tensor `--pure Q4_0` quantizes (including the tied
+embedding/output matrix), fp32 master weights with BF16 autocast, 30-minute checkpoints and a USR1 requeue that
+resumes with bit-identical losses (`tests/test_qad.py`). Data: the QAD mix packed per model into 2,048-token
+sequences (`$CMPE295_GROUP/data/qad_pack/<model>`: Qwen3 25,132 sequences, LFM2.5 24,606; 58 LFM2.5 records the
+template could not render). Eval: 64 sequences of the R2b ranking conversations, disjoint from the mix.
+
+Held-out per-token KL to the BF16 teacher, Q4_0 student (fake quantization on) after 150 steps (4.9M tokens), H100:
+
+| Model | Plain Q4_0 | QAD-KL | KL+CE, CE 0.5 | KL+CE, CE 0.1 | Control (KL+CE 0.5, FQ off) | tok/s (KL) |
+|---|---|---|---|---|---|---|
+| Qwen3-0.6B | 0.177 | 0.080 | 0.109 | 0.082 | 0.203 | 14,500 |
+| Qwen3-1.7B | 0.185 | 0.084 | 0.166 (60 steps) | 0.091 | – | 8,060 |
+| LFM2.5-1.2B | 0.408 | 0.245 | 0.496 (60 steps) | 0.273 | – | 14,160 |
+
+- QAD-KL roughly halves the Q4_0 student's divergence on the Qwen3 models and cuts it 40% on LFM2.5 within 5M tokens.
+- A CE weight of 0.5 pulls the student away from its teacher (its 16-bit KL rises) and on LFM2.5 makes Q4_0 worse
+  than no training; 0.1 keeps nearly all of the QAD-KL gain. **Registered setting: CE weight 0.1**, learning rate
+  1e-5 for every model (pre-registration §2). Chosen on held-out KL only, not on any benchmark.
+- Export check on the 0.6B QAD-KL pilot: 197 Q4_0 tensors, all bit-identical to the trained codes; count matches the
+  197 fake-quantized weights.
+- Peak memory: 35 GB (0.6B), 62 GB (1.7B), 37 GB (LFM2.5) at micro-batch 2. Full pass per arm: about 1 h (0.6B,
+  LFM2.5) and 2 h (1.7B).

@@ -321,7 +321,7 @@ def main() -> None:
     t.add_argument("--grad-accum", type=int, default=8)          # 2 x 8 x 2,048 = 32,768 tokens per step
     t.add_argument("--lr", type=float, default=1e-5)
     t.add_argument("--warmup", type=int, default=50)
-    t.add_argument("--ce-weight", type=float, default=0.5)
+    t.add_argument("--ce-weight", type=float, default=0.1)       # 2026-11-21 pilot: 0.5 drifts from the teacher
     t.add_argument("--max-steps", type=int, default=0, help="0 = one pass over the packed mix")
     t.add_argument("--eval-every", type=int, default=100)
     t.add_argument("--eval-seqs", type=int, default=64)

@@ -63,7 +63,13 @@ analysis run with a different code hash as exploratory.
   `docs/r1_grammars.md`); R2a uniform Q5_0, Q6_K, Q8_0; R2b layer-selective at 5.5 bits per weight (tensors ranked
   by single-tensor KL on held-out agent conversations); R2c step-selective, Q4_0 and Q8_0 servers, tool-call steps
   routed to Q8_0 (policy 1; the entropy policy is exploratory); R3 QAD-KL, QAD-KL+CE and the train-longer control
-  (QAD-KL+CE with fake quantization off, then plain Q4_0), full-parameter in BF16 on identical data, order and steps.
+  (QAD-KL+CE with fake quantization off, then plain Q4_0), full-parameter on identical data, order and steps.
+  **Training settings (fixed by the 2026-11-21 pilot on held-out KL only, before any R3 evaluation):** fp32 master
+  weights with BF16 autocast; AdamW (β 0.9/0.95, no weight decay), peak learning rate 1e-5, 50 warmup steps, cosine
+  decay; 32,768 tokens per step (2 × 8 × 2,048); one pass over the packed QAD mix (about 51M tokens, ≈ 1,570 steps);
+  KL+CE loss = KL + 0.1 × CE (weight 0.5 made the student drift from its teacher, worst on LFM2.5); seed 295.
+  Fake quantization covers every tensor `llama-quantize --pure Q4_0` quantizes (including a tied embedding/output
+  matrix); export through an f32 GGUF is checked code for code (`train/qad.py`, `train/export_r3.py`).
 - Decoding (decision 5): 4 sampled trials (T 0.7, top_p 0.8, top_k 20, min_p 0) with fixed seeds plus 1 greedy
   pass per task and configuration; context 40,960 tokens, ≤ 4,096 new tokens per step (decision 1).
 
