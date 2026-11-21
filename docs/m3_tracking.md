@@ -141,7 +141,7 @@ Last refresh: **2026-11-18T22:27-08:00** (Ekant's account, read-only over the gr
 | Damage previews, all six models | Ekant | – | done (job 155749) |
 | R1 grammars per tool-call format | Ekant | – | built (B2) |
 | R2 variants (R2b layer-selective) | Yashashav (resumed by Ekant) | 2026-11-22 | **done for all three core models** (2026-11-20): Qwen3-1.7B 5.52 bpw, LFM2.5-1.2B 5.57 bpw, both FR-E10 pass and KL-checked on both backends (`docs/m3_results.md`). Yashashav's 112007–112014 can be cancelled |
-| QAD data (critical path) | Yashashav | – | mix manifest done |
+| R3 QAD training (critical path) | Yashashav (trainer + pilot by Ekant) | ~2026-11-22 | trainer `train/qad.py` + exporter written and tested; pilot fixed CE weight 0.1, lr 1e-5 (`docs/m3_results.md`). **Nine full runs submitted 2026-11-21** (162971–162979: 0.6B, LFM2.5-1.2B, 1.7B × kl, klce, control), about 7 h wall time; then export with `train/export_r3.py` |
 | Label 300 pilot steps, second labeler, kappa → codebook v1 | Vritika, Ekant | – | label kit ready |
 | Damage map v1 | Vritika | 2026-12-04 | preview done (`docs/m3_damage_map_v1.md`); panel B scale fix before the deck |
 | File OSF pre-registration | Vritika | this week | filing version drafted (`docs/preregistration_osf.md`, 2026-11-19): H1 moved to a 300-task BFCL holdout with seeds 5–8; team/advisor review, then the §9 checklist |
