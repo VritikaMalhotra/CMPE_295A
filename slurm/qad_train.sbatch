@@ -26,6 +26,7 @@ PY=${QAD_PY:-/scratch/cmpe295-bertin/envs/qad-data/bin/python}
 OUT=$TESTBED_OUT/r3/$M/${QAD_TAG:+$QAD_TAG/}$ARM
 MAX_REQUEUE=${QAD_MAX_REQUEUE:-5}
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+export PYTHONPATH=${QAD_EXTRA_LIB:-/scratch/cmpe295-bertin/envs/pytest-lib}${PYTHONPATH:+:$PYTHONPATH}   # sentencepiece, pytest
 echo "qad $M $ARM -> $OUT, restart ${SLURM_RESTART_COUNT:-0}, $(git rev-parse --short HEAD), $(date -Iseconds)"
 "$PY" -c "import torch; assert torch.cuda.is_available(), 'no CUDA in the training env'; print('torch', torch.__version__, torch.cuda.get_device_name(0))"
 stopped=""
