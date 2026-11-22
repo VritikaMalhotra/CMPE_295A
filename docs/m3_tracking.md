@@ -141,13 +141,13 @@ Last refresh: **2026-11-18T22:27-08:00** (Ekant's account, read-only over the gr
 | Damage previews, all six models | Ekant | – | done (job 155749) |
 | R1 grammars per tool-call format | Ekant | – | built (B2) |
 | R2 variants (R2b layer-selective) | Yashashav (resumed by Ekant) | 2026-11-22 | **done for all three core models** (2026-11-20): Qwen3-1.7B 5.52 bpw, LFM2.5-1.2B 5.57 bpw, both FR-E10 pass and KL-checked on both backends (`docs/m3_results.md`). Yashashav's 112007–112014 can be cancelled |
-| R3 QAD training (critical path) | Yashashav (trainer + pilot by Ekant) | ~2026-11-22 | trainer `train/qad.py` + exporter written and tested; pilot fixed CE weight 0.1, lr 1e-5 (`docs/m3_results.md`). **Nine full runs submitted 2026-11-21** (162971–162979: 0.6B, LFM2.5-1.2B, 1.7B × kl, klce, control), about 7 h wall time; then export with `train/export_r3.py` |
+| R3 QAD training | Yashashav (trainer, pilot and runs by Ekant) | – | **done** (2026-11-21): 9 runs, 12 GGUF files exported code-exact and KL-checked on both backends (`docs/m3_results.md`, `results/m3/r3_*.json`) |
 | Label 300 pilot steps, second labeler, kappa → codebook v1 | Vritika, Ekant | – | label kit ready |
 | Damage map v1 | Vritika | 2026-12-04 | preview done (`docs/m3_damage_map_v1.md`); panel B scale fix before the deck |
 | File OSF pre-registration | Vritika | this week | filing version drafted (`docs/preregistration_osf.md`, 2026-11-19): H1 moved to a 300-task BFCL holdout with seeds 5–8; team/advisor review, then the §9 checklist |
 | Report Ch. 1–2 draft to advisor | team | **2026-11-24** | full draft v1 (2026-11-19): `docs/dec4/CMPE295A_Report_Ch1-2_draft_2026-11-19.docx`, built by `docs/dec4/report/build_report.py`; team review, then send |
 | Holdout configs (C1, C2) | Ekant | – | done (`01e4272`); submit after filing |
-| Stage C3 repair configs | Ekant, Yashashav | before C3 | R2b files ready; waiting for R3 QAD checkpoints |
+| Stage C3 repair configs | Ekant | before C3 | all inputs ready (R1 grammars, R2 files, R3 files); configs next, filed as a registration amendment |
 | Demo recording | team | 2026-12-03 | storyboard done |
 | Canvas submission / Project Expo | team | 2026-12-04 / 2026-12-11 | – |
 

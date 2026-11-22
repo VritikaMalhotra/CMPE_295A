@@ -1,0 +1,29 @@
+{
+ "final": "/scratch/cmpe295-bertin/runs/r3/Qwen3-0.6B/control/final",
+ "f32": "/scratch/cmpe295-bertin/models/Qwen3-0.6B-R3-CTRL-F32.gguf",
+ "q4_0": "/scratch/cmpe295-bertin/models/Qwen3-0.6B-R3-CTRL-Q4_0-pure.gguf",
+ "q4_0_sha256": "e07455d535cf3522a80454ea3b70109525341438122a62c0455bf65d64151e8a",
+ "bf16": "/scratch/cmpe295-bertin/models/Qwen3-0.6B-R3-CTRL-BF16.gguf",
+ "bf16_sha256": "63bc20991d6ec640edf87512359468e3890db6fb9941b060e999ed2b3bcd1220",
+ "fidelity": {
+  "q4_0_tensors": 197,
+  "max_rel_diff": 0.0,
+  "pass": true,
+  "worst": [
+   [
+    "token_embd.weight",
+    0.0
+   ],
+   [
+    "blk.0.attn_k.weight",
+    0.0
+   ],
+   [
+    "blk.0.attn_output.weight",
+    0.0
+   ]
+  ]
+ },
+ "fake_quant_weights": 197,
+ "count_match": true
+}

@@ -19,6 +19,31 @@
   "q8_0_closer_than_q4_0_pure": true
  },
  "complete": true,
+ "merged_from": [
+  {
+   "file": "results/m3/kl_cuda_Qwen3-0.6B.json",
+   "created": "2026-11-03T19:28:08+00:00",
+   "variants": [
+    "Q4_0-pure",
+    "Q4_K_M",
+    "Q8_0",
+    "IQ4_XS",
+    "Q5_0-pure",
+    "Q6_K-pure",
+    "R2b-LS5.5"
+   ]
+  },
+  {
+   "file": "/scratch/cmpe295-bertin/runs/kl_m3/Qwen3-0.6B-R3/kl_Qwen3-0.6B.json",
+   "created": "2026-11-22T04:20:38+00:00",
+   "variants": [
+    "R3-CTRL-BF16",
+    "R3-CTRL-Q4_0-pure",
+    "R3-QAD-KL-Q4_0-pure",
+    "R3-QAD-KLCE-Q4_0-pure"
+   ]
+  }
+ ],
  "variants": {
   "Q4_0-pure": {
    "ppl_q": 23.953216,
@@ -208,33 +233,114 @@
    "n_weights": 751632384,
    "bpw_file": 5.5646,
    "complete": true
-  }
- },
- "merged_from": [
-  {
-   "file": "results/m2/kl_Qwen3-0.6B.json",
-   "created": "2026-11-03T19:28:08+00:00",
-   "variants": [
-    "Q4_0-pure",
-    "Q4_K_M",
-    "Q8_0"
-   ]
   },
-  {
-   "file": "/scratch/cmpe295-bertin/runs/kl_m3/Qwen3-0.6B/kl_Qwen3-0.6B.json",
-   "created": "2026-11-09T22:01:30+00:00",
-   "variants": [
-    "IQ4_XS",
-    "Q5_0-pure",
-    "Q6_K-pure"
-   ]
+  "R3-CTRL-BF16": {
+   "ppl_q": 19.149577,
+   "ppl_q_unc": 0.547234,
+   "ppl_base": 20.251159,
+   "ppl_base_unc": 0.58807,
+   "ppl_ratio": 0.945604,
+   "ppl_ratio_unc": 0.002086,
+   "kld_mean": 0.006254,
+   "kld_mean_unc": 0.000112,
+   "kld_max": 0.599984,
+   "kld_p999": 0.140406,
+   "kld_p99": 0.038151,
+   "kld_median": 0.004249,
+   "dp_mean_pct": -0.167,
+   "dp_mean_pct_unc": 0.017,
+   "dp_rms_pct": 1.916,
+   "dp_rms_pct_unc": 0.046,
+   "same_top_p_pct": 96.376,
+   "same_top_p_pct_unc": 0.166,
+   "chunks_scored": 50,
+   "n_ctx": 512,
+   "sha256": "63bc20991d6ec640edf87512359468e3890db6fb9941b060e999ed2b3bcd1220",
+   "file_bytes": 1198182592,
+   "n_weights": 596049920,
+   "bpw_file": 16.0816,
+   "complete": true
   },
-  {
-   "file": "/scratch/cmpe295-bertin/runs/kl_m3/Qwen3-0.6B-R2b/kl_Qwen3-0.6B.json",
-   "created": "2026-11-12T01:50:58+00:00",
-   "variants": [
-    "R2b-LS5.5"
-   ]
+  "R3-CTRL-Q4_0-pure": {
+   "ppl_q": 22.051823,
+   "ppl_q_unc": 0.628781,
+   "ppl_base": 20.251159,
+   "ppl_base_unc": 0.58807,
+   "ppl_ratio": 1.088917,
+   "ppl_ratio_unc": 0.008043,
+   "kld_mean": 0.227114,
+   "kld_mean_unc": 0.002563,
+   "kld_max": 9.748957,
+   "kld_p999": 2.783411,
+   "kld_p99": 1.303881,
+   "kld_median": 0.166475,
+   "dp_mean_pct": -2.629,
+   "dp_mean_pct_unc": 0.1,
+   "dp_rms_pct": 11.57,
+   "dp_rms_pct_unc": 0.173,
+   "same_top_p_pct": 76.11,
+   "same_top_p_pct_unc": 0.378,
+   "chunks_scored": 50,
+   "n_ctx": 512,
+   "sha256": "e07455d535cf3522a80454ea3b70109525341438122a62c0455bf65d64151e8a",
+   "file_bytes": 341455040,
+   "n_weights": 596049920,
+   "bpw_file": 4.5829,
+   "complete": true
+  },
+  "R3-QAD-KL-Q4_0-pure": {
+   "ppl_q": 20.780981,
+   "ppl_q_unc": 0.605262,
+   "ppl_base": 20.251159,
+   "ppl_base_unc": 0.58807,
+   "ppl_ratio": 1.026163,
+   "ppl_ratio_unc": 0.004585,
+   "kld_mean": 0.068895,
+   "kld_mean_unc": 0.001181,
+   "kld_max": 5.948428,
+   "kld_p999": 1.426914,
+   "kld_p99": 0.514358,
+   "kld_median": 0.03969,
+   "dp_mean_pct": -0.662,
+   "dp_mean_pct_unc": 0.057,
+   "dp_rms_pct": 6.509,
+   "dp_rms_pct_unc": 0.144,
+   "same_top_p_pct": 86.847,
+   "same_top_p_pct_unc": 0.299,
+   "chunks_scored": 50,
+   "n_ctx": 512,
+   "sha256": "b49d65397f29771cbcd458b24e6afc360a5b5b7b196472af50d5a07bde1b5e95",
+   "file_bytes": 341455040,
+   "n_weights": 596049920,
+   "bpw_file": 4.5829,
+   "complete": true
+  },
+  "R3-QAD-KLCE-Q4_0-pure": {
+   "ppl_q": 19.617144,
+   "ppl_q_unc": 0.558415,
+   "ppl_base": 20.251159,
+   "ppl_base_unc": 0.58807,
+   "ppl_ratio": 0.968692,
+   "ppl_ratio_unc": 0.004464,
+   "kld_mean": 0.071674,
+   "kld_mean_unc": 0.001161,
+   "kld_max": 5.831782,
+   "kld_p999": 1.388234,
+   "kld_p99": 0.507831,
+   "kld_median": 0.043253,
+   "dp_mean_pct": -0.748,
+   "dp_mean_pct_unc": 0.058,
+   "dp_rms_pct": 6.638,
+   "dp_rms_pct_unc": 0.134,
+   "same_top_p_pct": 86.392,
+   "same_top_p_pct_unc": 0.304,
+   "chunks_scored": 50,
+   "n_ctx": 512,
+   "sha256": "74279414239f659b5be28c156aec24ec232a2d1b9884c0de10d24d5090390037",
+   "file_bytes": 341455040,
+   "n_weights": 596049920,
+   "bpw_file": 4.5829,
+   "complete": true
   }
- ]
+ }
 }

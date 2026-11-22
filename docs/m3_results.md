@@ -264,3 +264,38 @@ Held-out per-token KL to the BF16 teacher, Q4_0 student (fake quantization on) a
   197 fake-quantized weights.
 - Peak memory: 35 GB (0.6B), 62 GB (1.7B), 37 GB (LFM2.5) at micro-batch 2. Full pass per arm: about 1 h (0.6B,
   LFM2.5) and 2 h (1.7B).
+
+## R3 full runs (2026-11-21)
+
+Nine runs (jobs 162971–162979): three arms × three core models, one pass over the packed QAD mix (1,570 steps,
+51.4M tokens for Qwen3; 1,537 steps for LFM2.5), CE weight 0.1, learning rate 1e-5, one H100 each, no requeues
+(45 min to 1.9 h). Summary with every eval point: `results/m3/r3_training.json`.
+
+**Held-out agent-conversation KL to BF16** (64 R2b ranking conversations, Q4_0 student at the end of training):
+
+| Model | Plain Q4_0 | QAD-KL | QAD-KL+CE | Control (trained at 16 bits, then Q4_0) |
+|---|---|---|---|---|
+| Qwen3-0.6B | 0.177 | **0.043** | 0.049 | 0.160 |
+| Qwen3-1.7B | 0.185 | **0.050** | 0.059 | 0.150 |
+| LFM2.5-1.2B | 0.408 | **0.145** | 0.166 | 0.285 |
+
+**Export** (`train/export_r3.py`, jobs 164193–164205 and 164247–164249; reports `results/m3/r3_export_*.json`):
+every Q4_0 file holds exactly the trained codes (max difference 0.0; 197 tensors for Qwen3, 93 for LFM2.5, each equal
+to the number of fake-quantized weights). Files `$TESTBED_MODELS/<model>-R3-{QAD-KL,QAD-KLCE,CTRL}-Q4_0-pure.gguf`
+and `<model>-R3-CTRL-BF16.gguf`, in `results/m3/models_manifest.json`. The first 1.7B exports failed because the
+base model's shard index was copied into `final/` (fixed in `7cc9875`).
+
+**WikiText-2 KL to BF16** (out of the training domain; CUDA, CPU within 0.003; merged into `results/m3/kl_*`):
+
+| Model | Plain Q4_0 | QAD-KL | QAD-KL+CE | Control Q4_0 | Control BF16 |
+|---|---|---|---|---|---|
+| Qwen3-0.6B | 0.246 | **0.069** | 0.072 | 0.227 | 0.006 |
+| Qwen3-1.7B | 0.218 | **0.081** | 0.087 | 0.191 | 0.012 |
+| LFM2.5-1.2B | 0.184 | 0.191 | **0.157** | 0.238 | 0.068 |
+
+- **QAD recovers most of the Q4_0 divergence** on the Qwen3 models (−72% / −63% on WikiText, −73–76% in domain),
+  far more than the train-longer control (−7–13%), so the gain comes from training under quantization.
+- **LFM2.5 does not transfer out of domain:** QAD-KL cuts in-domain KL from 0.41 to 0.15 but is slightly worse than
+  plain Q4_0 on WikiText; KL+CE is 15% better. Its control also moves the 16-bit model far more (KL 0.068 vs 0.006–0.012
+  for Qwen3). The registered agent-task contrasts (RQ2 contrasts 8–10) are the test that counts.
+- These checks are development data; R3's confirmatory evaluation is stage C3 on the BFCL holdout.

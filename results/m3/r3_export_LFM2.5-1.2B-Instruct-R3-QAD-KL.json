@@ -1,0 +1,27 @@
+{
+ "final": "/scratch/cmpe295-bertin/runs/r3/LFM2.5-1.2B-Instruct/kl/final",
+ "f32": "/scratch/cmpe295-bertin/models/LFM2.5-1.2B-Instruct-R3-QAD-KL-F32.gguf",
+ "q4_0": "/scratch/cmpe295-bertin/models/LFM2.5-1.2B-Instruct-R3-QAD-KL-Q4_0-pure.gguf",
+ "q4_0_sha256": "a4f73ceb2a52590edfe452b4efba357d5de3b54e00693c32b70e91a5ddd27077",
+ "fidelity": {
+  "q4_0_tensors": 93,
+  "max_rel_diff": 0.0,
+  "pass": true,
+  "worst": [
+   [
+    "token_embd.weight",
+    0.0
+   ],
+   [
+    "blk.0.ffn_down.weight",
+    0.0
+   ],
+   [
+    "blk.0.ffn_gate.weight",
+    0.0
+   ]
+  ]
+ },
+ "fake_quant_weights": 93,
+ "count_match": true
+}
