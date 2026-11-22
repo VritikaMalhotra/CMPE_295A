@@ -155,7 +155,8 @@ def copy_tokenizer(src: str, dst: str) -> None:
     trained weights (save_pretrained writes only config and weights)."""
     import shutil
     for f in os.listdir(src):
-        if f.endswith(".safetensors") or f in ("config.json", "generation_config.json") or os.path.isdir(os.path.join(src, f)):
+        if (f.endswith((".safetensors", ".safetensors.index.json")) or f in ("config.json", "generation_config.json")
+                or os.path.isdir(os.path.join(src, f))):        # a shard index would point the converter at missing shards
             continue
         shutil.copy2(os.path.join(src, f), os.path.join(dst, f))
 
@@ -294,6 +295,8 @@ def cmd_train(a) -> None:
         final = os.path.join(a.out, "final")
         student.save_pretrained(final, safe_serialization=True)
         copy_tokenizer(a.model_dir, final)
+        for f in os.listdir(final):              # save_pretrained writes weights 0600; the group needs them
+            os.chmod(os.path.join(final, f), 0o660)
         json.dump({"steps": step, "arm": a.arm, "fake_quant_weights": n_distinct, "fake_quant_modules": fq},
                   open(os.path.join(a.out, "final", "r3.json"), "w"), indent=1)
         print(json.dumps({"event": "done", "steps": step}), flush=True)
