@@ -4,7 +4,7 @@
 template. It replaces `docs/preregistration_m2.md` (the M2 draft), whose rules it keeps except where marked
 **[changed]**. Every decision it cites is in `docs/m2_decisions.md`: decisions 1–17 were confirmed by the advisor
 (recorded 2026-11-16), decision 18 is proposed (Ekant, 2026-11-19). The checklist in §9 lists what must be done
-on the day of filing.
+on the day of filing. **OSF project:** https://osf.io/xwq5y/ (created 2026-11-22; the registration is filed from it).
 
 **What changed since the M2 draft, and why.** The H1 damage grid (BF16 against Q4_0, Q4_K_M and IQ4_XS for six
 models on the 501 development tasks, CUDA) was run to completion and analysed (damage map v1, 2026-11-19) before
@@ -270,7 +270,12 @@ All of the following are development data, excluded from every confirmatory test
   6 models × BF16, Q4_0, Q4_K_M, IQ4_XS; seeds 1–4 + greedy; CUDA), including the damage map v1
   (`docs/m3_damage_map_v1.md`). These are reported as exploratory, with the τ² rules of decisions 15, 16 and 18.
 - KL divergence checks (WikiText-2) on both backends, the FR-E17 backend parity runs, the NFR-5 throughput pilot,
-  the R2b ranking for Qwen3-0.6B, and the QAD data build.
+  the R2b rankings and builds for the three core models, and the QAD data build.
+- **R3 training** (2026-11-21): the pilot and the nine full runs were judged only on KL to the BF16 model, on the R2b
+  ranking conversations (disjoint from both benchmarks) and on WikiText-2 (`docs/m3_results.md`). No R3 checkpoint
+  has been run on any benchmark task.
+- **R2c smoke test** (2026-11-22): 5 development `multi_turn_base` tasks (not in the holdout), seed 1, to check the
+  routing; no other repair has been run on agent tasks since the Oct 28 runs.
 
 What the development data informed: the step-level primary outcome, the depth bins, the backend as a factor, the
 confirmatory classes (through the power table), and the choice of a held-out task set.
@@ -279,6 +284,6 @@ confirmatory classes (through the power table), and the choice of a held-out tas
 
 1. Team and advisor approve this version, including the holdout design and decision 18.
 2. ~~Write the holdout experiment configs and record their hashes in §7.~~ Done 2026-11-19 (`01e4272`).
-3. Re-check that the analysis files in §7 are unchanged since `1e13897` (or update the commit).
+3. ~~Re-check that the analysis files in §7 are unchanged since `1e13897`.~~ Checked 2026-11-22: unchanged.
 4. File on OSF (Preregistration template), add the registration ID to the C11 manifest and to this file, and
    only then submit stage C1.
