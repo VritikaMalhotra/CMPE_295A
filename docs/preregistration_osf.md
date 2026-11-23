@@ -93,7 +93,7 @@ tasks were used in development (§8).
 |---|---|---|
 | C1. H1 references and damage (CUDA) | 6 models × {BF16, Q4_0, Q4_K_M, IQ4_XS} | 24 × 1,500 = 36,000 |
 | C2. H1 CPU subset (decision 13) | Qwen3-0.6B, Qwen3-1.7B × {BF16, Q4_0, Q4_K_M, IQ4_XS}, CPU, `multi_turn_base` holdout (100 tasks), greedy only | 800 |
-| C3. Repairs (CUDA) | 3 core models × {R1, Q5_0, Q6_K, Q8_0, R2b, R2c, QAD-KL, QAD-KL+CE, train-longer} | 27 × 1,500 = 40,500 |
+| C3. Repairs (CUDA) | 3 core models × {R1, Q5_0, Q6_K, Q8_0, R2b, R2c, QAD-KL, QAD-KL+CE, train-longer} | 27 × 1,500 = 40,500 (24 configured; R2c pending, §7) |
 | C4. Costs (RQ4) | Every C1/C3 configuration on both backends, single-stream blocks on an exclusive node | ≥ 10 interleaved repetitions of a fixed 20-task cost set |
 
 Stage order: C1 BF16 references first (the inclusion set for the secondary success analysis is fixed from them,
@@ -241,8 +241,16 @@ are not used; the direction is checked on the estimate).
   | LFM2.5-2.6B | 1aafc04549 | d939176fda | – |
 
   The runner refuses a task list whose IDs do not match the recorded SHA-256 (`testbed.run.load_task_ids_file`,
-  `tests/test_task_ids_file.py`). Stage C3 (repair) configs are added by amendment before C3 starts, once the R2b
-  files and R3 checkpoints exist; their design is fixed in §2 and §6.
+  `tests/test_task_ids_file.py`).
+- **Stage C3 configs** (`configs/experiment/hold_c3_*.yaml`, commit `6573068`; written before filing, so no
+  amendment is needed for these): per core model, R1 (free grammar on Q4_0), Q5_0, Q6_K, Q8_0, R2b, QAD-KL,
+  QAD-KL+CE and the train-longer control, each 4 sampled seeds (5–8) + greedy, 12,000 specs. Experiment hashes:
+  Qwen3-0.6B `91c2e05fc3`, Qwen3-1.7B `5f17ad0746`, LFM2.5-1.2B-Instruct `70e1289134`. Model files and SHA-256:
+  `results/m3/models_manifest.json` (R2b `R2b-LS5.5`; R3 `R3-QAD-KL-Q4_0-pure`, `R3-QAD-KLCE-Q4_0-pure`,
+  `R3-CTRL-Q4_0-pure`, `R3-CTRL-BF16`); R3 training record `results/m3/r3_training.json`.
+- **R2c (step-selective routing) is not yet implemented** in the runner (two llama-server processes, Q4_0 and
+  Q8_0, routed per step). Its config is added before filing if it is ready; otherwise contrasts 6 and 7 of the RQ2
+  family are dropped by a filed amendment before C3 starts, and the family shrinks to 8.
 
 ## 8. Data already seen (disclosure)
 

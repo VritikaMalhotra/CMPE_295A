@@ -147,7 +147,7 @@ Last refresh: **2026-11-18T22:27-08:00** (Ekant's account, read-only over the gr
 | File OSF pre-registration | Vritika | this week | filing version drafted (`docs/preregistration_osf.md`, 2026-11-19): H1 moved to a 300-task BFCL holdout with seeds 5–8; team/advisor review, then the §9 checklist |
 | Report Ch. 1–2 draft to advisor | team | **2026-11-24** | full draft v1 (2026-11-19): `docs/dec4/CMPE295A_Report_Ch1-2_draft_2026-11-19.docx`, built by `docs/dec4/report/build_report.py`; team review, then send |
 | Holdout configs (C1, C2) | Ekant | – | done (`01e4272`); submit after filing |
-| Stage C3 repair configs | Ekant | before C3 | all inputs ready (R1 grammars, R2 files, R3 files); configs next, filed as a registration amendment |
+| Stage C3 repair configs | Ekant | before C3 | **written** (`hold_c3_*`, 6573068): 8 repairs × 3 core models, 36,000 specs, hashes in prereg §7. **R2c step-selective routing not implemented** (runner change) |
 | Demo recording | team | 2026-12-03 | storyboard done |
 | Canvas submission / Project Expo | team | 2026-12-04 / 2026-12-11 | – |
 
