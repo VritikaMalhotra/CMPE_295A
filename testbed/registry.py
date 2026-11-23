@@ -38,10 +38,13 @@ def expand(exp: dict, task_ids: list[str]) -> list[RunSpec]:
                 specs.append(RunSpec(variant=b["variant"], backend=b["backend"], repair="none", constraint="none",
                                      task_id=t, seed=int(seed), **c))
     for r in exp.get("repairs", []):
-        for seed in exp["repair_seeds"]:
+        # like a baseline, a repair may set its own decoding and seeds (the greedy pass of a repaired configuration);
+        # without them the spec is exactly as before, so existing run_ids do not change
+        c = dict(common, decoding={**common["decoding"], **dict(r.get("decoding") or {})})
+        for seed in r.get("seeds", exp["repair_seeds"]):
             for t in task_ids:
                 specs.append(RunSpec(variant=r["variant"], backend=r["backend"], repair=r["repair"],
-                                     constraint=r.get("constraint", "none"), task_id=t, seed=int(seed), **common))
+                                     constraint=r.get("constraint", "none"), task_id=t, seed=int(seed), **c))
     dup = [k for k, n in Counter(s.run_id for s in specs).items() if n > 1]
     if dup:
         raise ValueError(f"duplicate run specs: {dup[:5]}")

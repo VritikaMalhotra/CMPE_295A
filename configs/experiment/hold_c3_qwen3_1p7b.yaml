@@ -1,0 +1,45 @@
+# @package _global_
+# Confirmatory (docs/preregistration_osf.md). Do not submit before the registration is filed (§9).
+# Stage C3: repairs for qwen3-1.7b on the 300-task BFCL holdout, CUDA, from Q4_0 (pre-registration §2, §6).
+# 8 repaired configurations x (4 sampled + 1 greedy) x 300 tasks = 12,000 specs. R2c follows once implemented.
+# Pairs with hold_ref_qwen3_1p7b (BF16) and hold_h1_qwen3_1p7b (Q4_0) by (task, seed).
+experiment:
+  name: hold_c3_qwen3_1p7b
+  model: qwen3-1.7b
+  benchmark: bfcl_multi_turn_base
+  task_ids_file: results/m3/holdout_tasks_bfcl.json   # registered holdout, SHA-256 checked
+  n_tasks: 100
+  thinking: false
+  max_steps_per_turn: 20
+  baselines: []
+  baseline_seeds: [5, 6, 7, 8]
+  repairs:
+    - {repair: r1, variant: q4_0, backend: cuda, constraint: free}
+    - {repair: r1, variant: q4_0, backend: cuda, constraint: free, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}   # greedy pass
+    - {repair: r2, variant: q5_0, backend: cuda, constraint: none}
+    - {repair: r2, variant: q5_0, backend: cuda, constraint: none, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}   # greedy pass
+    - {repair: r2, variant: q6_k, backend: cuda, constraint: none}
+    - {repair: r2, variant: q6_k, backend: cuda, constraint: none, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}   # greedy pass
+    - {repair: r2, variant: q8_0, backend: cuda, constraint: none}
+    - {repair: r2, variant: q8_0, backend: cuda, constraint: none, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}   # greedy pass
+    - {repair: r2, variant: r2b, backend: cuda, constraint: none}
+    - {repair: r2, variant: r2b, backend: cuda, constraint: none, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}   # greedy pass
+    - {repair: r3, variant: r3_qad_kl, backend: cuda, constraint: none}
+    - {repair: r3, variant: r3_qad_kl, backend: cuda, constraint: none, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}   # greedy pass
+    - {repair: r3, variant: r3_qad_klce, backend: cuda, constraint: none}
+    - {repair: r3, variant: r3_qad_klce, backend: cuda, constraint: none, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}   # greedy pass
+    - {repair: r3, variant: r3_ctrl, backend: cuda, constraint: none}
+    - {repair: r3, variant: r3_ctrl, backend: cuda, constraint: none, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}   # greedy pass
+  repair_seeds: [5, 6, 7, 8]
+  decoding: {temperature: 0.7, top_p: 0.8, top_k: 20, min_p: 0.0, n_predict: 4096, cache_prompt: false}
+  server: {ctx: 40960}
+  extra_benchmarks:
+    - {name: bfcl_multi_turn_miss_func}
+    - {name: bfcl_multi_turn_miss_param}
+slurm:
+  time: "1-00:00:00"
+  max_requeue: 3
+models:
+  qwen3-1.7b:
+    hf_repo: Qwen/Qwen3-1.7B
+    files: {q4_0: Qwen3-1.7B-Q4_0-pure.gguf, q5_0: Qwen3-1.7B-Q5_0-pure.gguf, q6_k: Qwen3-1.7B-Q6_K-pure.gguf, q8_0: Qwen3-1.7B-Q8_0.gguf, r2b: Qwen3-1.7B-R2b-LS5.5.gguf, r3_qad_kl: Qwen3-1.7B-R3-QAD-KL-Q4_0-pure.gguf, r3_qad_klce: Qwen3-1.7B-R3-QAD-KLCE-Q4_0-pure.gguf, r3_ctrl: Qwen3-1.7B-R3-CTRL-Q4_0-pure.gguf}

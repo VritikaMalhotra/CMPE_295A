@@ -148,3 +148,17 @@ def test_manifest_task_order_takes_any_id():
     ids = ["[mobile_data_issue]data_mode_off|data_usage_exceeded[PERSONA:None]", "10", "multi_turn_base_10",
            "multi_turn_base_2", "7"]
     assert sorted(ids, key=_task_order) == ["multi_turn_base_2", "multi_turn_base_10", "7", "10", ids[0]]
+
+
+def test_repair_may_set_its_own_seeds_and_decoding(skeleton_exp):
+    """A repair entry with seeds/decoding (the greedy pass of a repaired configuration) expands like a baseline;
+    entries without them keep their run_ids."""
+    before = {s.run_id for s in reg.expand(skeleton_exp, TASKS)}
+    r1 = next(r for r in skeleton_exp["repairs"] if r["repair"] == "r1")
+    exp = {**skeleton_exp, "repairs": list(skeleton_exp["repairs"]) + [
+        {**r1, "decoding": {"temperature": 0.0, "top_k": 1}, "seeds": [0]}]}
+    specs = reg.expand(exp, TASKS)
+    greedy = [s for s in specs if s.repair == "r1" and s.seed == 0]
+    assert len(greedy) == len(TASKS)
+    assert all(s.decoding["temperature"] == 0.0 and s.decoding["top_k"] == 1 for s in greedy)
+    assert before <= {s.run_id for s in specs}            # nothing that existed changed
