@@ -100,6 +100,9 @@ class GenerateResult:
     n_predict: int = 0                # token budget given to this request
     prompt_sha256: str = ""           # SHA-256 of the rendered prompt text (FR-E17 parity)
     prompt_tokens_sha256: str = ""    # SHA-256 of the prompt's token IDs as this server tokenized them
+    served_by: str = ""               # R2c: the variant that generated this step ("" = no routing)
+    probe_prompt_tokens: int = 0      # R2c: prompt tokens prefilled by the one-token routing probe (extra tokens)
+    probe_ms: Optional[float] = None  # R2c: wall time of the probe request
 
 
 @dataclass
@@ -138,6 +141,9 @@ class StepRow:
     prompt_sha256: str = ""           # additive (M2): "" = rows written before the FR-E17 parity work
     prompt_tokens_sha256: str = ""    # additive (M2): hash of the prompt token IDs; equal on CPU and CUDA iff
                                       # both backends saw the same tokens
+    served_by: str = ""               # additive (R2c): variant that generated the step; "" = no routing
+    probe_prompt_tokens: int = 0      # additive (R2c): prompt tokens of the routing probe (RQ4 extra tokens)
+    probe_ms: Optional[float] = None  # additive (R2c): probe wall time
 
     def to_dict(self) -> dict:
         return dataclasses.asdict(self)

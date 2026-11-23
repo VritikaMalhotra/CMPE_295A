@@ -41,6 +41,8 @@ def expand(exp: dict, task_ids: list[str]) -> list[RunSpec]:
         # like a baseline, a repair may set its own decoding and seeds (the greedy pass of a repaired configuration);
         # without them the spec is exactly as before, so existing run_ids do not change
         c = dict(common, decoding={**common["decoding"], **dict(r.get("decoding") or {})})
+        if r.get("server"):            # R2c: the routing rule (part of the run_id); absent = unchanged
+            c["server"] = {**common["server"], **dict(r["server"])}
         for seed in r.get("seeds", exp["repair_seeds"]):
             for t in task_ids:
                 specs.append(RunSpec(variant=r["variant"], backend=r["backend"], repair=r["repair"],

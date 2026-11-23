@@ -26,7 +26,7 @@ from omegaconf import DictConfig, OmegaConf
 from . import registry as reg
 from .adapter import load_bfcl_multi_turn, sample_task_ids, skeleton_task_ids
 from . import prompt_formats
-from .backends import Backend, LlamaServer, ServerConfig
+from .backends import Backend, LlamaServer, RoutingBackend, ServerConfig
 from .grammar import grammars_for, task_grammar, task_grammar_free
 from .logger import MAX_INFRA_ATTEMPTS, StepLogger, record_retry, retry_count, to_parquet
 
@@ -88,8 +88,8 @@ def _plan(cfg: DictConfig):
         tasks = filter_tasks(tasks, _abs(exp["inclusion"]))
         task_ids = tasks[exp["benchmark"]]
     specs = reg.expand_all(exp, tasks)
-    model_files = {v: os.path.join(_abs(cfg.paths.models_dir), f) for v, f in model["files"].items()
-                   if any(s.variant == v for s in specs)}
+    used = {s.variant for s in specs} | {s.server["route"]["high"] for s in specs if s.server.get("route")}
+    model_files = {v: os.path.join(_abs(cfg.paths.models_dir), f) for v, f in model["files"].items() if v in used}
     binaries = {"cuda": _abs(cfg.paths.llama_cuda), "cpu": _abs(cfg.paths.llama_cpu)}
     own_sim = _simuser(specs) and (cfg.get("simuser_serve") or not cfg.get("simuser_endpoint"))
     need = {s.backend for s in specs} | ({"cuda"} if own_sim else set())   # the simulator runs on CUDA
@@ -274,8 +274,22 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
             print(f"  server failed to start: {e}; skipping this configuration", flush=True)
             lock.close()
             continue
+        route, srv_high = s0.server.get("route"), None
         try:
             be = Backend(srv, s0.decoding, thinking=s0.thinking, fmt=fmt)
+            if route:                                   # R2c: a second, high-precision copy on the same device
+                hcfg = ServerConfig(binary=binaries[s0.backend], model_path=model_files[route["high"]],
+                                    backend=s0.backend, ctx=int(s0.server.get("ctx", 40960)),
+                                    threads=cfg.cpu_threads if s0.backend == "cpu" else None)
+                try:
+                    srv_high = LlamaServer(hcfg, log_path=os.path.join(logs, f"{key}.high.log")).__enter__()
+                except Exception as e:                  # skip this configuration, as for the first server
+                    print(f"  high-precision server failed to start: {e}; skipping this configuration", flush=True)
+                    continue
+                be = RoutingBackend(be, Backend(srv_high, s0.decoding, thinking=s0.thinking, fmt=fmt),
+                                    s0.variant, route["high"], route.get("policy", "tool_call"))
+                print(f"  R2c: {s0.variant} + {route['high']} resident, policy {route.get('policy', 'tool_call')}",
+                      flush=True)
             for s in group:
                 if os.path.exists(os.path.join(r.dir, "episodes", f"{s.run_id}.json")):
                     continue
@@ -348,6 +362,9 @@ def run_local(cfg, r: reg.Registry, specs, category, model_files, binaries) -> N
                     print(f"  {s.task_id} seed={s.seed} FAILED (will retry on next run)\n"
                           + traceback.format_exc(limit=3), flush=True)
         finally:
+            if srv_high is not None:
+                print(f"  R2c steps served: {be.counts}", flush=True)
+                srv_high.__exit__(None, None, None)
             srv.__exit__(None, None, None)
             lock.close()                                # releases the flock
     if sim is not None:

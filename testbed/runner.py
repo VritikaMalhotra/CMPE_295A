@@ -119,7 +119,8 @@ def run_episode(spec: RunSpec, task: Task, backend, grammar_for: Optional[Callab
                 execution_results=results, known_tools=all(c["name"] in task.tool_names for c in calls),
                 schema_errors=errs, turn_has_ground_truth=gt_nonempty, is_last_step_of_turn=ends_turn or quit_now,
                 forced_quit=quit_now, prompt_sha256=g.prompt_sha256, prompt_tokens_sha256=g.prompt_tokens_sha256,
-                benchmark=spec.benchmark))
+                benchmark=spec.benchmark, served_by=getattr(g, "served_by", ""),
+                probe_prompt_tokens=getattr(g, "probe_prompt_tokens", 0), probe_ms=getattr(g, "probe_ms", None)))
             if g.bad_call_blocks:      # bfcl: the bad block crashes the next prompt build -> inference error
                 verdict = {"valid": False, "error_type": "multi_turn:inference_error"}
                 break

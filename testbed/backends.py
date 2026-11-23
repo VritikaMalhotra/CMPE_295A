@@ -128,6 +128,35 @@ class Backend:
         Token budget follows bfcl's local handler: min(cap, ctx - prompt_tokens - 2), cap = decoding.n_predict
         (bfcl: 4096). A prompt that leaves no budget raises ContextOverflow.
         """
+        prompt, token_ids, n_prompt, budget, body = self._request(messages, tools, constraint, seed)
+        t0 = time.time()
+        r = requests.post(self.server.base + "/completion", json=body, timeout=self.timeout_s)
+        latency_ms = (time.time() - t0) * 1000
+        if r.status_code == 400 and "context" in r.text:
+            raise ContextOverflow(r.text[:200])
+        r.raise_for_status()
+        res = parse_completion(r.json(), n_prompt=n_prompt, budget=budget, constraint=constraint,
+                               latency_ms=latency_ms, fmt=self.fmt)
+        res.prompt_sha256 = sha256_text(prompt)
+        res.prompt_tokens_sha256 = sha256_text(canonical_json(token_ids))
+        return res
+
+    def probe(self, messages: list[dict], tools: list[dict], constraint: Optional[str] = None,
+              seed: int = 0) -> tuple[str, int, float]:
+        """The first generated token only (R2c routing): the same request as ``generate`` with n_predict = 1, so
+        with the same seed and sampling settings it is the token ``generate`` would start with. Returns
+        (text of that token, prompt tokens, wall ms)."""
+        _, _, n_prompt, _, body = self._request(messages, tools, constraint, seed)
+        body["n_predict"] = 1
+        t0 = time.time()
+        r = requests.post(self.server.base + "/completion", json=body, timeout=self.timeout_s)
+        ms = (time.time() - t0) * 1000
+        if r.status_code == 400 and "context" in r.text:
+            raise ContextOverflow(r.text[:200])
+        r.raise_for_status()
+        return r.json().get("content", ""), n_prompt, ms
+
+    def _request(self, messages, tools, constraint, seed):
         prompt = self.fmt.format_prompt(messages, tools, thinking=self.thinking)
         token_ids = self.tokenize(prompt)
         n_prompt = len(token_ids)
@@ -149,16 +178,44 @@ class Backend:
             body["preserved_tokens"] = list(self.fmt.preserve)
         if constraint:
             body["grammar"] = constraint
-        t0 = time.time()
-        r = requests.post(self.server.base + "/completion", json=body, timeout=self.timeout_s)
-        latency_ms = (time.time() - t0) * 1000
-        if r.status_code == 400 and "context" in r.text:
-            raise ContextOverflow(r.text[:200])
-        r.raise_for_status()
-        res = parse_completion(r.json(), n_prompt=n_prompt, budget=budget, constraint=constraint,
-                               latency_ms=latency_ms, fmt=self.fmt)
-        res.prompt_sha256 = sha256_text(prompt)
-        res.prompt_tokens_sha256 = sha256_text(canonical_json(token_ids))
+        return prompt, token_ids, n_prompt, budget, body
+
+
+ROUTE_POLICIES = ("tool_call",)
+
+
+def opens_call(first: str, markers: tuple[str, ...]) -> bool:
+    """Does the first generated token start a tool call? It is the whole marker when the marker is one token
+    (Qwen3 ``<tool_call>``, LFM2.5 ``<|tool_call_start|>``), or a prefix of it when a template splits the marker."""
+    t = first.lstrip()
+    return bool(t) and any(t.startswith(m) or m.startswith(t) for m in markers)
+
+
+class RoutingBackend:
+    """R2c, step-selective added bits (pre-registration §2): two llama-server processes, a low-precision copy
+    (Q4_0) and a high-precision copy (Q8_0), both resident. Policy ``tool_call``: each step first asks the low
+    copy for one token (``Backend.probe``, same seed and settings as the step itself); if that token opens a tool
+    call the high copy generates the whole step, otherwise the low copy does. Each step records which copy served
+    it and the probe's prompt tokens and time, which C9 charges to the repair together with the second copy's
+    memory (the GPU meter sees both processes)."""
+
+    def __init__(self, low: Backend, high: Backend, low_name: str, high_name: str, policy: str = "tool_call"):
+        if policy not in ROUTE_POLICIES:
+            raise ValueError(f"unknown routing policy {policy!r}")
+        if low.fmt.raw_prefix:              # the first token of a thinking model is reasoning, not a call
+            raise ValueError("R2c tool-call routing needs a model that answers without a think block")
+        self.low, self.high, self.low_name, self.high_name, self.policy = low, high, low_name, high_name, policy
+        self.fmt = low.fmt
+        self.counts = {low_name: 0, high_name: 0}
+
+    def generate(self, messages: list[dict], tools: list[dict], constraint: Optional[str] = None,
+                 seed: int = 0) -> GenerateResult:
+        first, n_probe, probe_ms = self.low.probe(messages, tools, constraint, seed)
+        routed = opens_call(first, self.fmt.call_markers)
+        name = self.high_name if routed else self.low_name
+        res = (self.high if routed else self.low).generate(messages, tools, constraint=constraint, seed=seed)
+        res.served_by, res.probe_prompt_tokens, res.probe_ms = name, n_probe, probe_ms
+        self.counts[name] += 1
         return res
 
 
