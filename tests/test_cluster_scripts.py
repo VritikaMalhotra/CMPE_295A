@@ -8,7 +8,7 @@ import subprocess
 import pytest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-COMMON = dict(job="tb-skeleton", partition="gpuqs", gres="gpu:p100:1", time="02:00:00",
+COMMON = dict(job="tb-skeleton", partition="gpuqs", gres_line="#SBATCH --gres=gpu:p100:1", time="02:00:00",
               account_line="#SBATCH -A coe", logdir="/scratch/x/slurm_logs", repo="/scratch/x/repo",
               experiment="skeleton")
 
@@ -33,6 +33,14 @@ def test_array_template_renders_and_requeues(tmp_path):
     assert "${CUDA_VISIBLE_DEVICES:-unset}" in t and "$$" not in t
     # a config key like 2674909851e8 is a float to Hydra unless quoted (4B run, Nov 9: 26 episodes skipped)
     assert "only_config=\"'$KEY'\"" in t
+
+
+def test_array_template_cpu_only_has_no_gpu_request(tmp_path):
+    """Stage C2 (CPU backend): testbed.run.write_slurm passes partition cpuqs and an empty gres line."""
+    t = open(os.path.join(ROOT, "slurm", "array.sbatch.tmpl")).read().format(
+        **{**COMMON, "partition": "cpuqs", "gres_line": ""}, n=3, max_conc=8, cfg_list="/x/c.txt", max_requeue=3)
+    _bash_n(t, tmp_path)
+    assert "#SBATCH -p cpuqs" in t and "--gres" not in t
 
 
 def test_quoted_config_key_stays_a_string():
