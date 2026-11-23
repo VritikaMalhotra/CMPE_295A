@@ -1,0 +1,27 @@
+# @package _global_
+# R2c smoke test (development tasks, not the holdout): lfm2.5-1.2b-instruct, Q4_0 + Q8_0 resident, tool-call steps routed to
+# Q8_0 by the first generated token. 5 BFCL multi_turn_base tasks of the development sample, seed 1, CUDA.
+#   python -m testbed.run +experiment=r2c_smoke_lfm2p5_1p2b local=true
+experiment:
+  name: r2c_smoke_lfm2p5_1p2b
+  model: lfm2.5-1.2b-instruct
+  benchmark: bfcl_multi_turn_base
+  task_sample: true
+  n_tasks: 5
+  thinking: false
+  max_steps_per_turn: 20
+  baselines: []
+  baseline_seeds: [1]
+  repairs:
+    - {repair: r2, variant: r2c_tool, backend: cuda, constraint: none, server: {route: {policy: tool_call, high: q8_0}}}
+  repair_seeds: [1]
+  decoding: {temperature: 0.7, top_p: 0.8, top_k: 20, min_p: 0.0, n_predict: 4096, cache_prompt: false}
+  server: {ctx: 40960}
+  extra_benchmarks: []
+slurm:
+  time: "01:00:00"
+  max_requeue: 1
+models:
+  lfm2.5-1.2b-instruct:
+    hf_repo: LiquidAI/LFM2.5-1.2B-Instruct
+    files: {r2c_tool: LFM2.5-1.2B-Instruct-Q4_0-pure.gguf, q8_0: LFM2.5-1.2B-Instruct-Q8_0.gguf}
