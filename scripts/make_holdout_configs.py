@@ -12,8 +12,9 @@ seed 0, ctx 40,960 / 4,096-token cap, no tau2 and no simulated user.
   multi_turn_base holdout (decision 13).
 * C3: hold_c3_<key> for the three core models: the repairs of pre-registration §2 from Q4_0, each with seeds 5-8
   plus a greedy pass, CUDA: R1 (free GBNF grammar on Q4_0), R2a Q5_0 / Q6_K / Q8_0, R2b (layer-selective 5.5 bpw),
-  R3 QAD-KL, QAD-KL+CE and the train-longer control. R2c (step-selective routing) needs runner support first and
-  is added when it exists. Pairs with hold_ref_<key> and hold_h1_<key> (Q4_0) by (task, seed).
+  R2c (Q4_0 and Q8_0 resident, tool-call steps routed to Q8_0 by the first generated token; testbed.backends.
+  RoutingBackend), R3 QAD-KL, QAD-KL+CE and the train-longer control. Pairs with hold_ref_<key> and hold_h1_<key>
+  (Q4_0) by (task, seed).
 
     python3 scripts/make_holdout_configs.py          # writes configs/experiment/hold_*.yaml
 """
@@ -35,6 +36,7 @@ C3 = [("r1", "q4_0", "free", None),                       # file from the h1 con
       ("r2", "q6_k", "none", "Q6_K-pure.gguf"),
       ("r2", "q8_0", "none", "Q8_0.gguf"),
       ("r2", "r2b", "none", "R2b-LS5.5.gguf"),
+      ("r2", "r2c_tool", "none", "Q4_0-pure.gguf"),       # the low copy; the route names the high copy
       ("r3", "r3_qad_kl", "none", "R3-QAD-KL-Q4_0-pure.gguf"),
       ("r3", "r3_qad_klce", "none", "R3-QAD-KLCE-Q4_0-pure.gguf"),
       ("r3", "r3_ctrl", "none", "R3-CTRL-Q4_0-pure.gguf")]
@@ -112,11 +114,12 @@ def main() -> None:
                   f"    files: {{{', '.join(f'{v}: {f}' for v, f in files.items())}}}\n")
         reps = []
         for rep, v, con, _ in C3:
-            reps += [f"{{repair: {rep}, variant: {v}, backend: cuda, constraint: {con}}}",
-                     f"{{repair: {rep}, variant: {v}, backend: cuda, constraint: {con}, decoding: {GREEDY}, seeds: [0]}}   # greedy pass"]
+            srv = ", server: {route: {policy: tool_call, high: q8_0}}" if v == "r2c_tool" else ""
+            reps += [f"{{repair: {rep}, variant: {v}, backend: cuda, constraint: {con}{srv}}}",
+                     f"{{repair: {rep}, variant: {v}, backend: cuda, constraint: {con}{srv}, decoding: {GREEDY}, seeds: [0]}}   # greedy pass"]
         write_c3(os.path.join(EXP, f"hold_c3_{key}.yaml"),
                  reg + f"# Stage C3: repairs for {name} on the 300-task BFCL holdout, CUDA, from Q4_0 (pre-registration §2, §6).\n"
-                 f"# 8 repaired configurations x (4 sampled + 1 greedy) x 300 tasks = 12,000 specs. R2c follows once implemented.\n"
+                 f"# 9 repaired configurations x (4 sampled + 1 greedy) x 300 tasks = 13,500 specs.\n"
                  f"# Pairs with hold_ref_{key} (BF16) and hold_h1_{key} (Q4_0) by (task, seed).\n",
                  f"hold_c3_{key}", name, models, reps)
     for key in CPU_KEYS:

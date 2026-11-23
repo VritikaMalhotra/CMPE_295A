@@ -1,7 +1,7 @@
 # @package _global_
 # Confirmatory (docs/preregistration_osf.md). Do not submit before the registration is filed (§9).
 # Stage C3: repairs for qwen3-1.7b on the 300-task BFCL holdout, CUDA, from Q4_0 (pre-registration §2, §6).
-# 8 repaired configurations x (4 sampled + 1 greedy) x 300 tasks = 12,000 specs. R2c follows once implemented.
+# 9 repaired configurations x (4 sampled + 1 greedy) x 300 tasks = 13,500 specs.
 # Pairs with hold_ref_qwen3_1p7b (BF16) and hold_h1_qwen3_1p7b (Q4_0) by (task, seed).
 experiment:
   name: hold_c3_qwen3_1p7b
@@ -24,6 +24,8 @@ experiment:
     - {repair: r2, variant: q8_0, backend: cuda, constraint: none, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}   # greedy pass
     - {repair: r2, variant: r2b, backend: cuda, constraint: none}
     - {repair: r2, variant: r2b, backend: cuda, constraint: none, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}   # greedy pass
+    - {repair: r2, variant: r2c_tool, backend: cuda, constraint: none, server: {route: {policy: tool_call, high: q8_0}}}
+    - {repair: r2, variant: r2c_tool, backend: cuda, constraint: none, server: {route: {policy: tool_call, high: q8_0}}, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}   # greedy pass
     - {repair: r3, variant: r3_qad_kl, backend: cuda, constraint: none}
     - {repair: r3, variant: r3_qad_kl, backend: cuda, constraint: none, decoding: {temperature: 0.0, top_k: 1}, seeds: [0]}   # greedy pass
     - {repair: r3, variant: r3_qad_klce, backend: cuda, constraint: none}
@@ -42,4 +44,4 @@ slurm:
 models:
   qwen3-1.7b:
     hf_repo: Qwen/Qwen3-1.7B
-    files: {q4_0: Qwen3-1.7B-Q4_0-pure.gguf, q5_0: Qwen3-1.7B-Q5_0-pure.gguf, q6_k: Qwen3-1.7B-Q6_K-pure.gguf, q8_0: Qwen3-1.7B-Q8_0.gguf, r2b: Qwen3-1.7B-R2b-LS5.5.gguf, r3_qad_kl: Qwen3-1.7B-R3-QAD-KL-Q4_0-pure.gguf, r3_qad_klce: Qwen3-1.7B-R3-QAD-KLCE-Q4_0-pure.gguf, r3_ctrl: Qwen3-1.7B-R3-CTRL-Q4_0-pure.gguf}
+    files: {q4_0: Qwen3-1.7B-Q4_0-pure.gguf, q5_0: Qwen3-1.7B-Q5_0-pure.gguf, q6_k: Qwen3-1.7B-Q6_K-pure.gguf, q8_0: Qwen3-1.7B-Q8_0.gguf, r2b: Qwen3-1.7B-R2b-LS5.5.gguf, r2c_tool: Qwen3-1.7B-Q4_0-pure.gguf, r3_qad_kl: Qwen3-1.7B-R3-QAD-KL-Q4_0-pure.gguf, r3_qad_klce: Qwen3-1.7B-R3-QAD-KLCE-Q4_0-pure.gguf, r3_ctrl: Qwen3-1.7B-R3-CTRL-Q4_0-pure.gguf}
