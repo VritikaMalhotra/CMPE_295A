@@ -144,7 +144,7 @@ Last refresh: **2026-11-18T22:27-08:00** (Ekant's account, read-only over the gr
 | R3 QAD training | Yashashav (trainer, pilot and runs by Ekant) | – | **done** (2026-11-21): 9 runs, 12 GGUF files exported code-exact and KL-checked on both backends (`docs/m3_results.md`, `results/m3/r3_*.json`) |
 | Label 300 pilot steps, second labeler, kappa → codebook v1 | Vritika, Ekant | – | label kit ready |
 | Damage map v1 | Vritika | 2026-12-04 | preview done (`docs/m3_damage_map_v1.md`); panel B scale fix before the deck |
-| File OSF pre-registration | Vritika | this week | filing version drafted (`docs/preregistration_osf.md`, 2026-11-19): H1 moved to a 300-task BFCL holdout with seeds 5–8; team/advisor review, then the §9 checklist |
+| File OSF pre-registration | Vritika / Ekant | after advisor approval | **ready to file**: project https://osf.io/xwq5y/; field-by-field answers `docs/osf_filing_fields.md`; upload bundle (PDF, frozen files, code snapshot 648b9d6) in `osf_upload/`; §9 steps 2–3 done, waiting on step 1 (advisor approval) |
 | Report Ch. 1–2 draft to advisor | team | **2026-11-24** | full draft v1 (2026-11-19): `docs/dec4/CMPE295A_Report_Ch1-2_draft_2026-11-19.docx`, built by `docs/dec4/report/build_report.py`; team review, then send |
 | Holdout configs (C1, C2) | Ekant | – | done (`01e4272`); submit after filing |
 | Stage C3 repair configs | Ekant | before C3 | **done**: 9 repairs × 3 core models incl. R2c (implemented 406d7f8, smoke-tested), 40,500 specs, hashes in prereg §7 (cf928c8) |

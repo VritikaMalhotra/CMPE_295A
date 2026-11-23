@@ -116,6 +116,20 @@ def _task_order(t: str):
     return (not t.startswith("multi_turn"), not n.isdigit(), int(n) if n.isdigit() else 0, t)
 
 
+REGISTRATION_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                                 "results", "m3", "osf_registration.json")
+
+
+def registration_for(experiment: str | None, path: str = REGISTRATION_FILE) -> dict | None:
+    """The OSF registration record for a confirmatory experiment (name ``hold_*``), else None.
+    Manifest-only: it never enters a run_id or the experiment hash."""
+    if not experiment or not experiment.startswith("hold_") or not os.path.exists(path):
+        return None
+    with open(path) as f:
+        r = json.load(f)
+    return {k: r.get(k) for k in ("registry", "id", "url", "submitted", "embargo_end")}
+
+
 def build_manifest(specs: list[RunSpec], model_files: dict[str, str], binaries: dict[str, str],
                    expected_sha: dict | None = None, hash_files: bool = True) -> dict:
     try:
@@ -143,8 +157,11 @@ def build_manifest(specs: list[RunSpec], model_files: dict[str, str], binaries: 
         configs.setdefault(s.config_key, {"variant": s.variant, "backend": s.backend, "repair": s.repair,
                                           "constraint": s.constraint, "benchmark": s.benchmark, "episodes": 0})
         configs[s.config_key]["episodes"] += 1
+    experiment = specs[0].experiment if specs else None
+    registration = registration_for(experiment)
     return {
-        "experiment": specs[0].experiment if specs else None,
+        "experiment": experiment,
+        "registration": registration,
         "experiment_hash": experiment_hash(specs),
         "n_specs": len(specs),
         "configs": configs,
@@ -162,7 +179,8 @@ def build_manifest(specs: list[RunSpec], model_files: dict[str, str], binaries: 
         "python": platform.python_version(),
         "host": platform.node(),
         "gpu": _cmd(["nvidia-smi", "--query-gpu=name,memory.total,driver_version", "--format=csv,noheader"]),
-        "label": "development data (M1 walking skeleton), excluded from the study",
+        "label": (f"confirmatory, pre-registered on OSF ({registration['id']})" if registration
+                  else "development data (M1 walking skeleton), excluded from the study"),
     }
 
 

@@ -65,6 +65,23 @@ def test_manifest_flags_sha_mismatch(tmp_path, skeleton_exp):
     assert m["n_specs"] == len(specs) and m["prompt_cache"] is False
 
 
+def test_manifest_records_osf_registration_only_for_holdout(tmp_path, skeleton_exp):
+    rec = tmp_path / "osf.json"
+    rec.write_text(json.dumps({"registry": "OSF Registries", "id": "abc12", "url": "https://osf.io/abc12",
+                               "submitted": "2026-11-22", "embargo_end": "2027-11-22"}))
+    assert reg.registration_for("hold_ref_qwen3_0p6b", str(rec))["id"] == "abc12"
+    assert reg.registration_for("ref_qwen3_0p6b", str(rec)) is None
+    assert reg.registration_for("hold_ref_qwen3_0p6b", str(tmp_path / "missing.json")) is None
+    # the repo's record is present and the manifest picks it up without touching the experiment hash
+    hold = {**skeleton_exp, "name": "hold_test"}
+    specs = reg.expand(hold, TASKS[:1])
+    m = reg.build_manifest(specs, {}, {}, hash_files=False)
+    assert m["registration"]["id"] == "xwq5y" and m["label"].startswith("confirmatory")
+    assert m["experiment_hash"] == reg.experiment_hash(specs)
+    dev = reg.build_manifest(reg.expand(skeleton_exp, TASKS[:1]), {}, {}, hash_files=False)
+    assert dev["registration"] is None and dev["label"].startswith("development")
+
+
 def test_config_lock_is_exclusive_and_released(tmp_path):
     from testbed.run import _try_lock
     p = str(tmp_path / "locks" / "k.lock")
