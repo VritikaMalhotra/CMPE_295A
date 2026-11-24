@@ -1,0 +1,13 @@
+{
+  "registry": "OSF Registries",
+  "template": "OSF Preregistration",
+  "id": "xwq5y",
+  "url": "https://osf.io/xwq5y",
+  "title": "Where 4-bit quantization damages small tool-calling agents, and what each repair costs",
+  "submitted": "2026-11-22",
+  "embargo_end": "2027-11-22",
+  "status": "embargoed (approved 2026-11-22); private until embargo_end",
+  "source": "docs/preregistration_osf.md (filing version 2026-11-19, C3 hashes 2026-11-22)",
+  "applies_to": "experiments named hold_* (stages C1-C4)",
+  "known_issue": "OSF stripped '<model>' from results/m3/inclusion_holdout_<model>.json in two fields of the filed text"
+}

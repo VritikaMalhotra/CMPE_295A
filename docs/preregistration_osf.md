@@ -1,6 +1,9 @@
 # OSF pre-registration: quantization damage and repairs in small tool-calling agents
 
-**Status: filing version, draft 2026-11-19 (Ekant), for team and advisor review.** Written to the OSF Preregistration
+**Status: FILED on OSF Registries, 2026-11-22** (OSF Preregistration template, https://osf.io/xwq5y, embargoed until
+2027-11-22; record `results/m3/osf_registration.json`). Known issue: OSF dropped the text `<model>` from the path
+`results/m3/inclusion_holdout_<model>.json` in two fields of the filed form; the attached PDF has it intact.
+Earlier status line: filing version, draft 2026-11-19 (Ekant), for team and advisor review. Written to the OSF Preregistration
 template. It replaces `docs/preregistration_m2.md` (the M2 draft), whose rules it keeps except where marked
 **[changed]**. Every decision it cites is in `docs/m2_decisions.md`: decisions 1–17 were confirmed by the advisor
 (recorded 2026-11-16), decision 18 is proposed (Ekant, 2026-11-19). The checklist in §9 lists what must be done
@@ -285,5 +288,5 @@ confirmatory classes (through the power table), and the choice of a held-out tas
 1. Team and advisor approve this version, including the holdout design and decision 18.
 2. ~~Write the holdout experiment configs and record their hashes in §7.~~ Done 2026-11-19 (`01e4272`).
 3. ~~Re-check that the analysis files in §7 are unchanged since `1e13897`.~~ Checked 2026-11-22: unchanged.
-4. File on OSF (Preregistration template), add the registration ID to the C11 manifest and to this file, and
-   only then submit stage C1.
+4. ~~File on OSF (Preregistration template) and add the registration ID to this file.~~ Filed 2026-11-22,
+   https://osf.io/xwq5y (`results/m3/osf_registration.json`). Stage C1 may now be submitted.
