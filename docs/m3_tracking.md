@@ -148,6 +148,7 @@ Last refresh: **2026-11-18T22:27-08:00** (Ekant's account, read-only over the gr
 | Report Ch. 1–2 draft to advisor | team | **2026-11-24** | full draft v1 (2026-11-19): `docs/dec4/CMPE295A_Report_Ch1-2_draft_2026-11-19.docx`, built by `docs/dec4/report/build_report.py`; team review, then send |
 | Holdout configs (C1, C2) | Ekant | – | done (`01e4272`); submit after filing |
 | Stage C3 repair configs | Ekant | before C3 | **done**: 9 repairs × 3 core models incl. R2c (implemented 406d7f8, smoke-tested), 40,500 specs, hashes in prereg §7 (cf928c8) |
+| **Confirmatory runs C1–C3** | Ekant | – | **submitted 2026-11-24** (`scripts/submit_holdout.sh`, log `$TESTBED_OUT/holdout_submissions.txt`): C1 refs 167317–167327 (odd), C1 4-bit 167329–167339 after refs, C2 CPU 167341/167343 and C3 167345–167349 after C1; A100s, cs002 excluded; every experiment hash matches prereg §7. A second account can run the same script to split the work (per-config locks) |
 | Demo recording | team | 2026-12-03 | storyboard done |
 | Canvas submission / Project Expo | team | 2026-12-04 / 2026-12-11 | – |
 
