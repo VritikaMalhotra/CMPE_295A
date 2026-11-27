@@ -1,0 +1,662 @@
+{
+ "generated": "2026-11-27T12:24:45-08:00",
+ "sources_sha256_16": {
+  "analysis/rq3_tests.py": "bf7ac209e6df33c8",
+  "analysis/h1_tests.py": "719781e69f149ca1",
+  "testbed/classifier.py": "6574e61cdb696eef"
+ },
+ "runs": [
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_lfm2p5_1p2b/3018b3dc15",
+   "episodes": 2495,
+   "steps": 29677,
+   "label_changed_vs_logged": 0,
+   "experiment": "ref_lfm2p5_1p2b",
+   "experiment_hash": "3018b3dc15",
+   "testbed_git": {
+    "commit": "6be0ff765125d91f762621cbaba12b5d65645a13",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_q4_0/55a6367d24",
+   "episodes": 2498,
+   "steps": 28341,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_lfm2p5_1p2b_q4_0",
+   "experiment_hash": "55a6367d24",
+   "testbed_git": {
+    "commit": "6be0ff765125d91f762621cbaba12b5d65645a13",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_q4_k_m/dac01ff9a0",
+   "episodes": 2501,
+   "steps": 27500,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_lfm2p5_1p2b_q4_k_m",
+   "experiment_hash": "dac01ff9a0",
+   "testbed_git": {
+    "commit": "8a9b02ef362c56c070cd47186183d0bab5767c6a",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_iq4_xs/52af219f58",
+   "episodes": 2496,
+   "steps": 29332,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_lfm2p5_1p2b_iq4_xs",
+   "experiment_hash": "52af219f58",
+   "testbed_git": {
+    "commit": "8a9b02ef362c56c070cd47186183d0bab5767c6a",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_qwen3_0p6b/cd314594fb",
+   "episodes": 2502,
+   "steps": 22670,
+   "label_changed_vs_logged": 0,
+   "experiment": "ref_qwen3_0p6b",
+   "experiment_hash": "cd314594fb",
+   "testbed_git": {
+    "commit": "c6e83a2cd91d835a6b155c30b56fcecb402ff129",
+    "dirty": true
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_q4_0/c200505b35",
+   "episodes": 2501,
+   "steps": 19920,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_qwen3_0p6b_q4_0",
+   "experiment_hash": "c200505b35",
+   "testbed_git": {
+    "commit": "2bb5792e28f99276043b6eaae1de17f7292dd868",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_q4_k_m/b85b3044db",
+   "episodes": 2504,
+   "steps": 20614,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_qwen3_0p6b_q4_k_m",
+   "experiment_hash": "b85b3044db",
+   "testbed_git": {
+    "commit": "2bb5792e28f99276043b6eaae1de17f7292dd868",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_iq4_xs/b7e629273d",
+   "episodes": 2498,
+   "steps": 23444,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_qwen3_0p6b_iq4_xs",
+   "experiment_hash": "b7e629273d",
+   "testbed_git": {
+    "commit": "2bb5792e28f99276043b6eaae1de17f7292dd868",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_qwen3_1p7b/c456da2aef",
+   "episodes": 2502,
+   "steps": 27952,
+   "label_changed_vs_logged": 0,
+   "experiment": "ref_qwen3_1p7b",
+   "experiment_hash": "c456da2aef",
+   "testbed_git": {
+    "commit": "c6e83a2cd91d835a6b155c30b56fcecb402ff129",
+    "dirty": true
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_1p7b_q4_0/81058311fd",
+   "episodes": 2382,
+   "steps": 25080,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_qwen3_1p7b_q4_0",
+   "experiment_hash": "81058311fd",
+   "testbed_git": {
+    "commit": "6be0ff765125d91f762621cbaba12b5d65645a13",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_1p7b_q4_k_m/f1bd825c41",
+   "episodes": 2496,
+   "steps": 27213,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_qwen3_1p7b_q4_k_m",
+   "experiment_hash": "f1bd825c41",
+   "testbed_git": {
+    "commit": "6be0ff765125d91f762621cbaba12b5d65645a13",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_1p7b_iq4_xs/bb695f9151",
+   "episodes": 2480,
+   "steps": 26896,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_qwen3_1p7b_iq4_xs",
+   "experiment_hash": "bb695f9151",
+   "testbed_git": {
+    "commit": "6be0ff765125d91f762621cbaba12b5d65645a13",
+    "dirty": false
+   }
+  }
+ ],
+ "models": [
+  "qwen3-0.6b",
+  "qwen3-1.7b",
+  "lfm2.5-1.2b-instruct"
+ ],
+ "seeds": [
+  1,
+  2,
+  3,
+  4
+ ],
+ "rng_seed": 295,
+ "configs_present": [
+  "BF16",
+  "Q4_0",
+  "Q8_0",
+  "R1"
+ ],
+ "inclusion": {
+  "qwen3-0.6b": 17,
+  "qwen3-1.7b": 33,
+  "lfm2.5-1.2b-instruct": 34
+ },
+ "method": "\u00a76 RQ3 as registered; pooled over the core models (cluster task x model, model stratum); trials finished under BF16, Q4_0 and the repair; per-cluster mean success and mean failure rate; D = share of success gap closed - share of failure gap closed; model-stratified bootstrap, 10,000 resamples; Holm over 3; all tasks (inclusion sets as sensitivity)",
+ "tests": [
+  {
+   "repair": "R1",
+   "trials": 5886,
+   "gap_success": 0.01668884453315591,
+   "gap_failure": 0.06005072870821282,
+   "share_success": 0.2591362126245847,
+   "share_failure": 0.9676513514163855,
+   "D": -0.7085151387918007,
+   "clusters": 1503,
+   "means": {
+    "success_bf": 0.03432024839210468,
+    "success_q4": 0.01763140385894877,
+    "success_rep": 0.021956087824351298,
+    "rate_bf": 0.28405104527607844,
+    "rate_q4": 0.34410177398429126,
+    "rate_rep": 0.2859936051962504
+   },
+   "replicates_nonpositive_gap": 0.0,
+   "unstable": false,
+   "testable": true,
+   "gap_success_ci95": [
+    0.010534486582390774,
+    0.023120425815036597
+   ],
+   "gap_failure_ci95": [
+    0.050147079237868236,
+    0.06983651174072406
+   ],
+   "D_ci95": [
+    -1.0440358569135382,
+    -0.4328156922018421
+   ],
+   "share_success_ci95": [
+    -0.05485114114497013,
+    0.5206001426787941
+   ],
+   "share_failure_ci95": [
+    0.8473303705571608,
+    1.1053773319761169
+   ],
+   "p": 0.00019998000199980003,
+   "per_seed": {
+    "BF16": {
+     "success_mean": 3.3836968145293085,
+     "success_sd": 0.4919714768926923,
+     "fail_per100_mean": 28.9445756663776,
+     "fail_per100_sd": 1.4980325270057218
+    },
+    "Q4_0": {
+     "success_mean": 1.7761666631250963,
+     "success_sd": 0.6176579061517367,
+     "fail_per100_mean": 32.763475773684775,
+     "fail_per100_sd": 1.6997607023263048
+    },
+    "R1": {
+     "success_mean": 2.1828173984257426,
+     "success_sd": 0.36253240675189913,
+     "fail_per100_mean": 27.661147090802416,
+     "fail_per100_sd": 0.8929307010227966
+    }
+   },
+   "per_model": {
+    "lfm2.5-1.2b-instruct": {
+     "gap_success": 0.010312707917498339,
+     "gap_failure": 0.05164531893717972,
+     "share_success": -1.1774193548387093,
+     "share_failure": 1.3594966875964427,
+     "D": -2.536916042435152,
+     "clusters": 501,
+     "means": {
+      "success_bf": 0.040419161676646706,
+      "success_q4": 0.030106453759148367,
+      "success_rep": 0.017964071856287425,
+      "rate_bf": 0.30050385358002085,
+      "rate_q4": 0.35214917251720057,
+      "rate_rep": 0.2819375324922429
+     },
+     "replicates_nonpositive_gap": 0.0084,
+     "unstable": false,
+     "testable": true,
+     "gap_success_ci95": [
+      0.0016633399866932824,
+      0.019793745841650036
+     ],
+     "gap_failure_ci95": [
+      0.041169346207454854,
+      0.062066957431446634
+     ],
+     "D_ci95": [
+      -8.302693847649953,
+      -1.6468471456441345
+     ],
+     "share_success_ci95": [
+      -6.8749999999999964,
+      -0.3511824324324323
+     ],
+     "share_failure_ci95": [
+      1.137327688821987,
+      1.6382904914980627
+     ],
+     "p": 0.00020167389331451045
+    },
+    "qwen3-0.6b": {
+     "gap_success": 0.0124750499001996,
+     "gap_failure": 0.07057412250139983,
+     "share_success": 0.9199999999999998,
+     "share_failure": 1.248646693300009,
+     "D": -0.3286466933000093,
+     "clusters": 501,
+     "means": {
+      "success_bf": 0.019461077844311378,
+      "success_q4": 0.006986027944111776,
+      "success_rep": 0.018463073852295408,
+      "rate_bf": 0.29761174629223636,
+      "rate_q4": 0.3681858687936362,
+      "rate_rep": 0.28006372409971353
+     },
+     "replicates_nonpositive_gap": 0.0,
+     "unstable": false,
+     "testable": true,
+     "gap_success_ci95": [
+      0.00499001996007984,
+      0.020958083832335328
+     ],
+     "gap_failure_ci95": [
+      0.047302320698299025,
+      0.09459209142652372
+     ],
+     "D_ci95": [
+      -0.9096037736024059,
+      0.43304120087979825
+     ],
+     "share_success_ci95": [
+      0.4399375,
+      1.7000000000000002
+     ],
+     "share_failure_ci95": [
+      1.028034766721075,
+      1.6117235994468668
+     ],
+     "p": 0.30456954304569545
+    },
+    "qwen3-1.7b": {
+     "gap_success": 0.027278775781769796,
+     "gap_failure": 0.05793274468605908,
+     "share_success": 0.5000000000000001,
+     "share_failure": 0.2760221655627937,
+     "D": 0.22397783443720642,
+     "clusters": 501,
+     "means": {
+      "success_bf": 0.043080505655355955,
+      "success_q4": 0.01580172987358616,
+      "success_rep": 0.02944111776447106,
+      "rate_bf": 0.2540375359559781,
+      "rate_q4": 0.3119702806420372,
+      "rate_rep": 0.29597955899679473
+     },
+     "replicates_nonpositive_gap": 0.0,
+     "unstable": false,
+     "testable": true,
+     "gap_success_ci95": [
+      0.013473053892215571,
+      0.04258150365934797
+     ],
+     "gap_failure_ci95": [
+      0.04342076747422851,
+      0.07246022075070918
+     ],
+     "D_ci95": [
+      -0.15470627284253458,
+      0.6388168659128288
+     ],
+     "share_success_ci95": [
+      0.146769708532922,
+      0.8749999999999999
+     ],
+     "share_failure_ci95": [
+      -0.001555177756587414,
+      0.5000994353178158
+     ],
+     "p": 0.22057794220577942
+    }
+   },
+   "inclusion_sensitivity": {
+    "trials": 330,
+    "gap_success": 0.33829365079365076,
+    "gap_failure": 0.11258425909401977,
+    "share_success": 0.1700879765395895,
+    "share_failure": 0.3644787862168249,
+    "D": -0.19439080967723538,
+    "clusters": 84,
+    "means": {
+     "success_bf": 0.6140873015873015,
+     "success_q4": 0.27579365079365076,
+     "success_rep": 0.3333333333333333,
+     "rate_bf": 0.11769650591223084,
+     "rate_q4": 0.2302807650062506,
+     "rate_rep": 0.18924619090454176
+    },
+    "replicates_nonpositive_gap": 0.0,
+    "unstable": false,
+    "testable": true,
+    "gap_success_ci95": [
+     0.2609126984126984,
+     0.41765873015873006
+    ],
+    "gap_failure_ci95": [
+     0.07363474343077175,
+     0.15224541751973167
+    ],
+    "D_ci95": [
+     -0.4290805754721918,
+     0.09971604872978804
+    ],
+    "share_success_ci95": [
+     -0.06748029416544771,
+     0.35664619164619166
+    ],
+    "share_failure_ci95": [
+     -0.014108879949125533,
+     0.6386788118788123
+    ],
+    "p": 0.16098390160983903
+   },
+   "p_holm": 0.0005999400059994001,
+   "verdict": "not supported",
+   "ci_excludes_0_predicted": false
+  },
+  {
+   "repair": "Q8_0",
+   "trials": 5864,
+   "gap_success": 0.016633399866932803,
+   "gap_failure": 0.060016105905748685,
+   "share_success": 0.7266666666666665,
+   "share_failure": 0.5811531808055965,
+   "D": 0.14551348586106994,
+   "clusters": 1503,
+   "means": {
+    "success_bf": 0.034264803725881574,
+    "success_q4": 0.01763140385894877,
+    "success_rep": 0.029718341095586603,
+    "rate_bf": 0.2840838015573881,
+    "rate_q4": 0.3440999074631368,
+    "rate_rep": 0.3092213566164454
+   },
+   "replicates_nonpositive_gap": 0.0,
+   "unstable": false,
+   "testable": true,
+   "gap_success_ci95": [
+    0.010479041916167667,
+    0.02306498114881348
+   ],
+   "gap_failure_ci95": [
+    0.05016613721235983,
+    0.06990938569615332
+   ],
+   "D_ci95": [
+    -0.1145739665765358,
+    0.4352034385303341
+   ],
+   "share_success_ci95": [
+    0.48082978723404285,
+    0.9964553988109192
+   ],
+   "share_failure_ci95": [
+    0.45020725743465784,
+    0.6955612090508577
+   ],
+   "p": 0.28157184281571845,
+   "per_seed": {
+    "BF16": {
+     "success_mean": 3.3836968145293085,
+     "success_sd": 0.4919714768926923,
+     "fail_per100_mean": 28.9445756663776,
+     "fail_per100_sd": 1.4980325270057218
+    },
+    "Q4_0": {
+     "success_mean": 1.7761666631250963,
+     "success_sd": 0.6176579061517367,
+     "fail_per100_mean": 32.763475773684775,
+     "fail_per100_sd": 1.6997607023263048
+    },
+    "Q8_0": {
+     "success_mean": 2.994774919982917,
+     "success_sd": 0.3134094559909195,
+     "fail_per100_mean": 31.696966368898053,
+     "fail_per100_sd": 1.673671042057957
+    }
+   },
+   "per_model": {
+    "lfm2.5-1.2b-instruct": {
+     "gap_success": 0.010312707917498339,
+     "gap_failure": 0.051590316638788825,
+     "share_success": 0.6129032258064515,
+     "share_failure": 0.8055545176389142,
+     "D": -0.19265129183246266,
+     "clusters": 501,
+     "means": {
+      "success_bf": 0.040419161676646706,
+      "success_q4": 0.030106453759148367,
+      "success_rep": 0.03642714570858283,
+      "rate_bf": 0.30049147822653205,
+      "rate_q4": 0.3520817948653209,
+      "rate_rep": 0.3105229822305225
+     },
+     "replicates_nonpositive_gap": 0.0086,
+     "unstable": false,
+     "testable": true,
+     "gap_success_ci95": [
+      0.0018296739853626079,
+      0.019960079840319358
+     ],
+     "gap_failure_ci95": [
+      0.04130159489024951,
+      0.06203040530025775
+     ],
+     "D_ci95": [
+      -1.0548166765058171,
+      0.94426244640399
+     ],
+     "share_success_ci95": [
+      -0.24496951219512206,
+      1.75
+     ],
+     "share_failure_ci95": [
+      0.6645626922840248,
+      0.9503648447644942
+     ],
+     "p": 0.5797276853252648
+    },
+    "qwen3-0.6b": {
+     "gap_success": 0.0124750499001996,
+     "gap_failure": 0.07079425148899382,
+     "share_success": 0.6399999999999999,
+     "share_failure": 0.09540634897475754,
+     "D": 0.5445936510252424,
+     "clusters": 501,
+     "means": {
+      "success_bf": 0.019461077844311378,
+      "success_q4": 0.006986027944111776,
+      "success_rep": 0.014970059880239521,
+      "rate_bf": 0.2976529993025513,
+      "rate_q4": 0.3684472507915451,
+      "rate_rep": 0.3616930297285794
+     },
+     "replicates_nonpositive_gap": 0.0002,
+     "unstable": false,
+     "testable": true,
+     "gap_success_ci95": [
+      0.00499001996007984,
+      0.02095808383233533
+     ],
+     "gap_failure_ci95": [
+      0.04769554043076593,
+      0.09451239063307551
+     ],
+     "D_ci95": [
+      0.03973150109368158,
+      1.1266432761092329
+     ],
+     "share_success_ci95": [
+      0.16666666666666674,
+      1.0
+     ],
+     "share_failure_ci95": [
+      -0.40995530531762925,
+      0.37970853408722827
+     ],
+     "p": 0.037603760376037604
+    },
+    "qwen3-1.7b": {
+     "gap_success": 0.02711244178310047,
+     "gap_failure": 0.057663749589463464,
+     "share_success": 0.8098159509202453,
+     "share_failure": 0.9767422209498808,
+     "D": -0.16692627002963556,
+     "clusters": 501,
+     "means": {
+      "success_bf": 0.04291417165668663,
+      "success_q4": 0.01580172987358616,
+      "success_rep": 0.03775781769793746,
+      "rate_bf": 0.25410692714308103,
+      "rate_q4": 0.3117706767325445,
+      "rate_rep": 0.25544805789023417
+     },
+     "replicates_nonpositive_gap": 0.0,
+     "unstable": false,
+     "testable": true,
+     "gap_success_ci95": [
+      0.013306719893546242,
+      0.04208250166333999
+     ],
+     "gap_failure_ci95": [
+      0.04303295561660814,
+      0.07230912958206251
+     ],
+     "D_ci95": [
+      -0.5763482428686115,
+      0.3153606031897123
+     ],
+     "share_success_ci95": [
+      0.47106222654351,
+      1.2777777777777777
+     ],
+     "share_failure_ci95": [
+      0.7876563133988844,
+      1.2092290799446774
+     ],
+     "p": 0.4323567643235676
+    }
+   },
+   "inclusion_sensitivity": {
+    "trials": 331,
+    "gap_success": 0.3373015873015874,
+    "gap_failure": 0.11190119216095282,
+    "share_success": 0.6058823529411764,
+    "share_failure": 0.9893855268677443,
+    "D": -0.38350317392656785,
+    "clusters": 84,
+    "means": {
+     "success_bf": 0.6130952380952381,
+     "success_q4": 0.27579365079365076,
+     "success_rep": 0.4801587301587302,
+     "rate_bf": 0.11708572780145274,
+     "rate_q4": 0.22898691996240556,
+     "rate_rep": 0.11827349999911256
+    },
+    "replicates_nonpositive_gap": 0.0,
+    "unstable": false,
+    "testable": true,
+    "gap_success_ci95": [
+     0.2589285714285714,
+     0.4146825396825397
+    ],
+    "gap_failure_ci95": [
+     0.07300865968200239,
+     0.15097406195047366
+    ],
+    "D_ci95": [
+     -0.6333806285578493,
+     -0.17406921939072967
+    ],
+    "share_success_ci95": [
+     0.41757975034674055,
+     0.7832196969696973
+    ],
+    "share_failure_ci95": [
+     0.812162846957075,
+     1.1810769808242338
+    ],
+    "p": 0.00019998000199980003
+   },
+   "p_holm": 0.5631436856314369,
+   "verdict": "not supported",
+   "ci_excludes_0_predicted": false
+  },
+  {
+   "repair": "QAD-KL+CE",
+   "missing": true,
+   "p": 1.0,
+   "p_holm": 1.0,
+   "verdict": "missing"
+  }
+ ],
+ "label": "development data, stand-in configurations (mechanics check only)",
+ "configs": {
+  "BF16": [
+   "bf16",
+   "none"
+  ],
+  "Q4_0": [
+   "q4_0",
+   "none"
+  ],
+  "R1": [
+   "q4_k_m",
+   "none"
+  ],
+  "Q8_0": [
+   "iq4_xs",
+   "none"
+  ]
+ }
+}
