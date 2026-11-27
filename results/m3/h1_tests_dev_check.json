@@ -1,0 +1,3347 @@
+{
+ "generated": "2026-11-27T10:55:41-08:00",
+ "sources_sha256_16": {
+  "analysis/h1_tests.py": "719781e69f149ca1",
+  "analysis/damage_table.py": "27daed21c262c1ca",
+  "testbed/classifier.py": "6574e61cdb696eef",
+  "testbed/mixed_effects.py": "f545a9b02850e95e"
+ },
+ "runs": [
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_lfm2p5_1p2b/3018b3dc15",
+   "episodes": 2495,
+   "steps": 29677,
+   "label_changed_vs_logged": 0,
+   "experiment": "ref_lfm2p5_1p2b",
+   "experiment_hash": "3018b3dc15",
+   "testbed_git": {
+    "commit": "6be0ff765125d91f762621cbaba12b5d65645a13",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_q4_0/55a6367d24",
+   "episodes": 2498,
+   "steps": 28341,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_lfm2p5_1p2b_q4_0",
+   "experiment_hash": "55a6367d24",
+   "testbed_git": {
+    "commit": "6be0ff765125d91f762621cbaba12b5d65645a13",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_q4_k_m/dac01ff9a0",
+   "episodes": 2501,
+   "steps": 27500,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_lfm2p5_1p2b_q4_k_m",
+   "experiment_hash": "dac01ff9a0",
+   "testbed_git": {
+    "commit": "8a9b02ef362c56c070cd47186183d0bab5767c6a",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_1p2b_iq4_xs/52af219f58",
+   "episodes": 2496,
+   "steps": 29332,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_lfm2p5_1p2b_iq4_xs",
+   "experiment_hash": "52af219f58",
+   "testbed_git": {
+    "commit": "8a9b02ef362c56c070cd47186183d0bab5767c6a",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_lfm2p5_2p6b/86ef1012fd",
+   "episodes": 2504,
+   "steps": 33366,
+   "label_changed_vs_logged": 0,
+   "experiment": "ref_lfm2p5_2p6b",
+   "experiment_hash": "86ef1012fd",
+   "testbed_git": {
+    "commit": "6be0ff765125d91f762621cbaba12b5d65645a13",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_q4_0/3aa6ba0c98",
+   "episodes": 2501,
+   "steps": 35464,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_lfm2p5_2p6b_q4_0",
+   "experiment_hash": "3aa6ba0c98",
+   "testbed_git": {
+    "commit": "903490450b071bdbcb913d0939c7f156ff7f7008",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_q4_k_m/01063262a7",
+   "episodes": 2504,
+   "steps": 32569,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_lfm2p5_2p6b_q4_k_m",
+   "experiment_hash": "01063262a7",
+   "testbed_git": {
+    "commit": "903490450b071bdbcb913d0939c7f156ff7f7008",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_lfm2p5_2p6b_iq4_xs/dbae64a12c",
+   "episodes": 2505,
+   "steps": 33104,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_lfm2p5_2p6b_iq4_xs",
+   "experiment_hash": "dbae64a12c",
+   "testbed_git": {
+    "commit": "8a9b02ef362c56c070cd47186183d0bab5767c6a",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_qwen3_0p6b/cd314594fb",
+   "episodes": 2502,
+   "steps": 22670,
+   "label_changed_vs_logged": 0,
+   "experiment": "ref_qwen3_0p6b",
+   "experiment_hash": "cd314594fb",
+   "testbed_git": {
+    "commit": "c6e83a2cd91d835a6b155c30b56fcecb402ff129",
+    "dirty": true
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_q4_0/c200505b35",
+   "episodes": 2501,
+   "steps": 19920,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_qwen3_0p6b_q4_0",
+   "experiment_hash": "c200505b35",
+   "testbed_git": {
+    "commit": "2bb5792e28f99276043b6eaae1de17f7292dd868",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_q4_k_m/b85b3044db",
+   "episodes": 2504,
+   "steps": 20614,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_qwen3_0p6b_q4_k_m",
+   "experiment_hash": "b85b3044db",
+   "testbed_git": {
+    "commit": "2bb5792e28f99276043b6eaae1de17f7292dd868",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_0p6b_iq4_xs/b7e629273d",
+   "episodes": 2498,
+   "steps": 23444,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_qwen3_0p6b_iq4_xs",
+   "experiment_hash": "b7e629273d",
+   "testbed_git": {
+    "commit": "2bb5792e28f99276043b6eaae1de17f7292dd868",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_qwen3_1p7b/c456da2aef",
+   "episodes": 2502,
+   "steps": 27952,
+   "label_changed_vs_logged": 0,
+   "experiment": "ref_qwen3_1p7b",
+   "experiment_hash": "c456da2aef",
+   "testbed_git": {
+    "commit": "c6e83a2cd91d835a6b155c30b56fcecb402ff129",
+    "dirty": true
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_1p7b_q4_0/81058311fd",
+   "episodes": 2382,
+   "steps": 25080,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_qwen3_1p7b_q4_0",
+   "experiment_hash": "81058311fd",
+   "testbed_git": {
+    "commit": "6be0ff765125d91f762621cbaba12b5d65645a13",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_1p7b_q4_k_m/f1bd825c41",
+   "episodes": 2496,
+   "steps": 27213,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_qwen3_1p7b_q4_k_m",
+   "experiment_hash": "f1bd825c41",
+   "testbed_git": {
+    "commit": "6be0ff765125d91f762621cbaba12b5d65645a13",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_1p7b_iq4_xs/bb695f9151",
+   "episodes": 2480,
+   "steps": 26896,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_qwen3_1p7b_iq4_xs",
+   "experiment_hash": "bb695f9151",
+   "testbed_git": {
+    "commit": "6be0ff765125d91f762621cbaba12b5d65645a13",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_qwen3_4b/1c7b26d4e7",
+   "episodes": 2504,
+   "steps": 29507,
+   "label_changed_vs_logged": 0,
+   "experiment": "ref_qwen3_4b",
+   "experiment_hash": "1c7b26d4e7",
+   "testbed_git": {
+    "commit": "c6e83a2cd91d835a6b155c30b56fcecb402ff129",
+    "dirty": true
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_4b_q4_0/12141ac1a9",
+   "episodes": 2504,
+   "steps": 26518,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_qwen3_4b_q4_0",
+   "experiment_hash": "12141ac1a9",
+   "testbed_git": {
+    "commit": "903490450b071bdbcb913d0939c7f156ff7f7008",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_4b_q4_k_m/828a67648f",
+   "episodes": 2502,
+   "steps": 27303,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_qwen3_4b_q4_k_m",
+   "experiment_hash": "828a67648f",
+   "testbed_git": {
+    "commit": "8a9b02ef362c56c070cd47186183d0bab5767c6a",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_qwen3_4b_iq4_xs/494b882fbb",
+   "episodes": 2500,
+   "steps": 29836,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_qwen3_4b_iq4_xs",
+   "experiment_hash": "494b882fbb",
+   "testbed_git": {
+    "commit": "8a9b02ef362c56c070cd47186183d0bab5767c6a",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/ref_smollm3_3b/5053915afb",
+   "episodes": 2458,
+   "steps": 16398,
+   "label_changed_vs_logged": 0,
+   "experiment": "ref_smollm3_3b",
+   "experiment_hash": "5053915afb",
+   "testbed_git": {
+    "commit": "6be0ff765125d91f762621cbaba12b5d65645a13",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_smollm3_3b_q4_0/6002a19027",
+   "episodes": 2458,
+   "steps": 14729,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_smollm3_3b_q4_0",
+   "experiment_hash": "6002a19027",
+   "testbed_git": {
+    "commit": "a5afb22b6e1345bf5022bd7cf731fad5747fc905",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_smollm3_3b_q4_k_m/4d7c2962b3",
+   "episodes": 2471,
+   "steps": 16014,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_smollm3_3b_q4_k_m",
+   "experiment_hash": "4d7c2962b3",
+   "testbed_git": {
+    "commit": "a5afb22b6e1345bf5022bd7cf731fad5747fc905",
+    "dirty": false
+   }
+  },
+  {
+   "dir": "/scratch/cmpe295-bertin/runs/h1_smollm3_3b_iq4_xs/f27453f6dd",
+   "episodes": 2465,
+   "steps": 16142,
+   "label_changed_vs_logged": 0,
+   "experiment": "h1_smollm3_3b_iq4_xs",
+   "experiment_hash": "f27453f6dd",
+   "testbed_git": {
+    "commit": "a5afb22b6e1345bf5022bd7cf731fad5747fc905",
+    "dirty": false
+   }
+  }
+ ],
+ "seeds": [
+  1,
+  2,
+  3,
+  4
+ ],
+ "greedy_seed": 0,
+ "models": [
+  "lfm2.5-1.2b-instruct",
+  "lfm2.5-2.6b",
+  "qwen3-0.6b",
+  "qwen3-1.7b",
+  "qwen3-4b",
+  "smollm3-3b"
+ ],
+ "rng_seed": 295,
+ "method": "\u00a76 as registered; per-task rate = mean over paired trials of failures/steps; paired permutation (10,000 sign flips), Holm within family; pooled ratio and paired cluster bootstrap CI from the frozen damage_table.ratio_ci; classifier codebook v0",
+ "families": {
+  "H1": {
+   "family": "H1",
+   "m": 18,
+   "n_supported": 8,
+   "tests": [
+    {
+     "model": "lfm2.5-1.2b-instruct",
+     "format": "q4_0",
+     "mean_diff": 0.05151697742102566,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1993,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.30041922563420353,
+     "task_mean_rate_4bit": 0.35193620305522916,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.05009165241818647,
+      "p": 9.999000099990002e-05
+     },
+     "pooled": {
+      "rate_ref_per100": 29.809166808655647,
+      "rate_4bit_per100": 34.43288057858529,
+      "events_ref": 6998,
+      "events_4bit": 7808,
+      "steps_ref": 23476,
+      "steps_4bit": 22676,
+      "ratio": 1.1551104665088143,
+      "diff_per100": 4.623713769929644,
+      "ratio_ci95": [
+       1.114029078988475,
+       1.1967412222661256
+      ],
+      "diff_ci95_per100": [
+       3.4496339091429857,
+       5.793582811410612
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       27.03816520336857,
+       31.27954360228199,
+       32.95530353569046,
+       27.654406662040248
+      ],
+      "4bit": [
+       31.8272545817456,
+       35.54526748971193,
+       39.682253114280556,
+       30.773213669313083
+      ],
+      "ref_mean": 29.73185475084532,
+      "ref_sd": 2.849427824976231,
+      "4bit_mean": 34.45699721376279,
+      "4bit_sd": 4.040356375883086
+     },
+     "p_holm": 0.0017998200179982003,
+     "supported": true
+    },
+    {
+     "model": "lfm2.5-1.2b-instruct",
+     "format": "q4_k_m",
+     "mean_diff": -0.01844275505981383,
+     "p": 0.0016998300169983002,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1993,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.30040691779325784,
+     "task_mean_rate_4bit": 0.28196416273344393,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": -0.017267681365920846,
+      "p": 0.001999800019998
+     },
+     "pooled": {
+      "rate_ref_per100": 29.78669050964363,
+      "rate_4bit_per100": 25.469747783341756,
+      "events_ref": 6996,
+      "events_4bit": 5544,
+      "steps_ref": 23487,
+      "steps_4bit": 21767,
+      "ratio": 0.8550714210796854,
+      "diff_per100": -4.316942726301876,
+      "ratio_ci95": [
+       0.8094764543105475,
+       0.901493154545258
+      ],
+      "diff_ci95_per100": [
+       -5.739436734622848,
+       -2.891809536620577
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       27.07392011566962,
+       31.27954360228199,
+       32.939217318900916,
+       27.536979704162366
+      ],
+      "4bit": [
+       23.399014778325125,
+       28.114852162023585,
+       25.41364565904443,
+       24.662483361855866
+      ],
+      "ref_mean": 29.707415185253723,
+      "ref_sd": 2.8613644326776697,
+      "4bit_mean": 25.39749899031225,
+      "4bit_sd": 1.9931930910273705
+     },
+     "p_holm": 0.016998300169983,
+     "supported": false
+    },
+    {
+     "model": "lfm2.5-1.2b-instruct",
+     "format": "iq4_xs",
+     "mean_diff": 0.00997304078000788,
+     "p": 0.0110988901109889,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1989,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.30039454243976904,
+     "task_mean_rate_4bit": 0.3103675832197769,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.010880152211079587,
+      "p": 0.004299570042995701
+     },
+     "pooled": {
+      "rate_ref_per100": 29.825459821619084,
+      "rate_4bit_per100": 30.450481430536453,
+      "events_ref": 6989,
+      "events_4bit": 7084,
+      "steps_ref": 23433,
+      "steps_4bit": 23264,
+      "ratio": 1.0209559756213489,
+      "diff_per100": 0.6250216089173699,
+      "ratio_ci95": [
+       0.9907923870250948,
+       1.0525139788199904
+      ],
+      "diff_ci95_per100": [
+       -0.2829335813252215,
+       1.5331466811014414
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       27.063477791764072,
+       31.288845273143604,
+       32.939217318900916,
+       27.689900921258474
+      ],
+      "4bit": [
+       28.776341420223126,
+       31.684315023163467,
+       30.555086890501098,
+       30.69429684732554
+      ],
+      "ref_mean": 29.745360326266766,
+      "ref_sd": 2.828455147552051,
+      "4bit_mean": 30.427510045303308,
+      "4bit_sd": 1.210147047536941
+     },
+     "p_holm": 0.0887911208879112,
+     "supported": false
+    },
+    {
+     "model": "lfm2.5-2.6b",
+     "format": "q4_0",
+     "mean_diff": -0.0006683850526844975,
+     "p": 0.8167183281671833,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 2000,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.09455764202969937,
+     "task_mean_rate_4bit": 0.09388925697701488,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": -7.264466377244316e-05,
+      "p": 0.9799020097990201
+     },
+     "pooled": {
+      "rate_ref_per100": 10.951715806561214,
+      "rate_4bit_per100": 11.03397237101776,
+      "events_ref": 2901,
+      "events_4bit": 3131,
+      "steps_ref": 26489,
+      "steps_4bit": 28376,
+      "ratio": 1.0075108381106153,
+      "diff_per100": 0.08225656445654678,
+      "ratio_ci95": [
+       0.9445613637053769,
+       1.0737196180155046
+      ],
+      "diff_ci95_per100": [
+       -0.6307781607677171,
+       0.7830155040873196
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       11.533816425120772,
+       11.946835825404017,
+       10.394319383592688,
+       9.932075471698113
+      ],
+      "4bit": [
+       10.984046308061556,
+       10.724431818181818,
+       11.343115124153499,
+       11.081646894626658
+      ],
+      "ref_mean": 10.951761776453898,
+      "ref_sd": 0.9450682794370014,
+      "4bit_mean": 11.033310036255884,
+      "4bit_sd": 0.2557005493936348
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "lfm2.5-2.6b",
+     "format": "q4_k_m",
+     "mean_diff": -0.00928639089575101,
+     "p": 0.0007999200079992001,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 2002,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.09459574408252198,
+     "task_mean_rate_4bit": 0.08530935318677096,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": -0.00800118748187123,
+      "p": 0.0022997700229977
+     },
+     "pooled": {
+      "rate_ref_per100": 10.979978130538063,
+      "rate_4bit_per100": 9.961582789089512,
+      "events_ref": 2912,
+      "events_4bit": 2593,
+      "steps_ref": 26521,
+      "steps_4bit": 26030,
+      "ratio": 0.9072497841670432,
+      "diff_per100": -1.0183953414485512,
+      "ratio_ci95": [
+       0.8518084278902014,
+       0.9659764712283163
+      ],
+      "diff_ci95_per100": [
+       -1.6717708580941872,
+       -0.36319363980296954
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       11.533816425120772,
+       11.9331023052584,
+       10.394319383592688,
+       10.05872609546755
+      ],
+      "4bit": [
+       10.547294189789975,
+       10.23418491484185,
+       9.671476819158736,
+       9.381330839956366
+      ],
+      "ref_mean": 10.979991052359852,
+      "ref_sd": 0.8957090354034062,
+      "4bit_mean": 9.958571690936733,
+      "4bit_sd": 0.5285790055387937
+     },
+     "p_holm": 0.008799120087991202,
+     "supported": false
+    },
+    {
+     "model": "lfm2.5-2.6b",
+     "format": "iq4_xs",
+     "mean_diff": -0.003250369856894789,
+     "p": 0.21437856214378562,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 2003,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.09456782788694111,
+     "task_mean_rate_4bit": 0.09131745803004632,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": -0.0032561359147339707,
+      "p": 0.15758424157584242
+     },
+     "pooled": {
+      "rate_ref_per100": 10.976253298153035,
+      "rate_4bit_per100": 10.729597593080104,
+      "events_ref": 2912,
+      "events_4bit": 2853,
+      "steps_ref": 26530,
+      "steps_4bit": 26590,
+      "ratio": 0.977528242254173,
+      "diff_per100": -0.246655705072929,
+      "ratio_ci95": [
+       0.9288522881271435,
+       1.0322435564439578
+      ],
+      "diff_ci95_per100": [
+       -0.8040958095341929,
+       0.33979621591199394
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       11.533816425120772,
+       11.9331023052584,
+       10.394319383592688,
+       10.045112781954888
+      ],
+      "4bit": [
+       10.934453277336134,
+       10.332722832722833,
+       11.051534107834376,
+       10.590356016223524
+      ],
+      "ref_mean": 10.976587723981687,
+      "ref_sd": 0.9003899076532169,
+      "4bit_mean": 10.727266558529218,
+      "4bit_sd": 0.3278643155076869
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "qwen3-0.6b",
+     "format": "q4_0",
+     "mean_diff": 0.07053847950168496,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1999,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.2975642222926166,
+     "task_mean_rate_4bit": 0.36810270179430155,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.04902670450586119,
+      "p": 9.999000099990002e-05
+     },
+     "pooled": {
+      "rate_ref_per100": 30.46685752036996,
+      "rate_4bit_per100": 31.125324551959977,
+      "events_ref": 5534,
+      "events_4bit": 4915,
+      "steps_ref": 18164,
+      "steps_4bit": 15791,
+      "ratio": 1.0216125680552963,
+      "diff_per100": 0.6584670315900154,
+      "ratio_ci95": [
+       0.9470187544946708,
+       1.1009762597721275
+      ],
+      "diff_ci95_per100": [
+       -1.6321233649593911,
+       3.0261147824067045
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       30.82576740164289,
+       30.392599277978338,
+       31.361675908810845,
+       29.124380457871137
+      ],
+      "4bit": [
+       29.64824120603015,
+       35.8433734939759,
+       26.18510158013544,
+       32.890625
+      ],
+      "ref_mean": 30.4261057615758,
+      "ref_sd": 0.9540496803427977,
+      "4bit_mean": 31.141835320035373,
+      "4bit_sd": 4.1618409104395235
+     },
+     "p_holm": 0.0017998200179982003,
+     "supported": true
+    },
+    {
+     "model": "qwen3-0.6b",
+     "format": "q4_k_m",
+     "mean_diff": -0.01758960569219018,
+     "p": 0.0244975502449755,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 2000,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.29761174629223636,
+     "task_mean_rate_4bit": 0.28002214060004627,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": -0.022613112389227873,
+      "p": 0.0059994000599940004
+     },
+     "pooled": {
+      "rate_ref_per100": 30.44076377042866,
+      "rate_4bit_per100": 28.956791597039867,
+      "events_ref": 5532,
+      "events_4bit": 4852,
+      "steps_ref": 18173,
+      "steps_4bit": 16756,
+      "ratio": 0.9512504947451292,
+      "diff_per100": -1.4839721733887923,
+      "ratio_ci95": [
+       0.9023638914427179,
+       1.0008419554433143
+      ],
+      "diff_ci95_per100": [
+       -3.007028863706699,
+       0.02472535749521146
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       30.82576740164289,
+       30.33783783783784,
+       31.290983606557376,
+       29.145966406434823
+      ],
+      "4bit": [
+       32.579505300353354,
+       26.13314447592068,
+       26.895219700627717,
+       30.195983547060248
+      ],
+      "ref_mean": 30.400138813118232,
+      "ref_sd": 0.9222425527979907,
+      "4bit_mean": 28.9509632559905,
+      "4bit_sd": 2.9934693994101083
+     },
+     "p_holm": 0.1581841815818418,
+     "supported": false
+    },
+    {
+     "model": "qwen3-0.6b",
+     "format": "iq4_xs",
+     "mean_diff": 0.06404003042602818,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1995,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.2976529993025513,
+     "task_mean_rate_4bit": 0.3616930297285794,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.06382085306890115,
+      "p": 9.999000099990002e-05
+     },
+     "pooled": {
+      "rate_ref_per100": 30.448452755254014,
+      "rate_4bit_per100": 38.1599040139616,
+      "events_ref": 5520,
+      "events_4bit": 6997,
+      "steps_ref": 18129,
+      "steps_4bit": 18336,
+      "ratio": 1.2532624997628803,
+      "diff_per100": 7.711451258707591,
+      "ratio_ci95": [
+       1.1959944830944578,
+       1.3140554916104845
+      ],
+      "diff_ci95_per100": [
+       6.020192827703706,
+       9.432281733369484
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       30.815840727115344,
+       30.35150968904912,
+       31.290983606557376,
+       29.16467780429594
+      ],
+      "4bit": [
+       34.983642311886584,
+       42.165691130121566,
+       41.0391249474127,
+       34.445664105378704
+      ],
+      "ref_mean": 30.405752956754448,
+      "ref_sd": 0.911960369915883,
+      "4bit_mean": 38.15853062369989,
+      "4bit_sd": 4.009175000645034
+     },
+     "p_holm": 0.0017998200179982003,
+     "supported": true
+    },
+    {
+     "model": "qwen3-1.7b",
+     "format": "q4_0",
+     "mean_diff": 0.057763242526695575,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1904,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.25404553996886703,
+     "task_mean_rate_4bit": 0.31180878249556265,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.058575547051300345,
+      "p": 9.999000099990002e-05
+     },
+     "pooled": {
+      "rate_ref_per100": 26.520635517533137,
+      "rate_4bit_per100": 32.287311741298545,
+      "events_ref": 5642,
+      "events_4bit": 6410,
+      "steps_ref": 21274,
+      "steps_4bit": 19853,
+      "ratio": 1.2174411024182654,
+      "diff_per100": 5.76667622376541,
+      "ratio_ci95": [
+       1.1530587783701594,
+       1.2845667841407888
+      ],
+      "diff_ci95_per100": [
+       4.16651675122834,
+       7.3350542202318545
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       26.583801122694467,
+       26.209463051568314,
+       27.857683573050718,
+       25.47116999440194
+      ],
+      "4bit": [
+       30.63447981200598,
+       31.744208309400726,
+       34.02403646912557,
+       32.71520593402303
+      ],
+      "ref_mean": 26.53052943542886,
+      "ref_sd": 0.9982488042916452,
+      "4bit_mean": 32.279482631138826,
+      "4bit_sd": 1.4405873529892577
+     },
+     "p_holm": 0.0017998200179982003,
+     "supported": true
+    },
+    {
+     "model": "qwen3-1.7b",
+     "format": "q4_k_m",
+     "mean_diff": 0.04142466243759593,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1994,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.2551746684397498,
+     "task_mean_rate_4bit": 0.2965993308773457,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.03790820726845732,
+      "p": 9.999000099990002e-05
+     },
+     "pooled": {
+      "rate_ref_per100": 26.92342100554661,
+      "rate_4bit_per100": 28.964108278776056,
+      "events_ref": 6019,
+      "events_4bit": 6238,
+      "steps_ref": 22356,
+      "steps_4bit": 21537,
+      "ratio": 1.0757959871744767,
+      "diff_per100": 2.0406872732294468,
+      "ratio_ci95": [
+       1.0094731607417335,
+       1.1424848588727232
+      ],
+      "diff_ci95_per100": [
+       0.25763640790418685,
+       3.7720688178012063
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       26.785714285714285,
+       26.446986511866143,
+       28.32795120200933,
+       26.15521855486173
+      ],
+      "4bit": [
+       29.510333271271644,
+       29.560336763330216,
+       26.917976889562418,
+       29.80873330927463
+      ],
+      "ref_mean": 26.928967638612875,
+      "ref_sd": 0.9675863415247792,
+      "4bit_mean": 28.949345058359725,
+      "4bit_sd": 1.360517480174653
+     },
+     "p_holm": 0.0017998200179982003,
+     "supported": true
+    },
+    {
+     "model": "qwen3-1.7b",
+     "format": "iq4_xs",
+     "mean_diff": 0.00015871156447122626,
+     "p": 0.9775022497750225,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1979,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.2553166676894406,
+     "task_mean_rate_4bit": 0.25547537925391184,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.0026338310575965127,
+      "p": 0.6741325867413258
+     },
+     "pooled": {
+      "rate_ref_per100": 26.990291262135923,
+      "rate_4bit_per100": 27.626679236389347,
+      "events_ref": 5977,
+      "events_4bit": 5861,
+      "steps_ref": 22145,
+      "steps_4bit": 21215,
+      "ratio": 1.0235784033626267,
+      "diff_per100": 0.6363879742534218,
+      "ratio_ci95": [
+       0.9748235226408076,
+       1.075138942700352
+      ],
+      "diff_ci95_per100": [
+       -0.6940724422219708,
+       1.9916759871684022
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       27.145861212005354,
+       26.38984214138641,
+       28.277868703400618,
+       26.203687130839448
+      ],
+      "4bit": [
+       26.73325499412456,
+       27.24963715529753,
+       29.183230936031805,
+       27.23681611692672
+      ],
+      "ref_mean": 27.004314796907956,
+      "ref_sd": 0.9417282418383148,
+      "4bit_mean": 27.600734800595156,
+      "4bit_sd": 1.0820538492704037
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "qwen3-4b",
+     "format": "q4_0",
+     "mean_diff": 0.0009420023619864873,
+     "p": 0.8411158884111589,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 2002,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.22109856907878112,
+     "task_mean_rate_4bit": 0.2220405714407676,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.0030050997138503103,
+      "p": 0.532046795320468
+     },
+     "pooled": {
+      "rate_ref_per100": 23.050259965337954,
+      "rate_4bit_per100": 22.55261180007516,
+      "events_ref": 5453,
+      "events_4bit": 4801,
+      "steps_ref": 23657,
+      "steps_4bit": 21288,
+      "ratio": 0.9784103014017569,
+      "diff_per100": -0.49764816526279565,
+      "ratio_ci95": [
+       0.93810893212894,
+       1.0200403578385824
+      ],
+      "diff_ci95_per100": [
+       -1.4644251060061682,
+       0.44976380453681014
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       22.67577474175275,
+       23.19181070649438,
+       22.87207146468903,
+       23.477355543987507
+      ],
+      "4bit": [
+       22.684664416947882,
+       22.1134306299649,
+       21.898899459056146,
+       23.55212355212355
+      ],
+      "ref_mean": 23.054253114230917,
+      "ref_sd": 0.35325806861215797,
+      "4bit_mean": 22.562279514523116,
+      "4bit_sd": 0.7385363232491605
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "qwen3-4b",
+     "format": "q4_k_m",
+     "mean_diff": 0.011606615593831035,
+     "p": 0.0225977402259774,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 2001,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.22097991761282423,
+     "task_mean_rate_4bit": 0.2325865332066553,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.013716019061884318,
+      "p": 0.007899210078992101
+     },
+     "pooled": {
+      "rate_ref_per100": 23.053183393929146,
+      "rate_4bit_per100": 22.846167916590453,
+      "events_ref": 5453,
+      "events_4bit": 4996,
+      "steps_ref": 23654,
+      "steps_4bit": 21868,
+      "ratio": 0.9910200915074832,
+      "diff_per100": -0.20701547733869285,
+      "ratio_ci95": [
+       0.9475696337873087,
+       1.036416203778874
+      ],
+      "diff_ci95_per100": [
+       -1.228703334065788,
+       0.8204122115463828
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       22.678005669501417,
+       23.200805234021136,
+       22.87207146468903,
+       23.477355543987507
+      ],
+      "4bit": [
+       22.146664216136738,
+       23.198239501192006,
+       22.99283154121864,
+       23.044123099740453
+      ],
+      "ref_mean": 23.057059478049773,
+      "ref_sd": 0.3536542474718697,
+      "4bit_mean": 22.84546458957196,
+      "4bit_sd": 0.4739740929213103
+     },
+     "p_holm": 0.1581841815818418,
+     "supported": false
+    },
+    {
+     "model": "qwen3-4b",
+     "format": "iq4_xs",
+     "mean_diff": -0.003980974103318109,
+     "p": 0.3103689631036896,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1999,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.2211209598710254,
+     "task_mean_rate_4bit": 0.21713998576770727,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": -0.0042114595978949235,
+      "p": 0.3047695230476952
+     },
+     "pooled": {
+      "rate_ref_per100": 23.073015873015873,
+      "rate_4bit_per100": 22.6507036336904,
+      "events_ref": 5451,
+      "events_4bit": 5392,
+      "steps_ref": 23625,
+      "steps_4bit": 23805,
+      "ratio": 0.9816967039918101,
+      "diff_per100": -0.422312239325473,
+      "ratio_ci95": [
+       0.9435297347853423,
+       1.0216335888821837
+      ],
+      "diff_ci95_per100": [
+       -1.3140959863902528,
+       0.48956843208325107
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       22.757001509307397,
+       23.232492060839043,
+       22.836375929682216,
+       23.477355543987507
+      ],
+      "4bit": [
+       22.498721663541843,
+       23.299319727891156,
+       22.00193423597679,
+       22.839084386744105
+      ],
+      "ref_mean": 23.07580626095404,
+      "ref_sd": 0.33899637156155893,
+      "4bit_mean": 22.659765003538475,
+      "4bit_sd": 0.547680552494836
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "smollm3-3b",
+     "format": "q4_0",
+     "mean_diff": 0.15340994685443068,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1934,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.41625524276173587,
+     "task_mean_rate_4bit": 0.5696651896161665,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.1529799607723932,
+      "p": 9.999000099990002e-05
+     },
+     "pooled": {
+      "rate_ref_per100": 33.32027577561893,
+      "rate_4bit_per100": 44.26329026103547,
+      "events_ref": 4253,
+      "events_4bit": 5104,
+      "steps_ref": 12764,
+      "steps_4bit": 11531,
+      "ratio": 1.3284190850972413,
+      "diff_per100": 10.94301448541654,
+      "ratio_ci95": [
+       1.2683624023771927,
+       1.3905888107580264
+      ],
+      "diff_ci95_per100": [
+       9.114026379572662,
+       12.758609415119821
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       34.528,
+       33.700642791551886,
+       31.357792411414238,
+       33.71033616085454
+      ],
+      "4bit": [
+       44.20466411416638,
+       44.52605806225953,
+       45.067967933077725,
+       43.27645051194539
+      ],
+      "ref_mean": 33.32419284095516,
+      "ref_sd": 1.3670776074377928,
+      "4bit_mean": 44.26878515536226,
+      "4bit_sd": 0.7513813974428932
+     },
+     "p_holm": 0.0017998200179982003,
+     "supported": true
+    },
+    {
+     "model": "smollm3-3b",
+     "format": "q4_k_m",
+     "mean_diff": 0.01438821693884545,
+     "p": 0.004399560043995601,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1940,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.416579515894668,
+     "task_mean_rate_4bit": 0.4309677328335135,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.014336334527735287,
+      "p": 0.009099090090990901
+     },
+     "pooled": {
+      "rate_ref_per100": 33.17997504678728,
+      "rate_4bit_per100": 33.86454183266932,
+      "events_ref": 4255,
+      "events_4bit": 4250,
+      "steps_ref": 12824,
+      "steps_4bit": 12550,
+      "ratio": 1.0206319258804968,
+      "diff_per100": 0.6845667858820459,
+      "ratio_ci95": [
+       0.9821879659452262,
+       1.060689715076305
+      ],
+      "diff_ci95_per100": [
+       -0.6002940424726272,
+       1.978554752669787
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       34.01510383889239,
+       33.960518198642816,
+       31.38364779874214,
+       33.34367245657568
+      ],
+      "4bit": [
+       34.20038535645472,
+       33.646677471636956,
+       33.91167192429022,
+       33.70009430996542
+      ],
+      "ref_mean": 33.17573557321326,
+      "ref_sd": 1.2329104107500581,
+      "4bit_mean": 33.86470726558683,
+      "4bit_sd": 0.2513429768689757
+     },
+     "p_holm": 0.03959604039596041,
+     "supported": true
+    },
+    {
+     "model": "smollm3-3b",
+     "format": "iq4_xs",
+     "mean_diff": 0.044727169973197194,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1932,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.4167272484857376,
+     "task_mean_rate_4bit": 0.46145441845893487,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.0485392609192168,
+      "p": 9.999000099990002e-05
+     },
+     "pooled": {
+      "rate_ref_per100": 33.38831291234684,
+      "rate_4bit_per100": 34.94432598910211,
+      "events_ref": 4251,
+      "events_4bit": 4425,
+      "steps_ref": 12732,
+      "steps_4bit": 12663,
+      "ratio": 1.0466035250370456,
+      "diff_per100": 1.5560130767552693,
+      "ratio_ci95": [
+       1.0109608760143638,
+       1.0838634115342238
+      ],
+      "diff_ci95_per100": [
+       0.3730799693989059,
+       2.763208553585591
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       34.295685279187815,
+       34.19656786271451,
+       31.42497640767537,
+       33.63579474342929
+      ],
+      "4bit": [
+       35.68761667703796,
+       34.24270931326435,
+       32.574102964118566,
+       37.38134206219313
+      ],
+      "ref_mean": 33.388256073251746,
+      "ref_sd": 1.3407135104449932,
+      "4bit_mean": 34.9714427541535,
+      "4bit_sd": 2.049293395251517
+     },
+     "p_holm": 0.0017998200179982003,
+     "supported": true
+    }
+   ]
+  },
+  "H1-tep": {
+   "family": "H1-tep",
+   "m": 15,
+   "n_supported": 0,
+   "tests": [
+    {
+     "model": "lfm2.5-1.2b-instruct",
+     "format": "q4_0",
+     "mean_diff": 0.003089684083508958,
+     "p": 0.23737626237376264,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1993,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.09603054991488648,
+     "task_mean_rate_4bit": 0.09912023399839545,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.0036181067069685686,
+      "p": 0.17898210178982102
+     },
+     "pooled": {
+      "rate_ref_per100": 7.927244845799966,
+      "rate_4bit_per100": 8.484741576997706,
+      "events_ref": 1861,
+      "events_4bit": 1924,
+      "steps_ref": 23476,
+      "steps_4bit": 22676,
+      "ratio": 1.0703266698635043,
+      "diff_per100": 0.5574967311977402,
+      "ratio_ci95": [
+       1.005524402233598,
+       1.141147114716257
+      ],
+      "diff_ci95_per100": [
+       0.04316864121856626,
+       1.0671014358585504
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       6.952159111270381,
+       8.361858190709047,
+       8.82254836557705,
+       7.477446217904233
+      ],
+      "4bit": [
+       7.475957176555979,
+       8.521947873799725,
+       10.41704278750677,
+       7.5595443562305835
+      ],
+      "ref_mean": 7.903502971365178,
+      "ref_sd": 0.8448497777774009,
+      "4bit_mean": 8.493623048523265,
+      "4bit_sd": 1.3672957030089794
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "lfm2.5-1.2b-instruct",
+     "format": "q4_k_m",
+     "mean_diff": -0.0009570113720365853,
+     "p": 0.7072292770722928,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1993,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.09603054991488648,
+     "task_mean_rate_4bit": 0.09507353854284992,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": -0.0008185330448183328,
+      "p": 0.7586241375862414
+     },
+     "pooled": {
+      "rate_ref_per100": 7.923532166730532,
+      "rate_4bit_per100": 7.892681582211606,
+      "events_ref": 1861,
+      "events_4bit": 1718,
+      "steps_ref": 23487,
+      "steps_4bit": 21767,
+      "ratio": 0.9961064606201181,
+      "diff_per100": -0.030850584518926638,
+      "ratio_ci95": [
+       0.9349828250351216,
+       1.060271737803847
+      ],
+      "diff_ci95_per100": [
+       -0.5318197536313797,
+       0.4658865938674278
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       7.012470630760889,
+       8.361858190709047,
+       8.80932556203164,
+       7.413140694874441
+      ],
+      "4bit": [
+       7.427055702917772,
+       7.878995043582294,
+       8.53318460680424,
+       7.72009887811371
+      ],
+      "ref_mean": 7.899198769594005,
+      "ref_sd": 0.8296432491253604,
+      "4bit_mean": 7.889833557854503,
+      "4bit_sd": 0.4679712420305711
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "lfm2.5-1.2b-instruct",
+     "format": "iq4_xs",
+     "mean_diff": -0.004260323998498579,
+     "p": 0.07289271072892711,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1989,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.09603054991488648,
+     "task_mean_rate_4bit": 0.09177022591638792,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": -0.005116605047157821,
+      "p": 0.027597240275972403
+     },
+     "pooled": {
+      "rate_ref_per100": 7.941791490632869,
+      "rate_4bit_per100": 7.199965612104539,
+      "events_ref": 1861,
+      "events_4bit": 1675,
+      "steps_ref": 23433,
+      "steps_4bit": 23264,
+      "ratio": 0.9065921235273813,
+      "diff_per100": -0.7418258785283294,
+      "ratio_ci95": [
+       0.8549016329635741,
+       0.9616157659966496
+      ],
+      "diff_ci95_per100": [
+       -1.2117693920804915,
+       -0.29007777697689885
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       6.9771623808667504,
+       8.390578999018645,
+       8.80932556203164,
+       7.491743438206154
+      ],
+      "4bit": [
+       6.481317513724101,
+       7.478491065519523,
+       7.592373882233845,
+       7.208643287283032
+      ],
+      "ref_mean": 7.917202595030797,
+      "ref_sd": 0.8335985657526004,
+      "4bit_mean": 7.190206437190126,
+      "4bit_sd": 0.4992361178300903
+     },
+     "p_holm": 0.7501249875012499,
+     "supported": false
+    },
+    {
+     "model": "lfm2.5-2.6b",
+     "format": "q4_0",
+     "mean_diff": 0.0008821406391563262,
+     "p": 0.41985801419858015,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 2000,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.04166580124629636,
+     "task_mean_rate_4bit": 0.042547941885452696,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": -0.00018519898025416102,
+      "p": 0.877012298770123
+     },
+     "pooled": {
+      "rate_ref_per100": 4.462229604741591,
+      "rate_4bit_per100": 4.817451367352692,
+      "events_ref": 1182,
+      "events_4bit": 1367,
+      "steps_ref": 26489,
+      "steps_4bit": 28376,
+      "ratio": 1.0796063390000463,
+      "diff_per100": 0.3552217626111014,
+      "ratio_ci95": [
+       1.010616830947305,
+       1.1548992141085928
+      ],
+      "diff_ci95_per100": [
+       0.04803220109108161,
+       0.6765481812491089
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       4.7101449275362315,
+       4.772692946684791,
+       4.1698141713249735,
+       4.19622641509434
+      ],
+      "4bit": [
+       5.040237187632359,
+       4.630681818181818,
+       4.5852144469525955,
+       5.0104675505931615
+      ],
+      "ref_mean": 4.462219615160084,
+      "ref_sd": 0.3235809925250473,
+      "4bit_mean": 4.8166502508399835,
+      "4bit_sd": 0.2420076123142596
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "lfm2.5-2.6b",
+     "format": "q4_k_m",
+     "mean_diff": -0.0004390583708649028,
+     "p": 0.7116288371162883,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 2002,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.04166580124629636,
+     "task_mean_rate_4bit": 0.04122674287543147,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": -0.0004355898186368735,
+      "p": 0.7251274872512748
+     },
+     "pooled": {
+      "rate_ref_per100": 4.4568455186456015,
+      "rate_4bit_per100": 4.560122935074914,
+      "events_ref": 1182,
+      "events_4bit": 1187,
+      "steps_ref": 26521,
+      "steps_4bit": 26030,
+      "ratio": 1.0231727610924009,
+      "diff_per100": 0.1032774164293121,
+      "ratio_ci95": [
+       0.9547530549340194,
+       1.097858697285699
+      ],
+      "diff_ci95_per100": [
+       -0.20737849314217074,
+       0.42215822668195485
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       4.7101449275362315,
+       4.7611872834111795,
+       4.1698141713249735,
+       4.186116548712543
+      ],
+      "4bit": [
+       4.323164188256937,
+       5.094282238442823,
+       4.528707399447344,
+       4.285491662770765
+      ],
+      "ref_mean": 4.456815732746232,
+      "ref_sd": 0.32273088184114,
+      "4bit_mean": 4.5579113722294675,
+      "4bit_sd": 0.3732136638412018
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "lfm2.5-2.6b",
+     "format": "iq4_xs",
+     "mean_diff": 0.000821654431421891,
+     "p": 0.42045795420457954,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 2003,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.04166580124629636,
+     "task_mean_rate_4bit": 0.04248745567771826,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.0004123995656263335,
+      "p": 0.6741325867413258
+     },
+     "pooled": {
+      "rate_ref_per100": 4.455333584621184,
+      "rate_4bit_per100": 4.689732982324182,
+      "events_ref": 1182,
+      "events_4bit": 1247,
+      "steps_ref": 26530,
+      "steps_4bit": 26590,
+      "ratio": 1.0526109646451824,
+      "diff_per100": 0.23439939770299872,
+      "ratio_ci95": [
+       0.9928639522516519,
+       1.1139189819887627
+      ],
+      "diff_ci95_per100": [
+       -0.03241369201311463,
+       0.5000386057183327
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       4.7101449275362315,
+       4.7611872834111795,
+       4.1698141713249735,
+       4.180451127819549
+      ],
+      "4bit": [
+       4.4997750112494375,
+       4.685592185592186,
+       4.676794757223711,
+       4.897100796154424
+      ],
+      "ref_mean": 4.455399377522983,
+      "ref_sd": 0.32432339244093095,
+      "4bit_mean": 4.68981568755494,
+      "4bit_sd": 0.1625525120212674
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "qwen3-0.6b",
+     "format": "q4_0",
+     "mean_diff": -0.04356652759801726,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1999,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.09685003758781055,
+     "task_mean_rate_4bit": 0.053283509989793296,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": -0.041737850807602145,
+      "p": 9.999000099990002e-05
+     },
+     "pooled": {
+      "rate_ref_per100": 9.414225941422593,
+      "rate_4bit_per100": 5.680450889747324,
+      "events_ref": 1710,
+      "events_4bit": 897,
+      "steps_ref": 18164,
+      "steps_4bit": 15791,
+      "ratio": 0.6033901167331602,
+      "diff_per100": -3.733775051675269,
+      "ratio_ci95": [
+       0.5286648755899902,
+       0.6844239280674256
+      ],
+      "diff_ci95_per100": [
+       -4.699498729331042,
+       -2.779545686484861
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       8.77648076091656,
+       9.995487364620939,
+       9.365372766481824,
+       9.558649988199198
+      ],
+      "4bit": [
+       4.899497487437186,
+       6.375502008032129,
+       5.793829947328819,
+       5.651041666666667
+      ],
+      "ref_mean": 9.423997720054631,
+      "ref_sd": 0.505782148332603,
+      "4bit_mean": 5.6799677773662,
+      "4bit_sd": 0.6073722233575066
+     },
+     "p_holm": 0.0014998500149985003,
+     "supported": false
+    },
+    {
+     "model": "qwen3-0.6b",
+     "format": "q4_k_m",
+     "mean_diff": -0.016009262566646316,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 2000,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.09685003758781055,
+     "task_mean_rate_4bit": 0.08084077502116424,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": -0.01617686683637669,
+      "p": 9.999000099990002e-05
+     },
+     "pooled": {
+      "rate_ref_per100": 9.409563638364608,
+      "rate_4bit_per100": 7.979231320124135,
+      "events_ref": 1710,
+      "events_4bit": 1337,
+      "steps_ref": 18173,
+      "steps_4bit": 16756,
+      "ratio": 0.8479916419919058,
+      "diff_per100": -1.4303323182404724,
+      "ratio_ci95": [
+       0.773936918948667,
+       0.9251702207432442
+      ],
+      "diff_ci95_per100": [
+       -2.2400533738990704,
+       -0.6599537859867263
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       8.77648076091656,
+       9.977477477477477,
+       9.344262295081966,
+       9.581263307310149
+      ],
+      "4bit": [
+       7.9387514723203765,
+       7.695939565627951,
+       8.184451955577016,
+       8.105492378417614
+      ],
+      "ref_mean": 9.419870960196537,
+      "ref_sd": 0.5022085013852832,
+      "4bit_mean": 7.981158842985739,
+      "4bit_sd": 0.2159747970815786
+     },
+     "p_holm": 0.0014998500149985003,
+     "supported": false
+    },
+    {
+     "model": "qwen3-0.6b",
+     "format": "iq4_xs",
+     "mean_diff": -0.00544102994514067,
+     "p": 0.0745925407459254,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1995,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.09685003758781055,
+     "task_mean_rate_4bit": 0.09140900764266989,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": -0.0038448622797231215,
+      "p": 0.2576742325767423
+     },
+     "pooled": {
+      "rate_ref_per100": 9.432401125268907,
+      "rate_4bit_per100": 9.614965095986038,
+      "events_ref": 1710,
+      "events_4bit": 1763,
+      "steps_ref": 18129,
+      "steps_4bit": 18336,
+      "ratio": 1.0193549837726954,
+      "diff_per100": 0.18256397071713254,
+      "ratio_ci95": [
+       0.9182366012650302,
+       1.1335858727500954
+      ],
+      "diff_ci95_per100": [
+       -0.7977986868235022,
+       1.2118651883953855
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       8.785977061242155,
+       9.981973862100045,
+       9.344262295081966,
+       9.665871121718377
+      ],
+      "4bit": [
+       8.833151581243184,
+       10.333183250787933,
+       10.68573832562053,
+       8.58397365532382
+      ],
+      "ref_mean": 9.444521085035635,
+      "ref_sd": 0.5104192337516218,
+      "4bit_mean": 9.609011703243867,
+      "4bit_sd": 1.0545815249348403
+     },
+     "p_holm": 0.7501249875012499,
+     "supported": false
+    },
+    {
+     "model": "qwen3-1.7b",
+     "format": "q4_0",
+     "mean_diff": -0.0069157270301920355,
+     "p": 0.06819318068193181,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1904,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.09093331756745002,
+     "task_mean_rate_4bit": 0.08401759053725799,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": -0.0052206028410319155,
+      "p": 0.18758124187581243
+     },
+     "pooled": {
+      "rate_ref_per100": 8.489235686753783,
+      "rate_4bit_per100": 7.726791920616531,
+      "events_ref": 1806,
+      "events_4bit": 1534,
+      "steps_ref": 21274,
+      "steps_4bit": 19853,
+      "ratio": 0.9101869951229019,
+      "diff_per100": -0.7624437661372524,
+      "ratio_ci95": [
+       0.8157546338585044,
+       1.01626794051538
+      ],
+      "diff_ci95_per100": [
+       -1.671251734919629,
+       0.13071251864658268
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       8.821170809943865,
+       8.151692362218679,
+       9.216502649507948,
+       7.8186228774025
+      ],
+      "4bit": [
+       7.4556718649861144,
+       7.313804327015125,
+       8.619975134687111,
+       7.554167479992192
+      ],
+      "ref_mean": 8.501997174768249,
+      "ref_sd": 0.6330096826062352,
+      "4bit_mean": 7.735904701670136,
+      "4bit_sd": 0.5975807106765061
+     },
+     "p_holm": 0.7501249875012499,
+     "supported": false
+    },
+    {
+     "model": "qwen3-1.7b",
+     "format": "q4_k_m",
+     "mean_diff": 0.0026172240882843065,
+     "p": 0.42595740425957407,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1994,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.09093331756745002,
+     "task_mean_rate_4bit": 0.09355054165573432,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.005827637316479527,
+      "p": 0.08969103089691031
+     },
+     "pooled": {
+      "rate_ref_per100": 8.07836822329576,
+      "rate_4bit_per100": 8.863815758926497,
+      "events_ref": 1806,
+      "events_4bit": 1909,
+      "steps_ref": 22356,
+      "steps_4bit": 21537,
+      "ratio": 1.0972284889621307,
+      "diff_per100": 0.7854475356307387,
+      "ratio_ci95": [
+       0.9935741864659344,
+       1.2097979320724166
+      ],
+      "diff_ci95_per100": [
+       -0.053925434728791834,
+       1.6220977293254306
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       8.270676691729323,
+       7.85385009390473,
+       8.736993182633656,
+       7.475468331846566
+      ],
+      "4bit": [
+       8.52727611245578,
+       8.811973807296539,
+       8.7137715476416,
+       9.382894261999278
+      ],
+      "ref_mean": 8.084247075028568,
+      "ref_sd": 0.5429941098630874,
+      "4bit_mean": 8.858978932348299,
+      "4bit_sd": 0.36869531220346585
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "qwen3-1.7b",
+     "format": "iq4_xs",
+     "mean_diff": -0.00011912463770019367,
+     "p": 0.9626037396260374,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1979,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.09093331756745002,
+     "task_mean_rate_4bit": 0.09081419292974983,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.0002372817529100187,
+      "p": 0.926007399260074
+     },
+     "pooled": {
+      "rate_ref_per100": 8.155339805825243,
+      "rate_4bit_per100": 8.008484562809333,
+      "events_ref": 1806,
+      "events_4bit": 1699,
+      "steps_ref": 22145,
+      "steps_4bit": 21215,
+      "ratio": 0.9819927499635253,
+      "diff_per100": -0.14685524301591008,
+      "ratio_ci95": [
+       0.9191440208938506,
+       1.0487173108575953
+      ],
+      "diff_ci95_per100": [
+       -0.6838926354692526,
+       0.38475154635821734
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       8.411393614987574,
+       7.89293067947838,
+       8.856155664666304,
+       7.499552532665115
+      ],
+      "4bit": [
+       8.401880141010576,
+       7.783018867924528,
+       7.553306830502349,
+       8.354730396997827
+      ],
+      "ref_mean": 8.165008122949343,
+      "ref_sd": 0.5930845957069262,
+      "4bit_mean": 8.02323405910882,
+      "4bit_sd": 0.4210295380116215
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "qwen3-4b",
+     "format": "q4_0",
+     "mean_diff": 0.006336348779330463,
+     "p": 0.0197980201979802,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 2002,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.08488191376002827,
+     "task_mean_rate_4bit": 0.09121826253935873,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.006383059984718812,
+      "p": 0.0201979802019798
+     },
+     "pooled": {
+      "rate_ref_per100": 6.158853616265799,
+      "rate_4bit_per100": 7.187147688838783,
+      "events_ref": 1457,
+      "events_4bit": 1530,
+      "steps_ref": 23657,
+      "steps_4bit": 21288,
+      "ratio": 1.1669619277615584,
+      "diff_per100": 1.0282940725729834,
+      "ratio_ci95": [
+       1.0940393329155493,
+       1.2505868786187155
+      ],
+      "diff_ci95_per100": [
+       0.589556753156783,
+       1.5005275008147285
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       6.097967344218594,
+       6.108407450914583,
+       6.050901736052587,
+       6.385563074787437
+      ],
+      "4bit": [
+       6.992875890513686,
+       7.057084795861814,
+       7.10688304420817,
+       7.6061776061776065
+      ],
+      "ref_mean": 6.1607099014933,
+      "ref_sd": 0.15197473207500325,
+      "4bit_mean": 7.190755334190319,
+      "4bit_sd": 0.28085245956832666
+     },
+     "p_holm": 0.25737426257374263,
+     "supported": false
+    },
+    {
+     "model": "qwen3-4b",
+     "format": "q4_k_m",
+     "mean_diff": -0.0005967685432275398,
+     "p": 0.8413158684131586,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 2001,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.08488191376002827,
+     "task_mean_rate_4bit": 0.08428514521680074,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.0001566096551672915,
+      "p": 0.958904109589041
+     },
+     "pooled": {
+      "rate_ref_per100": 6.15963473408303,
+      "rate_4bit_per100": 6.365465520395099,
+      "events_ref": 1457,
+      "events_4bit": 1392,
+      "steps_ref": 23654,
+      "steps_4bit": 21868,
+      "ratio": 1.0334160701401898,
+      "diff_per100": 0.20583078631206814,
+      "ratio_ci95": [
+       0.961109427719284,
+       1.1163844319801801
+      ],
+      "diff_ci95_per100": [
+       -0.24252423889130917,
+       0.7010362065932783
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       6.103051525762881,
+       6.106357993625231,
+       6.050901736052587,
+       6.385563074787437
+      ],
+      "4bit": [
+       6.267230288549899,
+       6.345131120484137,
+       6.541218637992832,
+       6.3032999629217645
+      ],
+      "ref_mean": 6.161468582557034,
+      "ref_sd": 0.15153998210685904,
+      "4bit_mean": 6.3642200024871585,
+      "4bit_sd": 0.12221723585113517
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "qwen3-4b",
+     "format": "iq4_xs",
+     "mean_diff": 0.005300590830971168,
+     "p": 0.027297270272972702,
+     "n_tasks": 501,
+     "n_perm": 10000,
+     "pairs": 1999,
+     "tasks": 501,
+     "task_mean_rate_ref": 0.08488191376002827,
+     "task_mean_rate_4bit": 0.09018250459099943,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.005990615694887529,
+      "p": 0.013398660133986601
+     },
+     "pooled": {
+      "rate_ref_per100": 6.167195767195767,
+      "rate_4bit_per100": 6.864104179794161,
+      "events_ref": 1457,
+      "events_4bit": 1634,
+      "steps_ref": 23625,
+      "steps_4bit": 23805,
+      "ratio": 1.1130024793935283,
+      "diff_per100": 0.6969084125983946,
+      "ratio_ci95": [
+       1.0408228993231712,
+       1.1898261767304277
+      ],
+      "diff_ci95_per100": [
+       0.25572953994539904,
+       1.1534988185217798
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       6.13785007546537,
+       6.083904395788066,
+       6.068289384719405,
+       6.385563074787437
+      ],
+      "4bit": [
+       6.834838929606272,
+       7.074829931972789,
+       6.479690522243714,
+       7.089169798428425
+      ],
+      "ref_mean": 6.1689017326900695,
+      "ref_sd": 0.14748303226748444,
+      "4bit_mean": 6.8696322955628,
+      "4bit_sd": 0.2849373908109983
+     },
+     "p_holm": 0.32756724327567244,
+     "supported": false
+    }
+   ]
+  },
+  "H1-loc": {
+   "family": "H1-loc",
+   "m": 6,
+   "n_supported": 0,
+   "tests": [
+    {
+     "format": "q4_0",
+     "steps": 245339,
+     "clusters": 501,
+     "converged": true,
+     "coefficients": {
+      "intercept": -2.773446256476703,
+      "prec4": 0.6815430617760463,
+      "call": 1.973825111103559,
+      "depth_d2-3": 0.15097629025240367,
+      "depth_d4-6": 0.1632924763606538,
+      "depth_d7+": 0.18032079626043837,
+      "model_lfm2.5-2.6b": -1.207983251784431,
+      "model_qwen3-0.6b": 0.1604815658541721,
+      "model_qwen3-1.7b": -0.09718014865205933,
+      "model_qwen3-4b": -0.28783896654097896,
+      "model_smollm3-3b": 1.2076436990419208,
+      "prec4:call": -0.32420165619876545,
+      "prec4:depth_d2-3": -0.142055309612331,
+      "prec4:depth_d4-6": -0.2539867978373229,
+      "prec4:depth_d7+": -0.3404217855722233
+     },
+     "test": "precision x step type",
+     "estimate": -0.32420165619876545,
+     "se": 0.022183636909867646,
+     "z": -14.614450169555166,
+     "p": 2.2718102812067632e-48,
+     "rate_ratio": 0.7231044091897855,
+     "rr_ci95": [
+      0.692338150734142,
+      0.755237864669536
+     ],
+     "direction_ok": false,
+     "pooled": {
+      "ratio": 0.7231044091897855
+     },
+     "p_holm": 1.3630861687240579e-47,
+     "supported": false
+    },
+    {
+     "format": "q4_0",
+     "steps": 245339,
+     "clusters": 501,
+     "converged": true,
+     "coefficients": {
+      "intercept": -2.773446256476703,
+      "prec4": 0.6815430617760463,
+      "call": 1.973825111103559,
+      "depth_d2-3": 0.15097629025240367,
+      "depth_d4-6": 0.1632924763606538,
+      "depth_d7+": 0.18032079626043837,
+      "model_lfm2.5-2.6b": -1.207983251784431,
+      "model_qwen3-0.6b": 0.1604815658541721,
+      "model_qwen3-1.7b": -0.09718014865205933,
+      "model_qwen3-4b": -0.28783896654097896,
+      "model_smollm3-3b": 1.2076436990419208,
+      "prec4:call": -0.32420165619876545,
+      "prec4:depth_d2-3": -0.142055309612331,
+      "prec4:depth_d4-6": -0.2539867978373229,
+      "prec4:depth_d7+": -0.3404217855722233
+     },
+     "test": "precision x depth",
+     "estimates": [
+      -0.142055309612331,
+      -0.2539867978373229,
+      -0.3404217855722233
+     ],
+     "chi2": 191.48251608981798,
+     "df": 3,
+     "p": 2.9198135722386076e-41,
+     "rate_ratios": [
+      0.8675732700176364,
+      0.7757020429234346,
+      0.7114701716138936
+     ],
+     "direction_ok": false,
+     "pooled": {
+      "ratio": 0.7114701716138936
+     },
+     "p_holm": 1.4599067861193038e-40,
+     "supported": false
+    },
+    {
+     "format": "q4_k_m",
+     "steps": 247523,
+     "clusters": 501,
+     "converged": true,
+     "coefficients": {
+      "intercept": -2.658958959742566,
+      "prec4": 0.2004082180762375,
+      "call": 1.9077819674346839,
+      "depth_d2-3": 0.12899803590743564,
+      "depth_d4-6": 0.1305086299658104,
+      "depth_d7+": 0.12967147768556458,
+      "model_lfm2.5-2.6b": -1.169291572244692,
+      "model_qwen3-0.6b": 0.13629099664359445,
+      "model_qwen3-1.7b": -0.15328752363090128,
+      "model_qwen3-4b": -0.20534775967156638,
+      "model_smollm3-3b": 0.9883532887321835,
+      "prec4:call": -0.16948678874646336,
+      "prec4:depth_d2-3": 0.017723846833658297,
+      "prec4:depth_d4-6": -0.01457081493684543,
+      "prec4:depth_d7+": -0.14960969680421093
+     },
+     "test": "precision x step type",
+     "estimate": -0.16948678874646336,
+     "se": 0.018940251058602888,
+     "z": -8.948497473558062,
+     "p": 3.6035369788673197e-19,
+     "rate_ratio": 0.8440979059981455,
+     "rr_ci95": [
+      0.8133376039004807,
+      0.8760215579527477
+     ],
+     "direction_ok": false,
+     "pooled": {
+      "ratio": 0.8440979059981455
+     },
+     "p_holm": 1.4414147915469279e-18,
+     "supported": false
+    },
+    {
+     "format": "q4_k_m",
+     "steps": 247523,
+     "clusters": 501,
+     "converged": true,
+     "coefficients": {
+      "intercept": -2.658958959742566,
+      "prec4": 0.2004082180762375,
+      "call": 1.9077819674346839,
+      "depth_d2-3": 0.12899803590743564,
+      "depth_d4-6": 0.1305086299658104,
+      "depth_d7+": 0.12967147768556458,
+      "model_lfm2.5-2.6b": -1.169291572244692,
+      "model_qwen3-0.6b": 0.13629099664359445,
+      "model_qwen3-1.7b": -0.15328752363090128,
+      "model_qwen3-4b": -0.20534775967156638,
+      "model_smollm3-3b": 0.9883532887321835,
+      "prec4:call": -0.16948678874646336,
+      "prec4:depth_d2-3": 0.017723846833658297,
+      "prec4:depth_d4-6": -0.01457081493684543,
+      "prec4:depth_d7+": -0.14960969680421093
+     },
+     "test": "precision x depth",
+     "estimates": [
+      0.017723846833658297,
+      -0.01457081493684543,
+      -0.14960969680421093
+     ],
+     "chi2": 31.979666722694112,
+     "df": 3,
+     "p": 5.285360924462136e-07,
+     "rate_ratios": [
+      1.0178818462792836,
+      0.9855348256747769,
+      0.8610439790660844
+     ],
+     "direction_ok": false,
+     "pooled": {
+      "ratio": 0.8610439790660844
+     },
+     "p_holm": 1.5856082773386408e-06,
+     "supported": false
+    },
+    {
+     "format": "iq4_xs",
+     "steps": 252467,
+     "clusters": 501,
+     "converged": true,
+     "coefficients": {
+      "intercept": -2.7341553423570675,
+      "prec4": 0.09798097168757143,
+      "call": 1.9568507211646256,
+      "depth_d2-3": 0.14204236597797937,
+      "depth_d4-6": 0.15262452694873999,
+      "depth_d7+": 0.16685396017721846,
+      "model_lfm2.5-2.6b": -1.1789803648393875,
+      "model_qwen3-0.6b": 0.14411905295374278,
+      "model_qwen3-1.7b": -0.12250536035115568,
+      "model_qwen3-4b": -0.26565813869997495,
+      "model_smollm3-3b": 1.1360040828349904,
+      "prec4:call": 0.0045356303858119715,
+      "prec4:depth_d2-3": 0.01431452969913514,
+      "prec4:depth_d4-6": -0.034006443791600866,
+      "prec4:depth_d7+": -0.06603286354423424
+     },
+     "test": "precision x step type",
+     "estimate": 0.0045356303858119715,
+     "se": 0.01593377755767648,
+     "z": 0.28465505868862984,
+     "p": 0.7759084246802661,
+     "rate_ratio": 1.0045459319260814,
+     "rr_ci95": [
+      0.9736591358686193,
+      1.0364125310127055
+     ],
+     "direction_ok": true,
+     "pooled": {
+      "ratio": 1.0045459319260814
+     },
+     "p_holm": 0.7759084246802661,
+     "supported": false
+    },
+    {
+     "format": "iq4_xs",
+     "steps": 252467,
+     "clusters": 501,
+     "converged": true,
+     "coefficients": {
+      "intercept": -2.7341553423570675,
+      "prec4": 0.09798097168757143,
+      "call": 1.9568507211646256,
+      "depth_d2-3": 0.14204236597797937,
+      "depth_d4-6": 0.15262452694873999,
+      "depth_d7+": 0.16685396017721846,
+      "model_lfm2.5-2.6b": -1.1789803648393875,
+      "model_qwen3-0.6b": 0.14411905295374278,
+      "model_qwen3-1.7b": -0.12250536035115568,
+      "model_qwen3-4b": -0.26565813869997495,
+      "model_smollm3-3b": 1.1360040828349904,
+      "prec4:call": 0.0045356303858119715,
+      "prec4:depth_d2-3": 0.01431452969913514,
+      "prec4:depth_d4-6": -0.034006443791600866,
+      "prec4:depth_d7+": -0.06603286354423424
+     },
+     "test": "precision x depth",
+     "estimates": [
+      0.01431452969913514,
+      -0.034006443791600866,
+      -0.06603286354423424
+     ],
+     "chi2": 21.460525552130797,
+     "df": 3,
+     "p": 8.445932901175317e-05,
+     "rate_ratios": [
+      1.0144174731887738,
+      0.9665652762722305,
+      0.9361001002190622
+     ],
+     "direction_ok": false,
+     "pooled": {
+      "ratio": 0.9361001002190622
+     },
+     "p_holm": 0.00016891865802350634,
+     "supported": false
+    }
+   ]
+  },
+  "H1-sens": {
+   "family": "H1-sens",
+   "m": 18,
+   "n_supported": 10,
+   "tests": [
+    {
+     "model": "lfm2.5-1.2b-instruct",
+     "format": "q4_0",
+     "mean_diff": 0.048922412404417054,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.3091648932530318,
+     "task_mean_rate_4bit": 0.3580873056574488,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.04931982068082164,
+      "p": 9.999000099990002e-05
+     },
+     "pooled": {
+      "rate_ref_per100": 30.707661034176088,
+      "rate_4bit_per100": 35.32447426138563,
+      "events_ref": 2417,
+      "events_4bit": 2738,
+      "steps_ref": 7871,
+      "steps_4bit": 7751,
+      "ratio": 1.1503472772501708,
+      "diff_per100": 4.616813227209543,
+      "ratio_ci95": [
+       1.1043673599151762,
+       1.197483937535159
+      ],
+      "diff_ci95_per100": [
+       3.296388017389001,
+       5.9274995233148156
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       32.87820862916439,
+       29.130009775171064,
+       30.139624458353396,
+       30.93375065206051
+      ],
+      "4bit": [
+       38.469886055344546,
+       32.814070351758794,
+       34.52266152362584,
+       35.79175704989154
+      ],
+      "ref_mean": 30.77039837868734,
+      "ref_sd": 1.5872721386445614,
+      "4bit_mean": 35.39959374515518,
+      "4bit_sd": 2.3828853844688678
+     },
+     "p_holm": 0.0017998200179982003,
+     "supported": true
+    },
+    {
+     "model": "lfm2.5-1.2b-instruct",
+     "format": "q4_k_m",
+     "mean_diff": 0.027752882700589745,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.3091648932530318,
+     "task_mean_rate_4bit": 0.33691777595362155,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.024894071981147167,
+      "p": 0.00019998000199980003
+     },
+     "pooled": {
+      "rate_ref_per100": 30.707661034176088,
+      "rate_4bit_per100": 32.99782372143634,
+      "events_ref": 2417,
+      "events_4bit": 2426,
+      "steps_ref": 7871,
+      "steps_4bit": 7352,
+      "ratio": 1.0745795221821492,
+      "diff_per100": 2.2901626872602554,
+      "ratio_ci95": [
+       1.0313031630525504,
+       1.122820614766824
+      ],
+      "diff_ci95_per100": [
+       0.9848172603221788,
+       3.67044364075754
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       32.87820862916439,
+       29.130009775171064,
+       30.139624458353396,
+       30.93375065206051
+      ],
+      "4bit": [
+       35.74739281575898,
+       30.662557781201848,
+       31.217208814270723,
+       34.79977439368302
+      ],
+      "ref_mean": 30.77039837868734,
+      "ref_sd": 1.5872721386445614,
+      "4bit_mean": 33.10673345122864,
+      "4bit_sd": 2.5419000486467116
+     },
+     "p_holm": 0.0017998200179982003,
+     "supported": true
+    },
+    {
+     "model": "lfm2.5-1.2b-instruct",
+     "format": "iq4_xs",
+     "mean_diff": 0.014386600521081944,
+     "p": 0.019598040195980403,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.3091648932530318,
+     "task_mean_rate_4bit": 0.32355149377411374,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.012253698966604805,
+      "p": 0.04179582041795821
+     },
+     "pooled": {
+      "rate_ref_per100": 30.707661034176088,
+      "rate_4bit_per100": 31.585111920874542,
+      "events_ref": 2417,
+      "events_4bit": 2427,
+      "steps_ref": 7871,
+      "steps_4bit": 7684,
+      "ratio": 1.0285743315233908,
+      "diff_per100": 0.8774508866984554,
+      "ratio_ci95": [
+       0.990291910083562,
+       1.0696515980910475
+      ],
+      "diff_ci95_per100": [
+       -0.3093977214879179,
+       2.082889039537946
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       32.87820862916439,
+       29.130009775171064,
+       30.139624458353396,
+       30.93375065206051
+      ],
+      "4bit": [
+       33.57461024498886,
+       30.594059405940595,
+       28.943415122684026,
+       33.56493853554249
+      ],
+      "ref_mean": 30.77039837868734,
+      "ref_sd": 1.5872721386445614,
+      "4bit_mean": 31.669255827288993,
+      "4bit_sd": 2.295665718898799
+     },
+     "p_holm": 0.15678432156784322,
+     "supported": false
+    },
+    {
+     "model": "lfm2.5-2.6b",
+     "format": "q4_0",
+     "mean_diff": 0.009611389574485055,
+     "p": 0.04129587041295871,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.11176690151647183,
+     "task_mean_rate_4bit": 0.12137829109095687,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.011210363505847025,
+      "p": 0.012998700129987
+     },
+     "pooled": {
+      "rate_ref_per100": 11.813643926788686,
+      "rate_4bit_per100": 13.787878787878787,
+      "events_ref": 1207,
+      "events_4bit": 1547,
+      "steps_ref": 10217,
+      "steps_4bit": 11220,
+      "ratio": 1.1671148100725566,
+      "diff_per100": 1.9742348610901017,
+      "ratio_ci95": [
+       1.0922185886430515,
+       1.2467044128483742
+      ],
+      "diff_ci95_per100": [
+       1.094709899982539,
+       2.87937060878825
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       11.987504880905895,
+       12.28206121658272,
+       11.591901548233427,
+       11.384976525821596
+      ],
+      "4bit": [
+       14.340678558936691,
+       13.102951763858892,
+       13.769425370437297,
+       13.920454545454545
+      ],
+      "ref_mean": 11.811611042885911,
+      "ref_sd": 0.4010616250968213,
+      "4bit_mean": 13.783377559671857,
+      "4bit_sd": 0.5139871694264342
+     },
+     "p_holm": 0.289071092890711,
+     "supported": false
+    },
+    {
+     "model": "lfm2.5-2.6b",
+     "format": "q4_k_m",
+     "mean_diff": -0.0011325400121437962,
+     "p": 0.7974202579742026,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.11176690151647183,
+     "task_mean_rate_4bit": 0.11063436150432801,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": -0.0002810999625913713,
+      "p": 0.9464053594640536
+     },
+     "pooled": {
+      "rate_ref_per100": 11.813643926788686,
+      "rate_4bit_per100": 11.898608349900597,
+      "events_ref": 1207,
+      "events_4bit": 1197,
+      "steps_ref": 10217,
+      "steps_4bit": 10060,
+      "ratio": 1.0071920589141208,
+      "diff_per100": 0.08496442311191066,
+      "ratio_ci95": [
+       0.9448993808580505,
+       1.0734176368356445
+      ],
+      "diff_ci95_per100": [
+       -0.6634874806699964,
+       0.8363753214398147
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       11.987504880905895,
+       12.28206121658272,
+       11.591901548233427,
+       11.384976525821596
+      ],
+      "4bit": [
+       11.87122736418511,
+       12.461059190031152,
+       11.86037286790956,
+       11.383748994368464
+      ],
+      "ref_mean": 11.811611042885911,
+      "ref_sd": 0.4010616250968213,
+      "4bit_mean": 11.894102104123572,
+      "4bit_sd": 0.4410448008235134
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "lfm2.5-2.6b",
+     "format": "iq4_xs",
+     "mean_diff": 0.0006730307742928804,
+     "p": 0.8618138186181382,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.11176690151647183,
+     "task_mean_rate_4bit": 0.1124399322907647,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.0019093529259383612,
+      "p": 0.5971402859714029
+     },
+     "pooled": {
+      "rate_ref_per100": 11.813643926788686,
+      "rate_4bit_per100": 12.251623533973053,
+      "events_ref": 1207,
+      "events_4bit": 1264,
+      "steps_ref": 10217,
+      "steps_4bit": 10317,
+      "ratio": 1.0370740484391274,
+      "diff_per100": 0.4379796071843675,
+      "ratio_ci95": [
+       0.9807778635093736,
+       1.0964901017517863
+      ],
+      "diff_ci95_per100": [
+       -0.2279987387275326,
+       1.099465328434302
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       11.987504880905895,
+       12.28206121658272,
+       11.591901548233427,
+       11.384976525821596
+      ],
+      "4bit": [
+       11.948955916473318,
+       11.637931034482758,
+       13.016608729239088,
+       12.393822393822393
+      ],
+      "ref_mean": 11.811611042885911,
+      "ref_sd": 0.4010616250968213,
+      "4bit_mean": 12.24932951850439,
+      "4bit_sd": 0.5982273774255616
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "qwen3-0.6b",
+     "format": "q4_0",
+     "mean_diff": 0.1602955369330769,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.3259244625702176,
+     "task_mean_rate_4bit": 0.48621999950329453,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.13701488941022305,
+      "p": 9.999000099990002e-05
+     },
+     "pooled": {
+      "rate_ref_per100": 32.1247892074199,
+      "rate_4bit_per100": 43.8605529795638,
+      "events_ref": 2286,
+      "events_4bit": 2554,
+      "steps_ref": 7116,
+      "steps_4bit": 5823,
+      "ratio": 1.3653180008861592,
+      "diff_per100": 11.735763772143898,
+      "ratio_ci95": [
+       1.269103779087197,
+       1.4775399137307004
+      ],
+      "diff_ci95_per100": [
+       8.98978217301756,
+       14.731860605925737
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       32.532875929102346,
+       30.903954802259886,
+       33.7823275862069,
+       31.188971855255602
+      ],
+      "4bit": [
+       44.91404011461318,
+       43.615591397849464,
+       41.60535117056856,
+       45.42936288088643
+      ],
+      "ref_mean": 32.102032543206185,
+      "ref_sd": 1.3264096335515425,
+      "4bit_mean": 43.89108639097941,
+      "4bit_sd": 1.704231192176613
+     },
+     "p_holm": 0.0017998200179982003,
+     "supported": true
+    },
+    {
+     "model": "qwen3-0.6b",
+     "format": "q4_k_m",
+     "mean_diff": 0.031091165898535857,
+     "p": 0.000999900009999,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.3259244625702176,
+     "task_mean_rate_4bit": 0.35701562846875345,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.025499802453046488,
+      "p": 0.008599140085991401
+     },
+     "pooled": {
+      "rate_ref_per100": 32.1247892074199,
+      "rate_4bit_per100": 33.78684807256236,
+      "events_ref": 2286,
+      "events_4bit": 2235,
+      "steps_ref": 7116,
+      "steps_4bit": 6615,
+      "ratio": 1.0517375804214948,
+      "diff_per100": 1.6620588651424573,
+      "ratio_ci95": [
+       0.9913098666031755,
+       1.11730151755505
+      ],
+      "diff_ci95_per100": [
+       -0.2876605076307059,
+       3.640865529279924
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       32.532875929102346,
+       30.903954802259886,
+       33.7823275862069,
+       31.188971855255602
+      ],
+      "4bit": [
+       35.9211337030191,
+       32.02614379084967,
+       32.200357781753134,
+       35.11029411764706
+      ],
+      "ref_mean": 32.102032543206185,
+      "ref_sd": 1.3264096335515425,
+      "4bit_mean": 33.81448234831724,
+      "4bit_sd": 1.9933774508199065
+     },
+     "p_holm": 0.00999900009999,
+     "supported": true
+    },
+    {
+     "model": "qwen3-0.6b",
+     "format": "iq4_xs",
+     "mean_diff": 0.009634276491717378,
+     "p": 0.262973702629737,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.3259244625702176,
+     "task_mean_rate_4bit": 0.33555873906193495,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.011969682130008059,
+      "p": 0.23557644235576441
+     },
+     "pooled": {
+      "rate_ref_per100": 32.1247892074199,
+      "rate_4bit_per100": 34.71919302071974,
+      "events_ref": 2286,
+      "events_4bit": 2547,
+      "steps_ref": 7116,
+      "steps_4bit": 7336,
+      "ratio": 1.0807601816948453,
+      "diff_per100": 2.5944038132998393,
+      "ratio_ci95": [
+       1.0037590355691481,
+       1.163591985606913
+      ],
+      "diff_ci95_per100": [
+       0.12520275053218347,
+       5.130636989171776
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       32.532875929102346,
+       30.903954802259886,
+       33.7823275862069,
+       31.188971855255602
+      ],
+      "4bit": [
+       33.198614318706696,
+       34.90073145245559,
+       37.15025906735751,
+       33.35227272727273
+      ],
+      "ref_mean": 32.102032543206185,
+      "ref_sd": 1.3264096335515425,
+      "4bit_mean": 34.650469391448134,
+      "4bit_sd": 1.8352817453172328
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "qwen3-1.7b",
+     "format": "q4_0",
+     "mean_diff": 0.05927647670958829,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.2663247336965652,
+     "task_mean_rate_4bit": 0.3256012104061534,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.05999628494430098,
+      "p": 9.999000099990002e-05
+     },
+     "pooled": {
+      "rate_ref_per100": 26.952922917744438,
+      "rate_4bit_per100": 32.43318875052469,
+      "events_ref": 2084,
+      "events_4bit": 2318,
+      "steps_ref": 7732,
+      "steps_4bit": 7147,
+      "ratio": 1.2033273292661082,
+      "diff_per100": 5.4802658327802565,
+      "ratio_ci95": [
+       1.0942320378189467,
+       1.3249272799619312
+      ],
+      "diff_ci95_per100": [
+       2.681167243947267,
+       8.280509529011345
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       27.31578947368421,
+       27.029752899647,
+       28.179937952430198,
+       25.27415143603133
+      ],
+      "4bit": [
+       31.64630599185573,
+       31.215772179627603,
+       33.863013698630134,
+       32.976927405740014
+      ],
+      "ref_mean": 26.949907940448185,
+      "ref_sd": 1.2194777852759304,
+      "4bit_mean": 32.42550481896337,
+      "4bit_sd": 1.2167035408798155
+     },
+     "p_holm": 0.0017998200179982003,
+     "supported": true
+    },
+    {
+     "model": "qwen3-1.7b",
+     "format": "q4_k_m",
+     "mean_diff": 0.030581856186595462,
+     "p": 0.0034996500349965005,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.2663247336965652,
+     "task_mean_rate_4bit": 0.2969065898831606,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.031224085333268103,
+      "p": 0.0047995200479952005
+     },
+     "pooled": {
+      "rate_ref_per100": 26.952922917744438,
+      "rate_4bit_per100": 30.555205841621554,
+      "events_ref": 2084,
+      "events_4bit": 2427,
+      "steps_ref": 7732,
+      "steps_4bit": 7943,
+      "ratio": 1.1336509192294522,
+      "diff_per100": 3.602282923877115,
+      "ratio_ci95": [
+       1.0371723915557554,
+       1.239831603446736
+      ],
+      "diff_ci95_per100": [
+       1.0602837888587753,
+       6.137678874991337
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       27.31578947368421,
+       27.029752899647,
+       28.179937952430198,
+       25.27415143603133
+      ],
+      "4bit": [
+       29.96941896024465,
+       30.44822256568779,
+       30.342741935483872,
+       31.420233463035018
+      ],
+      "ref_mean": 26.949907940448185,
+      "ref_sd": 1.2194777852759304,
+      "4bit_mean": 30.545154231112832,
+      "4bit_sd": 0.6184931283496043
+     },
+     "p_holm": 0.0314968503149685,
+     "supported": true
+    },
+    {
+     "model": "qwen3-1.7b",
+     "format": "iq4_xs",
+     "mean_diff": 0.015384356744184882,
+     "p": 0.059494050594940506,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.2663247336965652,
+     "task_mean_rate_4bit": 0.28170909044075004,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.016731060211023708,
+      "p": 0.05549445055494451
+     },
+     "pooled": {
+      "rate_ref_per100": 26.952922917744438,
+      "rate_4bit_per100": 28.277499340543393,
+      "events_ref": 2084,
+      "events_4bit": 2144,
+      "steps_ref": 7732,
+      "steps_4bit": 7582,
+      "ratio": 1.0491440734216964,
+      "diff_per100": 1.3245764227989565,
+      "ratio_ci95": [
+       0.9614606747085321,
+       1.1351577471580951
+      ],
+      "diff_ci95_per100": [
+       -1.0784223299313427,
+       3.5899774245761984
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       27.31578947368421,
+       27.029752899647,
+       28.179937952430198,
+       25.27415143603133
+      ],
+      "4bit": [
+       26.483279395900755,
+       29.869451697127936,
+       28.689370485036118,
+       28.0
+      ],
+      "ref_mean": 26.949907940448185,
+      "ref_sd": 1.2194777852759304,
+      "4bit_mean": 28.260525394516204,
+      "4bit_sd": 1.414099098328607
+     },
+     "p_holm": 0.35696430356964304,
+     "supported": false
+    },
+    {
+     "model": "qwen3-4b",
+     "format": "q4_0",
+     "mean_diff": 0.031205461074163124,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.19987168565681487,
+     "task_mean_rate_4bit": 0.23107714673097798,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.031416176496729085,
+      "p": 9.999000099990002e-05
+     },
+     "pooled": {
+      "rate_ref_per100": 18.765273311897108,
+      "rate_4bit_per100": 21.97156138911676,
+      "events_ref": 1459,
+      "events_4bit": 1607,
+      "steps_ref": 7775,
+      "steps_4bit": 7314,
+      "ratio": 1.1708628498998137,
+      "diff_per100": 3.2062880772196545,
+      "ratio_ci95": [
+       1.1013161466274863,
+       1.2492845337325764
+      ],
+      "diff_ci95_per100": [
+       1.9606409122938844,
+       4.517529986637652
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       18.78538342768914,
+       18.942505133470227,
+       18.649350649350648,
+       18.68300153139357
+      ],
+      "4bit": [
+       22.100054975261134,
+       21.646673936750272,
+       21.88183807439825,
+       22.25859247135843
+      ],
+      "ref_mean": 18.765060185475896,
+      "ref_sd": 0.1316840451015136,
+      "4bit_mean": 21.97178986444202,
+      "4bit_sd": 0.2661449260324362
+     },
+     "p_holm": 0.0017998200179982003,
+     "supported": true
+    },
+    {
+     "model": "qwen3-4b",
+     "format": "q4_k_m",
+     "mean_diff": 0.04122431660129759,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.19987168565681487,
+     "task_mean_rate_4bit": 0.24109600225811245,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.040795095439369024,
+      "p": 9.999000099990002e-05
+     },
+     "pooled": {
+      "rate_ref_per100": 18.765273311897108,
+      "rate_4bit_per100": 22.611419621244483,
+      "events_ref": 1459,
+      "events_4bit": 1588,
+      "steps_ref": 7775,
+      "steps_4bit": 7023,
+      "ratio": 1.2049608468483608,
+      "diff_per100": 3.846146309347376,
+      "ratio_ci95": [
+       1.127209579229603,
+       1.2923007162428868
+      ],
+      "diff_ci95_per100": [
+       2.4352922134140127,
+       5.318738856671745
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       18.78538342768914,
+       18.942505133470227,
+       18.649350649350648,
+       18.68300153139357
+      ],
+      "4bit": [
+       22.586206896551722,
+       22.50566893424036,
+       23.714285714285715,
+       21.650650084793668
+      ],
+      "ref_mean": 18.765060185475896,
+      "ref_sd": 0.1316840451015136,
+      "4bit_mean": 22.614202907467867,
+      "4bit_sd": 0.8467938796644312
+     },
+     "p_holm": 0.0017998200179982003,
+     "supported": true
+    },
+    {
+     "model": "qwen3-4b",
+     "format": "iq4_xs",
+     "mean_diff": 0.005256788907658402,
+     "p": 0.3548645135486451,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.19987168565681487,
+     "task_mean_rate_4bit": 0.20512847456447328,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.006375047294752126,
+      "p": 0.2696730326967303
+     },
+     "pooled": {
+      "rate_ref_per100": 18.765273311897108,
+      "rate_4bit_per100": 20.099923136049195,
+      "events_ref": 1459,
+      "events_4bit": 1569,
+      "steps_ref": 7775,
+      "steps_4bit": 7806,
+      "ratio": 1.071123388504335,
+      "diff_per100": 1.3346498241520872,
+      "ratio_ci95": [
+       1.0115010760962042,
+       1.1362696588149754
+      ],
+      "diff_ci95_per100": [
+       0.22672327933498682,
+       2.454608654047562
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       18.78538342768914,
+       18.942505133470227,
+       18.649350649350648,
+       18.68300153139357
+      ],
+      "4bit": [
+       20.093457943925234,
+       20.357142857142858,
+       19.949238578680202,
+       20.0
+      ],
+      "ref_mean": 18.765060185475896,
+      "ref_sd": 0.1316840451015136,
+      "4bit_mean": 20.099959844937075,
+      "4bit_sd": 0.18156197030759394
+     },
+     "p_holm": 1.0,
+     "supported": false
+    },
+    {
+     "model": "smollm3-3b",
+     "format": "q4_0",
+     "mean_diff": 0.14723104673104676,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.6585531794594295,
+     "task_mean_rate_4bit": 0.8057842261904762,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.1606566763844456,
+      "p": 9.999000099990002e-05
+     },
+     "pooled": {
+      "rate_ref_per100": 64.51758340847611,
+      "rate_4bit_per100": 81.9935691318328,
+      "events_ref": 2862,
+      "events_4bit": 3060,
+      "steps_ref": 4436,
+      "steps_4bit": 3732,
+      "ratio": 1.2708716724975901,
+      "diff_per100": 17.47598572335669,
+      "ratio_ci95": [
+       1.2278538064317386,
+       1.3181550299492197
+      ],
+      "diff_ci95_per100": [
+       15.15336498915436,
+       19.844904692612396
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       66.82113067655236,
+       64.33628318584071,
+       59.894459102902374,
+       67.24770642201835
+      ],
+      "4bit": [
+       82.20793140407288,
+       81.9935691318328,
+       81.13612004287245,
+       82.63665594855306
+      ],
+      "ref_mean": 64.57489484682844,
+      "ref_sd": 3.374063395817411,
+      "4bit_mean": 81.9935691318328,
+      "4bit_sd": 0.6310654423957045
+     },
+     "p_holm": 0.0017998200179982003,
+     "supported": true
+    },
+    {
+     "model": "smollm3-3b",
+     "format": "q4_k_m",
+     "mean_diff": 0.013315777972027971,
+     "p": 0.062993700629937,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.6585531794594295,
+     "task_mean_rate_4bit": 0.6718689574314574,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.012559948131824953,
+      "p": 0.11488851114888511
+     },
+     "pooled": {
+      "rate_ref_per100": 64.51758340847611,
+      "rate_4bit_per100": 65.83736466252016,
+      "events_ref": 2862,
+      "events_4bit": 2858,
+      "steps_ref": 4436,
+      "steps_4bit": 4341,
+      "ratio": 1.020456148298181,
+      "diff_per100": 1.3197812540440501,
+      "ratio_ci95": [
+       0.9913689363508835,
+       1.0501993941908143
+      ],
+      "diff_ci95_per100": [
+       -0.5658293833827177,
+       3.1814021015675404
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       66.82113067655236,
+       64.33628318584071,
+       59.894459102902374,
+       67.24770642201835
+      ],
+      "4bit": [
+       66.26506024096386,
+       64.98625114573785,
+       63.392857142857146,
+       68.88677450047574
+      ],
+      "ref_mean": 64.57489484682844,
+      "ref_sd": 3.374063395817411,
+      "4bit_mean": 65.88273575750866,
+      "4bit_sd": 2.3218958456928616
+     },
+     "p_holm": 0.35696430356964304,
+     "supported": false
+    },
+    {
+     "model": "smollm3-3b",
+     "format": "iq4_xs",
+     "mean_diff": 0.052560411810411815,
+     "p": 9.999000099990002e-05,
+     "n_tasks": 200,
+     "n_perm": 10000,
+     "pairs": 800,
+     "tasks": 200,
+     "task_mean_rate_ref": 0.6585531794594295,
+     "task_mean_rate_4bit": 0.7111135912698413,
+     "sensitivity_task_pooled_rate": {
+      "mean_diff": 0.05969142935028687,
+      "p": 9.999000099990002e-05
+     },
+     "pooled": {
+      "rate_ref_per100": 64.51758340847611,
+      "rate_4bit_per100": 70.8740234375,
+      "events_ref": 2862,
+      "events_4bit": 2903,
+      "steps_ref": 4436,
+      "steps_4bit": 4096,
+      "ratio": 1.0985225994715233,
+      "diff_per100": 6.356440029023891,
+      "ratio_ci95": [
+       1.0700694920469611,
+       1.128765365254606
+      ],
+      "diff_ci95_per100": [
+       4.607641020822358,
+       8.129844191494474
+      ]
+     },
+     "per_seed_per100": {
+      "ref": [
+       66.82113067655236,
+       64.33628318584071,
+       59.894459102902374,
+       67.24770642201835
+      ],
+      "4bit": [
+       72.20039292730844,
+       71.66666666666667,
+       68.7015503875969,
+       70.9551656920078
+      ],
+      "ref_mean": 64.57489484682844,
+      "ref_sd": 3.374063395817411,
+      "4bit_mean": 70.88094391839496,
+      "4bit_sd": 1.5398669810557348
+     },
+     "p_holm": 0.0017998200179982003,
+     "supported": true
+    }
+   ]
+  }
+ },
+ "label": "development data (seeds 1-4), check of the test code"
+}
