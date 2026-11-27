@@ -60,7 +60,14 @@ counts were read from the C3 directories.
 
 ## Holdout run
 
-_Filled in after the run._
+Slurm 172344 on 2026-11-27, code `ea72e4c` deployed with `git archive` (`analysis/rq2_tests.py` SHA-256
+`cf9fa966…`, the file of the development check). Six run directories (C1 Q4_0 cells and C3 of the three core
+models, prereg hashes), all nine configurations present, 0 relabel differences, 900 clusters and 3,600 pairs per
+rate contrast. Results: `docs/m3_rq2_holdout.md`, `results/m3/rq2_holdout.json`.
+
+Checked after the run: McNemar for R1 vs Q4_0 shows 0 discordant greedy pairs. The pairing is not degenerate
+(for Qwen3-0.6B the R1 and Q4_0 greedy episodes are distinct runs, with 1 vs 117 format failures and different
+step counts in 34 of 300); greedy success is rare in both (1.8%), and the same tasks succeed.
 
 ## Status of the results
 
