@@ -81,6 +81,12 @@ code, 172339 (`analysis/h1_tests.py` SHA-256 `719781e6…`, identical on the lap
   2026-11-27, before the H1 run, as §5 requires. Five of the six models have fewer than 120 included multi-turn
   tasks (the secondary success analysis is affected; the step-level H1 tests use every task, decision 11).
 
+## Holdout run
+
+Slurm 172340 on 2026-11-27, code `d88f48d` deployed with `git archive` (`analysis/h1_tests.py` SHA-256 `719781e6…`,
+the same file as the final development check). 14 run directories (the prereg hashes of C1 and C2), 0 relabel
+differences. Results: `docs/m3_h1_holdout.md`, `results/m3/h1_holdout.json`.
+
 ## Status of the results
 
 Whether H1 results from this code count as confirmatory (registered tests, code written after registration and
