@@ -58,7 +58,11 @@ seen, each follows the registration's wording where it has one, and the alternat
 
 ## Holdout run
 
-_Filled in after the run._
+Slurm 172361 on 2026-11-27, code `b437791` deployed with `git archive` (`analysis/rq3_tests.py` SHA-256
+`bf7ac209…`, the file of the development check). Nine run directories (C1 BF16 and Q4_0, C3, three core models,
+prereg hashes), 0 relabel differences, 900 clusters and 3,600 trials per repair, no bootstrap replicate with a
+gap ≤ 0 in the pooled tests. Results: `docs/m3_rq3_holdout.md`, `results/m3/rq3_holdout.json`. Per-model
+estimates for LFM2.5-1.2B rest on a 0.2-point success gap and are not interpretable.
 
 ## Status of the results
 
