@@ -44,6 +44,25 @@ Estimates:
   An exclusive 32-core node will be faster, but by how much is unknown (prefill should scale with cores,
   decode much less). Even at 4× it is about 45 node-days. **Not feasible as registered** (§5).
 
+### Two cluster accounts (decided 2026-11-27)
+
+The C4 jobs are split between Ekant's and Vritika's accounts. Node limits are per user (`gpu2nodes`: 2 nodes;
+`cpu200`: 200 cores, which is 3 exclusive 56-core `cpuqs` nodes), so two accounts double what can run at once.
+Both accounts are in `cmpe295-bertin`, and the code, venv and `runs/` are group-readable and writable.
+
+- **Each person submits their own jobs from their own login.** No one runs jobs under the other's account.
+- **Same code for both.** Both deploy the same commit with `git archive` and check the driver's SHA-256 before
+  submitting. Both write to `/scratch/cmpe295-bertin/runs/c4_*`, and each run logs the user, job id and node.
+- **The split is by model, so each model's contrasts stay on one node.**
+  - CUDA, 6 jobs on 4 nodes at once. Ekant: LFM2.5-2.6B, Qwen3-0.6B, LFM2.5-1.2B. Vritika: SmolLM3-3B,
+    Qwen3-4B, Qwen3-1.7B. The longest single job (LFM2.5-2.6B, about 9 h) sets the wall time, so about 9 h
+    instead of 13 h.
+  - CPU (option C), 3 jobs, one per core model. Ekant: Qwen3-1.7B and Qwen3-0.6B. Vritika: LFM2.5-1.2B. Three
+    nodes already cover this, so the second account mostly frees capacity for reruns. Splitting one model's
+    repetitions across two nodes would be faster, but node would then enter the contrast, so it isn't planned.
+- **The analysis pools both accounts' run directories.** It checks that every block ran the same code hash
+  and cost-set hash.
+
 ## 3. Design choices to fix before the runs
 
 1. **Cost set.** 20 tasks drawn from the BFCL holdout with seed 295, stratified 7 / 7 / 6 over
@@ -137,9 +156,9 @@ assumed 4× with a measurement before the scope is filed.
 | When | What |
 |---|---|
 | Dec 5–8 | Driver, profiler additions, analysis code, unit tests; draw the cost set |
-| Dec 8 | Pilot: 1 repetition of Qwen3-0.6B Q4_0 and R1 on CUDA, and on an exclusive CPU node (measures the CPU speedup and checks every metric) |
+| Dec 8 | Pilot (Ekant's account, plus one short CUDA job from Vritika's to check the shared paths): 1 repetition of Qwen3-0.6B Q4_0 and R1 on CUDA, and on an exclusive CPU node (measures the CPU speedup and checks every metric) |
 | Dec 9 | Confirm option C against the pilot speed and fix the RQ4 claim list; commit this plan; file the OSF update (claims, plus any deviation) |
-| Dec 10–11 | CUDA runs (about 13 h on 2 nodes) |
+| Dec 10–11 | CUDA runs (about 9 h on 4 nodes, two accounts) |
 | Dec 10–20 | CPU runs (option C: about 3 days on 3 nodes) |
 | After the runs | `analysis/rq4_tests.py` on the C4 data, then the H4 results doc |
 
