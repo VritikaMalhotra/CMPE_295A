@@ -99,7 +99,12 @@ Claims 4–5 depend on the CPU scope (§5). Reported without tests:
 Open point: whether claim 1 is "within ±5%" (two-sided TOST, as registered) or "at most +5%" (one-sided, the
 literal H4 wording). I'd recommend two-sided, since it's what the registration's analysis section says.
 
-## 5. CPU scope: needs a decision (deviation if reduced)
+## 5. CPU scope: option C chosen (deviation, to be filed on OSF before the runs)
+
+**Decision 2026-11-27 (Ekant): option C.** The CPU arm runs the 21 claim configurations below; CUDA keeps the
+full registered scope (all 51). This narrows C4 and is a deviation: it goes into the Dec 9 OSF update with the
+RQ4 claim list, before any C4 job. The Dec 8 pilot measures the real CPU speed. If option C still does not fit
+in about 3 days on 3 nodes, the repetitions stay at 10 and the plan is revisited before filing, not after.
 
 The registered CPU arm (all 51 configurations) cannot finish in any reasonable time. Options:
 
@@ -110,7 +115,7 @@ The registered CPU arm (all 51 configurations) cannot finish in any reasonable t
 | C. Claims-only (recommended) | 21 (3 core models × BF16, Q4_0, R1, Q8_0, R2c, QAD-KL, QAD-KL+CE) | about 9 node-days, about 3 days wall on 3 nodes | every H4 statement and both CPU claims |
 
 Any reduction is a deviation and needs an OSF update before the runs. A 1-day pilot (below) replaces the
-assumed 4× with a measurement before anyone commits to an option.
+assumed 4× with a measurement before the scope is filed.
 
 ## 6. Code still to write
 
@@ -133,14 +138,14 @@ assumed 4× with a measurement before anyone commits to an option.
 |---|---|
 | Dec 5–8 | Driver, profiler additions, analysis code, unit tests; draw the cost set |
 | Dec 8 | Pilot: 1 repetition of Qwen3-0.6B Q4_0 and R1 on CUDA, and on an exclusive CPU node (measures the CPU speedup and checks every metric) |
-| Dec 9 | Fix the CPU option and the RQ4 claim list; commit this plan; file the OSF update (claims, plus any deviation) |
+| Dec 9 | Confirm option C against the pilot speed and fix the RQ4 claim list; commit this plan; file the OSF update (claims, plus any deviation) |
 | Dec 10–11 | CUDA runs (about 13 h on 2 nodes) |
 | Dec 10–20 | CPU runs (option C: about 3 days on 3 nodes) |
 | After the runs | `analysis/rq4_tests.py` on the C4 data, then the H4 results doc |
 
 ## 8. Decisions needed
 
-1. CPU scope: A, B or C (§5); C is recommended.
+1. ~~CPU scope~~: **C, decided 2026-11-27** (§5); filed on OSF Dec 9 with the claims.
 2. The RQ4 claim list (§4), and whether claim 1 is two-sided.
 3. R1 extra tokens: proxy (a) or exact replay (b).
 4. Greedy decoding and the TTFT definition (§3); both are recommended as written.
